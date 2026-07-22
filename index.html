@@ -1,442 +1,1622 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-<title>Visor de Fotolibro Digital</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root{--bg:#060608;--surface:#0e0e12;--card:#16161c;--border:rgba(255,255,255,.06);--fg:#f0ece4;--muted:#6b6878;--accent:#c9a84c;--accent-dim:rgba(201,168,76,.15);--accent-glow:rgba(201,168,76,.25);--btn-bg:rgba(255,255,255,.05);--btn-hover:rgba(255,255,255,.12);--danger:#e04848;--success:#4cc978}
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;min-height:100dvh;overflow-x:hidden;display:flex;flex-direction:column;align-items:center;position:relative;-webkit-tap-highlight-color:transparent}
-  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 35%,rgba(201,168,76,.04) 0%,transparent 70%),radial-gradient(ellipse 120% 100% at 50% 50%,#0c0c10 0%,#060608 100%);pointer-events:none;z-index:0}
-  body::after{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.6}
-  .particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-  .particle{position:absolute;width:2px;height:2px;background:var(--accent);border-radius:50%;opacity:0;animation:floatP linear infinite}
-  @keyframes floatP{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:.5}90%{opacity:.2}100%{opacity:0;transform:translateY(-10vh) scale(1)}}
-  .header{position:relative;z-index:2;text-align:center;padding:28px 20px 6px;width:100%;flex-shrink:0}
-  .header-brand{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.3rem,4vw,2.4rem);letter-spacing:5px;text-transform:uppercase;color:var(--fg);margin-bottom:3px}
-  .header-brand span{color:var(--accent);font-weight:600}
-  .header-sub{font-size:.68rem;color:var(--muted);letter-spacing:3px;text-transform:uppercase;font-weight:300}
-  .header-line{width:50px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:10px auto 0}
-  .photobook-wrapper{display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%;max-width:1200px;position:relative;z-index:2;margin-bottom:16px;margin-top:12px;flex:1 1 auto;min-height:0}
-  .zoom-container{display:flex;justify-content:center;align-items:center;position:relative;transform-origin:center center;will-change:transform;flex-shrink:0;filter:drop-shadow(0 30px 60px rgba(0,0,0,.7)) drop-shadow(0 6px 18px rgba(0,0,0,.5))}
-  .zoom-container.smooth-transition{transition:transform .35s cubic-bezier(.22,1,.36,1)}
-  .book-ambient{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.06) 0%,transparent 70%);filter:blur(50px);pointer-events:none;z-index:-1}
-  .book{width:400px;aspect-ratio:1/1;position:relative;transform-style:preserve-3d;transition:transform 900ms cubic-bezier(.65,0,.35,1);touch-action:none;cursor:pointer}
-  .book.no-transition{transition:none!important}
-  .page-stack{position:absolute;top:2%;bottom:2%;right:-1px;width:16px;z-index:1;pointer-events:none}
-  .stack-edge{position:absolute;top:0;bottom:0;width:1.5px;border-radius:0 1px 1px 0;background:linear-gradient(to bottom,rgba(255,255,255,.015) 0%,rgba(255,255,255,.045) 15%,rgba(255,255,255,.055) 50%,rgba(255,255,255,.045) 85%,rgba(255,255,255,.015) 100%)}
-  .book-flip-shadow{position:absolute;inset:0;pointer-events:none;z-index:55;opacity:0;border-radius:2px 5px 5px 2px}
-  .paper{position:absolute;width:100%;height:100%;top:0;left:0;transform-style:preserve-3d;transform-origin:left center;border-radius:2px 5px 5px 2px;cursor:pointer}
-  .front,.back{position:absolute;width:100%;height:100%;backface-visibility:hidden;background:#0a0a0e;overflow:hidden;border-radius:2px 5px 5px 2px}
-  .back{transform:rotateY(180deg);border-radius:5px 2px 2px 5px}
-  .front::after,.back::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.003) 2px,rgba(255,255,255,.003) 4px);pointer-events:none;z-index:6}
-  .img-fit{width:100%;height:100%;object-fit:cover;display:block}
-  .panoramic-img{height:100%;width:200%;max-width:none;position:absolute;top:0;display:block}
-  .pano-left{left:0;object-fit:cover;object-position:left center}
-  .pano-right{right:0;object-fit:cover;object-position:right center}
-  .curl-highlight{position:absolute;right:-1px;top:0;bottom:0;width:4px;background:linear-gradient(to bottom,transparent 2%,rgba(255,255,255,.1) 20%,rgba(255,255,255,.2) 50%,rgba(255,255,255,.1) 80%,transparent 98%);opacity:0;z-index:15;pointer-events:none;border-radius:0 2px 2px 0;filter:blur(.5px)}
-  .acrylic-led-glass{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(115deg,transparent 0%,transparent 38%,rgba(255,255,255,.03) 41%,rgba(255,255,255,.35) 44%,rgba(255,255,255,.7) 46%,rgba(255,255,255,.35) 48%,rgba(255,255,255,.03) 51%,transparent 54%,transparent 100%);background-size:300% 300%;animation:ledR 10s cubic-bezier(.4,0,.2,1) infinite alternate;pointer-events:none;z-index:10;border-radius:2px 5px 5px 2px;mix-blend-mode:screen}
-  .beveled-edge{position:absolute;top:0;left:0;width:100%;height:100%;box-sizing:border-box;pointer-events:none;z-index:11;border-top:10px solid rgba(255,255,255,.18);border-right:10px solid rgba(255,255,255,.04);border-bottom:10px solid rgba(0,0,0,.3);border-left:10px solid rgba(0,0,0,.12);box-shadow:inset 0 0 1px 1px rgba(255,255,255,.15),inset 0 0 12px rgba(0,0,0,.3),0 0 0 1px rgba(255,255,255,.06);border-radius:2px 5px 5px 2px}
-  @keyframes ledR{0%{background-position:120% 120%}100%{background-position:-20% -20%}}
-  .placeholder-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#2a2a2a;font-weight:300;letter-spacing:3px;pointer-events:none;font-size:.8em;z-index:5;text-transform:uppercase;font-family:'Cormorant Garamond',serif;line-height:1.8}
-  .img-error-overlay{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,10,14,.92);z-index:4;gap:6px;pointer-events:none}
-  .img-error-overlay.visible{display:flex}
-  .img-error-overlay svg{width:26px;height:26px;stroke:var(--danger);opacity:.5}
-  .img-error-overlay span{font-size:.58rem;color:var(--danger);opacity:.7;letter-spacing:.8px;text-transform:uppercase}
-  .page-indicator{position:relative;z-index:2;display:flex;align-items:center;gap:12px;margin-top:14px;margin-bottom:12px;user-select:none;flex-shrink:0}
-  .page-dots{display:flex;gap:5px;align-items:center}
-  .page-dot{width:5px;height:5px;border-radius:50%;background:var(--muted);opacity:.25;transition:all .6s cubic-bezier(.22,1,.36,1)}
-  .page-dot.active{width:22px;border-radius:3px;background:var(--accent);opacity:1}
-  .page-label{font-size:.62rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-weight:400;min-width:65px;text-align:center;transition:all .4s}
-  .book-controls{display:flex;gap:8px;align-items:center;position:relative;z-index:2;flex-shrink:0;flex-wrap:wrap;justify-content:center}
-  .nav-btn{padding:9px 20px;background:var(--btn-bg);color:var(--fg);border:1px solid var(--border);border-radius:40px;cursor:pointer;transition:all .4s cubic-bezier(.22,1,.36,1);font-family:'DM Sans',sans-serif;font-weight:400;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;backdrop-filter:blur(12px);outline:none;position:relative;overflow:hidden}
-  .nav-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--accent-dim),transparent);opacity:0;transition:opacity .4s}
-  .nav-btn:hover::before{opacity:1}
-  .nav-btn:hover{border-color:rgba(201,168,76,.3);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
-  .nav-btn:active{transform:translateY(0) scale(.97)}
-  .nav-btn:disabled{opacity:.15;cursor:default;transform:none!important;box-shadow:none!important}
-  .nav-btn:disabled::before{display:none}
-  .nav-btn.accent-btn{background:linear-gradient(135deg,var(--accent),#b8943f);color:#0a0a0a;border-color:transparent;font-weight:600}
-  .nav-btn.accent-btn:hover{box-shadow:0 8px 30px var(--accent-glow);transform:translateY(-2px)}
-  .nav-btn.restart-btn{background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.06));color:var(--accent);border:1px solid rgba(201,168,76,.25);font-weight:500}
-  .nav-btn.restart-btn:hover{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.1));box-shadow:0 8px 24px rgba(201,168,76,.12)}
-  .fullscreen-btn{position:fixed;top:14px;right:14px;z-index:50;width:42px;height:42px;border-radius:12px;background:var(--btn-bg);border:1px solid var(--border);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;backdrop-filter:blur(12px);font-size:1.1rem}
-  .fullscreen-btn:hover{color:var(--fg);border-color:rgba(255,255,255,.15);background:var(--btn-hover)}
-  .landscape-arrow{display:none;position:fixed;top:50%;z-index:60;width:46px;height:46px;border-radius:50%;background:rgba(10,10,14,.75);border:1px solid var(--border);color:var(--fg);cursor:pointer;align-items:center;justify-content:center;font-size:1.4rem;backdrop-filter:blur(10px);transition:all .3s;transform:translateY(-50%)}
-  .landscape-arrow:hover{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.3)}
-  .landscape-arrow:active{transform:translateY(-50%) scale(.9)}
-  .landscape-arrow.arrow-left{left:10px}
-  .landscape-arrow.arrow-right{right:10px}
-  .mobile-toolbar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:90;background:rgba(10,10,14,.93);border-top:1px solid var(--border);backdrop-filter:blur(20px);padding:7px 10px;padding-bottom:max(7px,env(safe-area-inset-bottom));justify-content:center;align-items:center;gap:5px}
-  .mtb-btn{width:38px;height:38px;border-radius:10px;background:var(--btn-bg);border:1px solid var(--border);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .25s;font-family:'DM Sans',sans-serif}
-  .mtb-btn:hover{color:var(--fg);background:var(--btn-hover)}
-  .mtb-btn:active{transform:scale(.9)}
-  .zoom-label{font-size:.68rem;color:var(--muted);min-width:38px;text-align:center;letter-spacing:.5px;font-variant-numeric:tabular-nums}
-  .toolbar-sep{width:1px;height:20px;background:var(--border);margin:0 3px}
-  .mobile-cta{position:fixed;bottom:0;left:0;right:0;z-index:95;padding:12px 14px;padding-bottom:max(12px,env(safe-area-inset-bottom));transform:translateY(110%);transition:transform .65s cubic-bezier(.22,1,.36,1);pointer-events:none}
-  .mobile-cta.visible{transform:translateY(0);pointer-events:auto}
-  .mobile-cta-card{max-width:440px;margin:0 auto;background:rgba(12,12,16,.97);border:1px solid rgba(201,168,76,.28);border-radius:18px;padding:16px 18px;display:flex;align-items:center;gap:14px;backdrop-filter:blur(24px);box-shadow:0 -8px 40px rgba(0,0,0,.6),0 0 50px rgba(201,168,76,.04);position:relative}
-  .cta-phone{flex-shrink:0;color:var(--accent);animation:ctaR 3.2s ease-in-out infinite}
-  @keyframes ctaR{0%,15%{transform:rotate(0deg)}35%,55%{transform:rotate(90deg)}75%,100%{transform:rotate(0deg)}}
-  .cta-text{flex:1;min-width:0}
-  .cta-text strong{display:block;font-size:.82rem;color:var(--fg);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:2px}
-  .cta-text span{font-size:.68rem;color:var(--muted);letter-spacing:.3px;display:block;line-height:1.4}
-  .cta-fs-btn{flex-shrink:0;padding:10px 18px;background:linear-gradient(135deg,var(--accent),#b8943f);color:#0a0a0a;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .3s;white-space:nowrap}
-  .cta-fs-btn:hover{box-shadow:0 6px 24px var(--accent-glow);transform:translateY(-1px)}
-  .cta-fs-btn:active{transform:scale(.96)}
-  .cta-close{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:4px;transition:color .2s}
-  .cta-close:hover{color:var(--fg)}
-  .toast-container{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
-  .toast{padding:9px 20px;border-radius:40px;background:var(--card);border:1px solid var(--border);color:var(--fg);font-size:.76rem;letter-spacing:.5px;backdrop-filter:blur(20px);box-shadow:0 10px 40px rgba(0,0,0,.5);animation:tIn .4s cubic-bezier(.22,1,.36,1) forwards,tOut .4s 2.5s ease forwards;pointer-events:auto;max-width:92vw;text-align:center}
-  .toast.success{border-color:rgba(76,201,120,.3)}
-  .toast.info{border-color:var(--accent-dim)}
-  .toast.error{border-color:rgba(224,72,72,.3);color:var(--danger)}
-  @keyframes tIn{from{opacity:0;transform:translateY(-20px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
-  @keyframes tOut{to{opacity:0;transform:translateY(-10px) scale(.95)}}
-  .admin-collapse{position:fixed;bottom:0;left:50%;transform:translateX(-50%);background:rgba(14,14,18,.96);border:1px solid var(--border);border-radius:16px 16px 0 0;padding:0;color:var(--fg);z-index:100;width:100%;max-width:1020px;backdrop-filter:blur(30px);box-shadow:0 -10px 60px rgba(0,0,0,.6);overflow:hidden;max-height:70vh;display:flex;flex-direction:column}
-  .admin-collapse summary{cursor:pointer;font-weight:400;outline:none;list-style:none;text-align:center;color:var(--muted);transition:all .3s;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;padding:13px 24px;flex-shrink:0}
-  .admin-collapse summary::-webkit-details-marker{display:none}
-  .admin-collapse summary::before{content:'◆';margin-right:8px;font-size:.5em;vertical-align:middle;color:var(--accent);opacity:.6;transition:transform .3s}
-  .admin-collapse summary:hover{color:var(--fg)}
-  .admin-collapse[open] summary{padding-bottom:13px;border-bottom:1px solid var(--border);color:var(--fg)}
-  .admin-collapse[open] summary::before{transform:rotate(45deg)}
-  .admin-body{padding:14px 18px 18px;overflow-y:auto;flex:1}
-  .drive-section{margin-bottom:14px;padding:16px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.12);border-radius:12px}
-  .drive-section h3{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
-  .drive-section p{font-size:.66rem;color:var(--muted);line-height:1.5;margin-bottom:10px}
-  .drive-section p strong{color:var(--fg);font-weight:500}
-  .field-group{margin-bottom:10px}
-  .field-label{font-size:.6rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;display:block;font-weight:500}
-  .field-row{display:flex;gap:8px}
-  .field-input{flex:1;padding:9px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--fg);font-family:'DM Sans',sans-serif;font-size:.72rem;outline:none;transition:border-color .3s;min-width:0}
-  .field-input::placeholder{color:#3a3a3a}
-  .field-input:focus{border-color:rgba(201,168,76,.4)}
-  .field-btn{padding:9px 14px;background:linear-gradient(135deg,var(--accent),#b8943f);color:#0a0a0a;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.68rem;letter-spacing:.5px;cursor:pointer;white-space:nowrap;transition:all .3s;flex-shrink:0}
-  .field-btn:hover{box-shadow:0 4px 16px var(--accent-glow);transform:translateY(-1px)}
-  .field-btn:active{transform:scale(.96)}
-  .field-btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important;box-shadow:none!important}
-  .field-btn.secondary{background:var(--btn-bg);color:var(--fg);border:1px solid var(--border)}
-  .field-btn.secondary:hover{background:var(--btn-hover);border-color:rgba(255,255,255,.12);box-shadow:none}
-  .drive-status{margin-top:10px;padding:10px 12px;border-radius:8px;font-size:.68rem;display:none;align-items:center;gap:8px;line-height:1.4}
-  .drive-status.loading{display:flex;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.15);color:var(--accent)}
-  .drive-status.ok{display:flex;background:rgba(76,201,120,.06);border:1px solid rgba(76,201,120,.15);color:var(--success)}
-  .drive-status.fail{display:flex;background:rgba(224,72,72,.06);border:1px solid rgba(224,72,72,.15);color:var(--danger)}
-  .spinner{width:14px;height:14px;border:2px solid rgba(201,168,76,.2);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .auto-fill-bar{margin-top:10px;display:none;align-items:center;gap:8px;flex-wrap:wrap}
-  .auto-fill-bar.visible{display:flex}
-  .auto-fill-bar span{font-size:.66rem;color:var(--muted);flex:1;min-width:100px}
-  .url-section{margin-bottom:14px;padding:12px;border:1px solid var(--border);border-radius:10px}
-  .url-section h4{font-size:.72rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;font-weight:500}
-  .url-section .field-row{flex-direction:column}
-  .drag-drop-area{width:100%;border:1.5px dashed rgba(255,255,255,.1);border-radius:12px;padding:16px;text-align:center;color:var(--muted);transition:all .4s;margin-bottom:12px;cursor:pointer;background:rgba(255,255,255,.015);font-size:.72rem;letter-spacing:.5px}
-  .drag-drop-area:hover,.drag-drop-area.drag-over{border-color:var(--accent);background:var(--accent-dim);color:var(--fg)}
-  .drag-drop-area .drop-icon{display:block;margin-bottom:4px;font-size:1.2rem;opacity:.4}
-  .gallery-strip{display:flex;gap:7px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px;border-bottom:1px solid var(--border);min-height:62px;align-items:center}
-  .gallery-strip::-webkit-scrollbar{height:3px}
-  .gallery-strip::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
-  .gallery-item-wrap{position:relative;flex-shrink:0}
-  .gallery-item{width:54px;height:54px;object-fit:cover;border-radius:7px;cursor:grab;border:2px solid transparent;transition:all .3s;background:var(--card);display:block}
-  .gallery-item:hover{border-color:var(--accent);transform:scale(1.08)}
-  .gallery-item-badge{position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;font-size:.45rem;display:flex;align-items:center;justify-content:center;font-weight:700;border:1.5px solid var(--card);pointer-events:none}
-  .badge-url{background:var(--accent);color:#0a0a0a}
-  .badge-local{background:var(--muted);color:var(--bg)}
-  .slots-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:9px;max-height:24vh;overflow-y:auto;padding-right:5px}
-  .slots-container::-webkit-scrollbar{width:3px}
-  .slots-container::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
-  .slot{display:flex;flex-direction:column;position:relative;background:var(--card);padding:10px;border-radius:9px;border:1.5px dashed rgba(255,255,255,.06);transition:all .3s;text-align:center}
-  .slot.drag-over{border-color:var(--accent);background:rgba(201,168,76,.05)}
-  .slot label{font-weight:500;margin-bottom:7px;font-size:.6rem;color:var(--muted);pointer-events:none;letter-spacing:1px;text-transform:uppercase}
-  .slot-img{width:100%;height:45px;object-fit:cover;border-radius:5px;background:var(--surface);pointer-events:none;transition:opacity .3s}
-  .remove-btn{position:absolute;top:5px;right:5px;background:rgba(224,72,72,.15);color:var(--danger);border:1px solid rgba(224,72,72,.2);border-radius:50%;width:19px;height:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;transition:all .3s}
-  .remove-btn:hover{background:var(--danger);color:#fff;border-color:var(--danger)}
-  .slot-file-input{margin-top:4px;font-size:.56rem;color:#555;width:100%}
-  .controls-admin{display:flex;gap:9px;justify-content:space-between;margin-top:12px;align-items:center;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border)}
-  .admin-action-btn{padding:6px 12px;background:rgba(255,255,255,.04);color:var(--fg);border:1px solid var(--border);border-radius:7px;cursor:pointer;transition:all .3s;font-size:.68rem;font-family:'DM Sans',sans-serif}
-  .admin-action-btn:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12)}
-  .admin-action-btn.danger{background:rgba(224,72,72,.06);color:var(--danger);border-color:rgba(224,72,72,.15)}
-  .admin-action-btn.danger:hover{background:var(--danger);color:#fff;border-color:var(--danger)}
-  .toggle-container{display:flex;align-items:center;gap:9px;font-size:.68rem;color:var(--muted)}
-  .toggle-switch{position:relative;width:36px;height:20px;cursor:pointer}
-  .toggle-switch input{display:none}
-  .toggle-track{position:absolute;inset:0;background:#222;border-radius:10px;border:1px solid var(--border);transition:all .3s}
-  .toggle-thumb{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--muted);transition:all .3s}
-  .toggle-switch input:checked~.toggle-track{background:var(--accent-dim);border-color:var(--accent)}
-  .toggle-switch input:checked~.toggle-thumb{left:18px;background:var(--accent)}
-  .footer-hint{position:relative;z-index:2;text-align:center;padding:0 20px 105px;color:#333;font-size:.6rem;letter-spacing:2px;text-transform:uppercase}
-  .footer-hint kbd{display:inline-block;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);font-family:'DM Sans',sans-serif;font-size:.56rem;color:#555;margin:0 2px}
-  body.fullscreen-mode .header,body.fullscreen-mode .footer-hint,body.fullscreen-mode .admin-collapse{display:none!important}
-  body.fullscreen-mode .photobook-wrapper{margin:0;height:100vh;height:100dvh;justify-content:center}
-  body.fullscreen-mode .book{width:min(400px,62vh)}
-  body.fullscreen-mode .mobile-toolbar{display:flex}
-  body.fullscreen-mode .fullscreen-btn{display:none}
-  body.fullscreen-mode .book-controls{display:none}
-  body.fullscreen-mode .page-indicator{margin-bottom:56px;margin-bottom:calc(56px + env(safe-area-inset-bottom))}
-  body.fullscreen-mode .mobile-cta{display:none!important}
-  @media(orientation:landscape){body.fullscreen-mode .book{width:min(460px,80vh)}body.fullscreen-mode .page-indicator{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);margin:0;z-index:80;background:rgba(10,10,14,.75);padding:5px 14px;border-radius:18px;border:1px solid var(--border);backdrop-filter:blur(10px)}body.fullscreen-mode .landscape-arrow{display:flex}body.fullscreen-mode .mobile-toolbar{display:none}}
-  @media(max-width:768px){.book{width:min(320px,82vw)}.book-ambient{width:350px;height:350px}.nav-btn{padding:7px 13px;font-size:.66rem}.header{padding:18px 14px 4px}.header-brand{letter-spacing:3px}.footer-hint{display:none}.slots-container{grid-template-columns:repeat(auto-fill,minmax(125px,1fr))}.admin-body{padding:10px 14px 14px}.page-indicator{margin-top:8px;margin-bottom:8px}.field-row{flex-direction:column}.field-btn{width:100%}}
-  @media(max-width:420px){.book{width:min(290px,86vw)}.book-controls{gap:5px}.nav-btn{padding:6px 10px;font-size:.6rem;letter-spacing:1px}.header-brand{letter-spacing:2px;font-size:1.1rem}}
-  @media(orientation:landscape) and (max-height:500px){.book{width:min(300px,72vh)}.header{padding:8px 14px 2px}.header-brand{font-size:1rem;letter-spacing:3px}.header-sub{font-size:.55rem}.header-line{margin:5px auto 0}.page-indicator{margin-top:4px;margin-bottom:4px}.nav-btn{padding:5px 10px;font-size:.58rem}}
-  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}.particle{display:none}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <title>Visor de Fotolibro Digital · Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:opsz,wght@9..40,200;9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050508; --surface: #0d0d14; --card: #15151f; --border: rgba(255,255,255,0.05); --border-strong: rgba(255,255,255,0.1);
+            --fg: #ede8dd; --fg-dim: #b8b3a8; --muted: #5e5b6e; --accent: #d4af37; --accent-soft: #c9a84c;
+            --accent-dim: rgba(212,175,55,0.12); --accent-glow: rgba(212,175,55,0.3);
+            --btn-bg: rgba(255,255,255,0.04); --btn-hover: rgba(255,255,255,0.1);
+            --danger: #e05555; --success: #4cc978;
+            --font-serif: 'Cormorant Garamond', serif; --font-sans: 'DM Sans', sans-serif;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font-sans); background: var(--bg); color: var(--fg);
+            min-height: 100vh; min-height: 100dvh; overflow-x: hidden;
+            display: flex; flex-direction: column; align-items: center;
+            position: relative; -webkit-tap-highlight-color: transparent;
+        }
+        /* Fondo ambiental sutil */
+        body::before {
+            content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background:
+                radial-gradient(ellipse 60% 40% at 50% 25%, rgba(180,140,60,0.05) 0%, transparent 70%),
+                radial-gradient(ellipse 100% 100% at 50% 50%, #08080f 0%, #030308 100%);
+            animation: ambientPulse 14s ease-in-out infinite alternate;
+        }
+        @keyframes ambientPulse { 0% { opacity: .75; } 100% { opacity: 1; } }
+        body::after {
+            content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none; mix-blend-mode: overlay; opacity: .4;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+        }
+        /* Partículas doradas */
+        .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+        .particle {
+            position: absolute; border-radius: 50%; background: var(--accent); opacity: 0;
+            animation: floatP linear infinite; filter: blur(.6px);
+        }
+        @keyframes floatP {
+            0% { opacity: 0; transform: translateY(105vh) scale(0) rotate(0deg); }
+            6% { opacity: .55; }
+            80% { opacity: .08; }
+            100% { opacity: 0; transform: translateY(-10vh) scale(1.3) rotate(200deg); }
+        }
+        /* Encabezado */
+        .header {
+            position: relative; z-index: 2; text-align: center;
+            padding: 28px 20px 6px; width: 100%; flex-shrink: 0; pointer-events: none;
+        }
+        .header-brand {
+            font-family: var(--font-serif); font-weight: 300;
+            font-size: clamp(1.3rem, 4.5vw, 2.4rem); letter-spacing: 7px;
+            text-transform: uppercase; color: var(--fg);
+            text-shadow: 0 0 50px rgba(200,160,70,0.15);
+        }
+        .header-brand span { color: var(--accent); font-weight: 600; font-style: italic; }
+        .header-sub { font-size: .6rem; color: var(--muted); letter-spacing: 4px; text-transform: uppercase; font-weight: 300; margin-top: 2px; }
+        .header-line {
+            width: 36px; height: 1px; margin: 10px auto 0; border-radius: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-soft), transparent);
+        }
+        /* Contenedor del fotolibro */
+        .photobook-wrapper {
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            width: 100%; max-width: 1300px; position: relative; z-index: 2;
+            margin-bottom: 16px; margin-top: 12px; flex: 1 1 auto; min-height: 0;
+        }
+        .zoom-container {
+            display: flex; justify-content: center; align-items: center;
+            position: relative; transform-origin: center center; will-change: transform;
+            flex-shrink: 0; transition: transform .35s cubic-bezier(.22,1,.36,1);
+            filter: drop-shadow(0 30px 60px rgba(0,0,0,.85)) drop-shadow(0 6px 18px rgba(0,0,0,.6));
+        }
+        /* Libro */
+        .book {
+            width: 400px; aspect-ratio: 1/1; position: relative;
+            transform-style: preserve-3d; cursor: pointer; perspective: 1500px;
+        }
+        .book-ambient {
+            position: absolute; width: 500px; height: 500px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(180,140,50,0.07) 0%, transparent 60%);
+            filter: blur(70px); pointer-events: none; z-index: -1;
+            animation: ambientGlow 10s ease-in-out infinite alternate;
+        }
+        @keyframes ambientGlow { 0% { transform: scale(.88); opacity: .5; } 100% { transform: scale(1.12); opacity: 1; } }
+        .page-stack {
+            position: absolute; top: 2%; bottom: 2%; right: -2px; width: 18px; z-index: 1; pointer-events: none;
+        }
+        .stack-edge {
+            position: absolute; top: 0; bottom: 0; width: 1.5px; border-radius: 0 2px 2px 0;
+            background: linear-gradient(to bottom, rgba(255,255,255,.01) 0%, rgba(255,255,255,.055) 25%, rgba(255,255,255,.07) 50%, rgba(255,255,255,.055) 75%, rgba(255,255,255,.01) 100%);
+            box-shadow: -1px 0 3px rgba(0,0,0,.25);
+        }
+        .book-flip-shadow {
+            position: absolute; inset: 0; pointer-events: none; z-index: 55; opacity: 0;
+            border-radius: 3px 6px 6px 3px;
+        }
+        /* Página (paper) */
+        .paper {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+            transform-style: preserve-3d; transform-origin: left center;
+            border-radius: 3px 6px 6px 3px; cursor: pointer;
+            contain: layout style;
+        }
+        .front, .back {
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden; -webkit-backface-visibility: hidden;
+            background: #0a0a10; overflow: hidden;
+            border-radius: 3px 6px 6px 3px;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+        }
+        .back { transform: rotateY(180deg); border-radius: 6px 3px 3px 6px; }
+        /* Viñeta sutil en las caras */
+        .front::after, .back::after {
+            content: ''; position: absolute; inset: 0; z-index: 7; pointer-events: none;
+            background: radial-gradient(ellipse 85% 85% at 50% 50%, transparent 50%, rgba(0,0,0,.25) 100%);
+        }
+        .img-fit { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .panoramic-img { height: 100%; width: 200%; max-width: none; position: absolute; top: 0; display: block; }
+        .pano-left { left: 0; object-fit: cover; object-position: left center; }
+        .pano-right { right: 0; object-fit: cover; object-position: right center; }
+        /* Brillo de borde (curl) */
+        .curl-highlight {
+            position: absolute; right: -1px; top: 0; bottom: 0; width: 5px;
+            background: linear-gradient(to bottom, transparent 5%, rgba(255,255,255,.06) 25%, rgba(255,255,255,.2) 50%, rgba(255,255,255,.06) 75%, transparent 95%);
+            opacity: 0; z-index: 15; pointer-events: none; border-radius: 0 4px 4px 0; filter: blur(1px);
+        }
+        /* Efecto acrílico/LED en portada */
+        .acrylic-led-glass {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(110deg, transparent 0%, transparent 36%, rgba(255,255,255,.015) 40%, rgba(255,255,255,.2) 44%, rgba(255,255,255,.5) 46%, rgba(255,255,255,.2) 48%, rgba(255,255,255,.015) 52%, transparent 56%, transparent 100%);
+            background-size: 300% 300%;
+            animation: ledSweep 14s cubic-bezier(.4,0,.2,1) infinite alternate;
+            pointer-events: none; z-index: 10; border-radius: 3px 6px 6px 3px; mix-blend-mode: soft-light;
+        }
+        @keyframes ledSweep { 0% { background-position: 130% 130%; } 100% { background-position: -30% -30%; } }
+        /* Biselado de portada */
+        .beveled-edge {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box;
+            pointer-events: none; z-index: 11;
+            border-top: 10px solid rgba(255,255,255,.2); border-right: 10px solid rgba(255,255,255,.04);
+            border-bottom: 10px solid rgba(0,0,0,.3); border-left: 10px solid rgba(0,0,0,.12);
+            box-shadow: inset 0 0 2px 2px rgba(255,255,255,.15), inset 0 0 14px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.07);
+            border-radius: 3px 6px 6px 3px;
+        }
+        .placeholder-text {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+            text-align: center; color: #252530; font-weight: 300; letter-spacing: 4px;
+            pointer-events: none; font-size: .75em; z-index: 5;
+            text-transform: uppercase; font-family: var(--font-serif); line-height: 1.7;
+        }
+        .img-error-overlay {
+            position: absolute; inset: 0; display: none; flex-direction: column;
+            align-items: center; justify-content: center;
+            background: rgba(10,10,16,.92); z-index: 4; gap: 8px; pointer-events: none;
+            backdrop-filter: blur(4px);
+        }
+        .img-error-overlay.visible { display: flex; }
+        .img-error-overlay svg { width: 26px; height: 26px; stroke: var(--danger); opacity: .45; }
+        .img-error-overlay span { font-size: .58rem; color: var(--danger); opacity: .6; letter-spacing: 1px; text-transform: uppercase; }
+        /* Indicador de página */
+        .page-indicator {
+            position: relative; z-index: 2; display: flex; align-items: center; gap: 14px;
+            margin-top: 16px; margin-bottom: 12px; user-select: none; flex-shrink: 0;
+            background: rgba(10,10,18,.55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+            padding: 7px 18px; border-radius: 30px; border: 1px solid rgba(255,255,255,.05);
+        }
+        .page-dots { display: flex; gap: 5px; align-items: center; }
+        .page-dot {
+            width: 5px; height: 5px; border-radius: 50%; background: var(--muted); opacity: .18;
+            transition: all .55s cubic-bezier(.22,1,.36,1);
+        }
+        .page-dot.active {
+            width: 22px; border-radius: 3px; background: var(--accent); opacity: 1;
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+        .page-label {
+            font-size: .6rem; color: var(--fg-dim); letter-spacing: 2.5px;
+            text-transform: uppercase; font-weight: 400; min-width: 70px; text-align: center;
+            transition: all .4s;
+        }
+        /* Botones de navegación */
+        .book-controls {
+            display: flex; gap: 10px; align-items: center;
+            position: relative; z-index: 2; flex-shrink: 0; flex-wrap: wrap; justify-content: center;
+        }
+        .nav-btn {
+            padding: 10px 22px; background: var(--btn-bg); color: var(--fg);
+            border: 1px solid var(--border); border-radius: 40px; cursor: pointer;
+            transition: all .35s cubic-bezier(.22,1,.36,1);
+            font-family: var(--font-sans); font-weight: 400; font-size: .68rem;
+            letter-spacing: 1.8px; text-transform: uppercase;
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            outline: none; position: relative; overflow: hidden; white-space: nowrap;
+        }
+        .nav-btn::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, var(--accent-dim), transparent 70%);
+            opacity: 0; transition: opacity .4s; border-radius: inherit;
+        }
+        .nav-btn:hover {
+            border-color: rgba(200,160,60,.3); transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(0,0,0,.45); color: #fff;
+        }
+        .nav-btn:hover::before { opacity: 1; }
+        .nav-btn:active { transform: translateY(0) scale(.96); }
+        .nav-btn:disabled { opacity: .1; cursor: default; pointer-events: none; transform: none !important; box-shadow: none !important; }
+        .nav-btn.accent-btn {
+            background: linear-gradient(135deg, var(--accent), #b8943f);
+            color: #0a0a0a; border-color: transparent; font-weight: 600; letter-spacing: 2px;
+        }
+        .nav-btn.accent-btn:hover { box-shadow: 0 8px 35px var(--accent-glow); transform: translateY(-3px); }
+        .nav-btn.restart-btn {
+            background: linear-gradient(135deg, rgba(200,160,60,.12), rgba(200,160,60,.04));
+            color: var(--accent-soft); border: 1px solid rgba(200,160,60,.25); font-weight: 500;
+        }
+        .nav-btn.restart-btn:hover { background: linear-gradient(135deg, rgba(200,160,60,.22), rgba(200,160,60,.08)); box-shadow: 0 8px 28px rgba(200,160,60,.12); }
+        /* Botón pantalla completa */
+        .fullscreen-btn {
+            position: fixed; top: 14px; right: 14px; z-index: 50; width: 42px; height: 42px;
+            border-radius: 13px; background: rgba(15,15,22,.75); border: 1px solid var(--border);
+            color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all .3s; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); font-size: 1.1rem;
+        }
+        .fullscreen-btn:hover { color: var(--fg); border-color: var(--border-strong); background: rgba(25,25,35,.8); box-shadow: 0 4px 20px rgba(0,0,0,.4); }
+        /* Flechas landscape */
+        .landscape-arrow {
+            display: none; position: fixed; top: 50%; z-index: 60; width: 48px; height: 48px;
+            border-radius: 50%; background: rgba(12,12,20,.75); border: 1px solid var(--border);
+            color: var(--fg); cursor: pointer; align-items: center; justify-content: center;
+            font-size: 1.5rem; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            transition: all .3s; transform: translateY(-50%); box-shadow: 0 4px 20px rgba(0,0,0,.5);
+        }
+        .landscape-arrow:hover { background: rgba(200,160,60,.12); border-color: rgba(200,160,60,.35); box-shadow: 0 4px 24px rgba(200,160,60,.12); }
+        .landscape-arrow:active { transform: translateY(-50%) scale(.88); }
+        .arrow-left { left: 14px; }
+        .arrow-right { right: 14px; }
+        /* Toolbar móvil */
+        .mobile-toolbar {
+            display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 90;
+            background: rgba(8,8,14,.94); border-top: 1px solid var(--border);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            padding: 8px 10px; padding-bottom: calc(8px + var(--safe-bottom));
+            justify-content: center; align-items: center; gap: 5px;
+        }
+        .mtb-btn {
+            width: 38px; height: 38px; border-radius: 11px; background: var(--btn-bg);
+            border: 1px solid var(--border); color: var(--fg-dim); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.05rem; transition: all .25s; font-family: var(--font-sans);
+        }
+        .mtb-btn:hover { color: #fff; background: var(--btn-hover); border-color: var(--border-strong); }
+        .mtb-btn:active { transform: scale(.88); background: rgba(200,160,60,.12); }
+        .zoom-label { font-size: .65rem; color: var(--muted); min-width: 40px; text-align: center; letter-spacing: .4px; font-variant-numeric: tabular-nums; }
+        .toolbar-sep { width: 1px; height: 20px; background: var(--border); margin: 0 3px; border-radius: 1px; }
+        /* CTA móvil */
+        .mobile-cta {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 95;
+            padding: 12px 14px; padding-bottom: calc(12px + var(--safe-bottom));
+            transform: translateY(120%); transition: transform .7s cubic-bezier(.22,1,.36,1); pointer-events: none;
+        }
+        .mobile-cta.visible { transform: translateY(0); pointer-events: auto; }
+        .mobile-cta-card {
+            max-width: 440px; margin: 0 auto;
+            background: rgba(10,10,18,.97); border: 1px solid rgba(200,160,60,.25);
+            border-radius: 18px; padding: 16px 18px; display: flex; align-items: center; gap: 14px;
+            backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+            box-shadow: 0 -10px 40px rgba(0,0,0,.65), 0 0 50px rgba(200,160,60,.03);
+            position: relative;
+        }
+        .cta-phone { flex-shrink: 0; color: var(--accent); animation: ctaRotate 3.5s ease-in-out infinite; }
+        @keyframes ctaRotate { 0%,15% { transform: rotate(0deg); } 40%,60% { transform: rotate(90deg); } 85%,100% { transform: rotate(0deg); } }
+        .cta-text { flex: 1; min-width: 0; }
+        .cta-text strong { display: block; font-size: .8rem; color: var(--fg); letter-spacing: 1.8px; text-transform: uppercase; font-weight: 600; margin-bottom: 2px; }
+        .cta-text span { font-size: .66rem; color: var(--muted); letter-spacing: .3px; display: block; line-height: 1.5; }
+        .cta-fs-btn {
+            flex-shrink: 0; padding: 10px 18px;
+            background: linear-gradient(135deg, var(--accent), #b8943f); color: #0a0a0a; border: none;
+            border-radius: 11px; font-family: var(--font-sans); font-weight: 600; font-size: .68rem;
+            letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all .3s; white-space: nowrap;
+        }
+        .cta-fs-btn:hover { box-shadow: 0 6px 26px var(--accent-glow); transform: translateY(-2px); }
+        .cta-fs-btn:active { transform: scale(.94); }
+        .cta-close { position: absolute; top: 8px; right: 10px; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.2rem; line-height: 1; padding: 4px; transition: color .2s; z-index: 2; }
+        .cta-close:hover { color: var(--fg); }
+        /* Toast */
+        .toast-container { position: fixed; top: 18px; left: 50%; transform: translateX(-50%); z-index: 200; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
+        .toast {
+            padding: 9px 20px; border-radius: 40px; background: var(--card); border: 1px solid var(--border);
+            color: var(--fg); font-size: .72rem; letter-spacing: .5px;
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            box-shadow: 0 12px 40px rgba(0,0,0,.6);
+            animation: toastIn .4s cubic-bezier(.22,1,.36,1) forwards, toastOut .4s 2.8s ease forwards;
+            pointer-events: auto; max-width: 92vw; text-align: center; font-weight: 400;
+        }
+        .toast.success { border-color: rgba(76,201,120,.3); }
+        .toast.info { border-color: var(--accent-dim); }
+        .toast.error { border-color: rgba(224,85,85,.3); color: var(--danger); }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(-20px) scale(.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes toastOut { to { opacity: 0; transform: translateY(-10px) scale(.93); } }
+        /* Panel administrativo */
+        .admin-collapse {
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+            background: rgba(10,10,18,.98); border: 1px solid var(--border);
+            border-radius: 16px 16px 0 0; padding: 0; color: var(--fg); z-index: 100;
+            width: 100%; max-width: 1050px; backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
+            box-shadow: 0 -12px 60px rgba(0,0,0,.65); overflow: hidden; max-height: 72vh;
+            display: flex; flex-direction: column;
+        }
+        .admin-collapse summary {
+            cursor: pointer; font-weight: 500; outline: none; list-style: none;
+            text-align: center; color: var(--muted); transition: all .3s;
+            font-size: .68rem; letter-spacing: 2.5px; text-transform: uppercase;
+            padding: 13px 24px; flex-shrink: 0;
+        }
+        .admin-collapse summary::-webkit-details-marker { display: none; }
+        .admin-collapse summary::before {
+            content: '◆'; margin-right: 8px; font-size: .45em; vertical-align: middle;
+            color: var(--accent); opacity: .45; transition: transform .3s; display: inline-block;
+        }
+        .admin-collapse summary:hover { color: var(--fg); }
+        .admin-collapse[open] summary { padding-bottom: 13px; border-bottom: 1px solid var(--border); color: var(--fg); }
+        .admin-collapse[open] summary::before { transform: rotate(45deg); opacity: 1; }
+        .admin-body { padding: 14px 18px 18px; overflow-y: auto; flex: 1; }
+        .drive-section {
+            margin-bottom: 14px; padding: 16px;
+            background: rgba(200,160,60,.025); border: 1px solid rgba(200,160,60,.12); border-radius: 12px;
+        }
+        .drive-section h3 { font-family: var(--font-serif); font-size: .95rem; font-weight: 600; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+        .drive-section p { font-size: .64rem; color: var(--muted); line-height: 1.6; margin-bottom: 10px; }
+        .field-group { margin-bottom: 10px; }
+        .field-label { font-size: .58rem; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px; display: block; font-weight: 500; }
+        .field-row { display: flex; gap: 8px; }
+        .field-input {
+            flex: 1; padding: 9px 12px; background: var(--surface); border: 1px solid var(--border);
+            border-radius: 9px; color: var(--fg); font-family: var(--font-sans); font-size: .7rem;
+            outline: none; transition: border-color .3s, box-shadow .3s; min-width: 0;
+        }
+        .field-input::placeholder { color: #353540; }
+        .field-input:focus { border-color: rgba(200,160,60,.45); box-shadow: 0 0 0 3px rgba(200,160,60,.05); }
+        .field-btn {
+            padding: 9px 14px; background: linear-gradient(135deg, var(--accent), #b8943f);
+            color: #0a0a0a; border: none; border-radius: 9px; font-family: var(--font-sans);
+            font-weight: 600; font-size: .65rem; letter-spacing: .8px; cursor: pointer;
+            white-space: nowrap; transition: all .3s; flex-shrink: 0;
+        }
+        .field-btn:hover { box-shadow: 0 6px 20px var(--accent-glow); transform: translateY(-1px); }
+        .field-btn:active { transform: scale(.95); }
+        .field-btn:disabled { opacity: .35; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .field-btn.secondary { background: var(--btn-bg); color: var(--fg); border: 1px solid var(--border); }
+        .field-btn.secondary:hover { background: var(--btn-hover); border-color: var(--border-strong); box-shadow: none; }
+        .drive-status { margin-top: 10px; padding: 9px 12px; border-radius: 9px; font-size: .65rem; display: none; align-items: center; gap: 8px; line-height: 1.5; }
+        .drive-status.loading { display: flex; background: rgba(200,160,60,.05); border: 1px solid rgba(200,160,60,.18); color: var(--accent-soft); }
+        .drive-status.ok { display: flex; background: rgba(76,201,120,.05); border: 1px solid rgba(76,201,120,.18); color: var(--success); }
+        .drive-status.fail { display: flex; background: rgba(224,85,85,.05); border: 1px solid rgba(224,85,85,.18); color: var(--danger); }
+        .spinner { width: 14px; height: 14px; border: 2px solid rgba(200,160,60,.18); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .auto-fill-bar { margin-top: 10px; display: none; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .auto-fill-bar.visible { display: flex; }
+        .auto-fill-bar span { font-size: .64rem; color: var(--muted); flex: 1; min-width: 100px; }
+        .url-section { margin-bottom: 14px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; }
+        .url-section h4 { font-size: .68rem; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; font-weight: 500; }
+        .drag-drop-area {
+            width: 100%; border: 2px dashed rgba(255,255,255,.08); border-radius: 12px;
+            padding: 18px; text-align: center; color: var(--muted); transition: all .4s;
+            margin-bottom: 12px; cursor: pointer; background: rgba(255,255,255,.008); font-size: .7rem; letter-spacing: .6px;
+        }
+        .drag-drop-area:hover, .drag-drop-area.drag-over { border-color: var(--accent-soft); background: var(--accent-dim); color: var(--fg); }
+        .drag-drop-area .drop-icon { display: block; margin-bottom: 5px; font-size: 1.3rem; opacity: .35; }
+        .gallery-strip { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; border-bottom: 1px solid var(--border); min-height: 60px; align-items: center; }
+        .gallery-strip::-webkit-scrollbar { height: 3px; }
+        .gallery-strip::-webkit-scrollbar-thumb { background: #252530; border-radius: 3px; }
+        .gallery-item-wrap { position: relative; flex-shrink: 0; }
+        .gallery-item {
+            width: 54px; height: 54px; object-fit: cover; border-radius: 7px; cursor: grab;
+            border: 2px solid transparent; transition: all .3s; background: var(--card);
+            display: block; box-shadow: 0 2px 8px rgba(0,0,0,.4);
+        }
+        .gallery-item:hover { border-color: var(--accent-soft); transform: scale(1.1); box-shadow: 0 4px 16px rgba(200,160,60,.18); }
+        .gallery-item-badge {
+            position: absolute; top: -4px; right: -4px; width: 16px; height: 16px;
+            border-radius: 50%; font-size: .45rem; display: flex; align-items: center;
+            justify-content: center; font-weight: 700; border: 2px solid var(--card); pointer-events: none;
+        }
+        .badge-url { background: var(--accent); color: #0a0a0a; }
+        .badge-local { background: var(--muted); color: var(--bg); }
+        .slots-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; max-height: 24vh; overflow-y: auto; padding-right: 4px; }
+        .slots-container::-webkit-scrollbar { width: 3px; }
+        .slots-container::-webkit-scrollbar-thumb { background: #252530; border-radius: 3px; }
+        .slot {
+            display: flex; flex-direction: column; position: relative; background: var(--card);
+            padding: 10px; border-radius: 9px; border: 2px dashed rgba(255,255,255,.04);
+            transition: all .3s; text-align: center;
+        }
+        .slot.drag-over { border-color: var(--accent); background: rgba(200,160,60,.05); box-shadow: 0 0 16px rgba(200,160,60,.08); }
+        .slot label { font-weight: 500; margin-bottom: 6px; font-size: .55rem; color: var(--muted); pointer-events: none; letter-spacing: 1.2px; text-transform: uppercase; }
+        .slot-img { width: 100%; height: 46px; object-fit: cover; border-radius: 5px; background: var(--surface); pointer-events: none; transition: opacity .3s; }
+        .remove-btn {
+            position: absolute; top: 5px; right: 5px; background: rgba(224,85,85,.18); color: var(--danger);
+            border: 1px solid rgba(224,85,85,.25); border-radius: 50%; width: 20px; height: 20px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 9px; transition: all .3s; z-index: 2;
+        }
+        .remove-btn:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+        .slot-file-input { margin-top: 5px; font-size: .52rem; color: #444; width: 100%; }
+        .controls-admin { display: flex; gap: 8px; justify-content: space-between; margin-top: 12px; align-items: center; flex-wrap: wrap; padding-top: 12px; border-top: 1px solid var(--border); }
+        .admin-action-btn {
+            padding: 6px 12px; background: rgba(255,255,255,.03); color: var(--fg-dim);
+            border: 1px solid var(--border); border-radius: 7px; cursor: pointer;
+            transition: all .3s; font-size: .65rem; font-family: var(--font-sans); letter-spacing: .4px;
+        }
+        .admin-action-btn:hover { background: rgba(255,255,255,.07); border-color: var(--border-strong); color: var(--fg); }
+        .admin-action-btn.danger { background: rgba(224,85,85,.06); color: var(--danger); border-color: rgba(224,85,85,.18); }
+        .admin-action-btn.danger:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+        .toggle-container { display: flex; align-items: center; gap: 8px; font-size: .65rem; color: var(--muted); }
+        .toggle-switch { position: relative; width: 36px; height: 20px; cursor: pointer; }
+        .toggle-switch input { display: none; }
+        .toggle-track { position: absolute; inset: 0; background: #1a1a25; border-radius: 10px; border: 1px solid var(--border); transition: all .3s; }
+        .toggle-thumb { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--muted); transition: all .3s; box-shadow: 0 1px 3px rgba(0,0,0,.4); }
+        .toggle-switch input:checked ~ .toggle-track { background: var(--accent-dim); border-color: var(--accent-soft); }
+        .toggle-switch input:checked ~ .toggle-thumb { left: 18px; background: var(--accent); box-shadow: 0 2px 8px var(--accent-glow); }
+        .footer-hint { position: relative; z-index: 2; text-align: center; padding: 0 20px 100px; color: #222230; font-size: .58rem; letter-spacing: 2px; text-transform: uppercase; }
+        .footer-hint kbd { display: inline-block; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,.025); border: 1px solid rgba(255,255,255,.04); font-family: var(--font-sans); font-size: .52rem; color: #3a3a48; margin: 0 2px; }
+        /* Modo pantalla completa */
+        body.fullscreen-mode .header, body.fullscreen-mode .footer-hint, body.fullscreen-mode .admin-collapse { display: none !important; }
+        body.fullscreen-mode .photobook-wrapper { margin: 0; height: 100vh; height: 100dvh; justify-content: center; }
+        body.fullscreen-mode .book { width: min(420px, 62vh); }
+        body.fullscreen-mode .mobile-toolbar { display: flex; }
+        body.fullscreen-mode .fullscreen-btn { display: none; }
+        body.fullscreen-mode .book-controls { display: none; }
+        body.fullscreen-mode .page-indicator { margin-bottom: 56px; margin-bottom: calc(56px + var(--safe-bottom)); }
+        body.fullscreen-mode .mobile-cta { display: none !important; }
+        @media (orientation: landscape) {
+            body.fullscreen-mode .book { width: min(460px, 80vh); }
+            body.fullscreen-mode .page-indicator { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); margin: 0; z-index: 80; background: rgba(10,10,18,.82); padding: 5px 14px; border-radius: 18px; border: 1px solid var(--border); backdrop-filter: blur(14px); }
+            body.fullscreen-mode .landscape-arrow { display: flex; }
+            body.fullscreen-mode .mobile-toolbar { display: none; }
+        }
+        @media (max-width: 768px) {
+            .book { width: min(320px, 82vw); }
+            .book-ambient { width: 340px; height: 340px; }
+            .nav-btn { padding: 8px 13px; font-size: .62rem; }
+            .header { padding: 18px 12px 4px; }
+            .header-brand { letter-spacing: 4px; }
+            .footer-hint { display: none; }
+            .slots-container { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+            .admin-body { padding: 10px 12px 14px; }
+            .page-indicator { margin-top: 8px; margin-bottom: 8px; padding: 5px 12px; }
+            .field-row { flex-direction: column; }
+            .field-btn { width: 100%; }
+        }
+        @media (max-width: 420px) {
+            .book { width: min(280px, 87vw); }
+            .book-controls { gap: 5px; }
+            .nav-btn { padding: 6px 10px; font-size: .58rem; }
+            .header-brand { letter-spacing: 3px; font-size: 1.1rem; }
+        }
+        @media (orientation: landscape) and (max-height: 500px) {
+            .book { width: min(300px, 72vh); }
+            .header { padding: 8px 12px 2px; }
+            .header-brand { font-size: .95rem; letter-spacing: 3px; }
+            .header-sub { font-size: .5rem; }
+            .header-line { margin: 5px auto 0; }
+            .page-indicator { margin-top: 5px; margin-bottom: 5px; }
+            .nav-btn { padding: 5px 10px; font-size: .55rem; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+            .particle { display: none; }
+        }
+    </style>
 </head>
 <body>
-<div class="particles" id="particles" aria-hidden="true"></div>
-<div class="toast-container" id="toast-container" aria-live="polite"></div>
-<div class="mobile-cta" id="mobile-cta"><div class="mobile-cta-card"><button class="cta-close" onclick="dismissCTA()" aria-label="Cerrar">&times;</button><svg class="cta-phone" viewBox="0 0 48 56" width="32" height="38" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="2" width="28" height="52" rx="4"/><circle cx="24" cy="48" r="1.5" fill="currentColor" stroke="none" opacity=".4"/><line x1="18" y1="8" x2="30" y2="8" opacity=".3"/></svg><div class="cta-text"><strong>Rota tu dispositivo</strong><span>Para ver el fotolibro a pantalla completa como un libro real</span></div><button class="cta-fs-btn" onclick="enterImmersive()">Pantalla Completa</button></div></div>
-<button class="fullscreen-btn" id="fullscreen-btn" onclick="toggleFullscreen()" title="Pantalla completa" aria-label="Pantalla completa">⛶</button>
-<button class="landscape-arrow arrow-left" id="arrow-left" onclick="prevPage()" aria-label="Anterior">&#8249;</button>
-<button class="landscape-arrow arrow-right" id="arrow-right" onclick="nextPage()" aria-label="Siguiente">&#8250;</button>
-<header class="header"><div class="header-brand">Foto<span>Libro</span></div><div class="header-sub">Visor digital premium</div><div class="header-line"></div></header>
-<main class="photobook-wrapper" id="photobook-wrapper">
-  <div class="zoom-container" id="zoom-container">
-    <div class="book-ambient" aria-hidden="true"></div>
-    <div id="book" class="book" role="region" aria-label="Fotolibro digital">
-      <div class="page-stack" id="page-stack" aria-hidden="true"></div>
-      <div class="book-flip-shadow" id="book-flip-shadow" aria-hidden="true"></div>
+    <div class="particles" id="particles" aria-hidden="true"></div>
+    <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+    <div class="mobile-cta" id="mobile-cta">
+        <div class="mobile-cta-card">
+            <button class="cta-close" onclick="app.dismissCTA()" aria-label="Cerrar">&times;</button>
+            <svg class="cta-phone" viewBox="0 0 48 56" width="32" height="38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="2" width="28" height="52" rx="4.5"/><circle cx="24" cy="48" r="1.8" fill="currentColor" stroke="none" opacity=".3"/><line x1="18" y1="8" x2="30" y2="8" opacity=".2"/></svg>
+            <div class="cta-text">
+                <strong>Rota tu dispositivo</strong>
+                <span>Para ver el fotolibro a pantalla completa como un libro real</span>
+            </div>
+            <button class="cta-fs-btn" onclick="app.enterImmersive()">Pantalla Completa</button>
+        </div>
     </div>
-  </div>
-  <div class="page-indicator" id="page-indicator"><div class="page-dots" id="page-dots"></div><div class="page-label" id="page-label">Portada</div></div>
-  <nav class="book-controls" aria-label="Navegación del fotolibro">
-    <button id="btn-home" class="nav-btn" onclick="goToCover()" aria-label="Ir a portada">Inicio</button>
-    <button id="btn-prev" class="nav-btn" onclick="prevPage()" aria-label="Anterior">Anterior</button>
-    <button id="btn-next" class="nav-btn accent-btn" onclick="nextPage()" aria-label="Siguiente">Siguiente</button>
-  </nav>
-</main>
-<div class="mobile-toolbar" id="mobile-toolbar">
-  <button class="mtb-btn" onclick="prevPage()" aria-label="Anterior">&#8249;</button>
-  <button class="mtb-btn" onclick="goToCover()" aria-label="Inicio"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></button>
-  <button class="mtb-btn" onclick="nextPage()" aria-label="Siguiente">&#8250;</button>
-  <div class="toolbar-sep"></div>
-  <button class="mtb-btn" onclick="zoomOut()" aria-label="Reducir zoom">−</button>
-  <span class="zoom-label" id="zoom-label">100%</span>
-  <button class="mtb-btn" onclick="zoomIn()" aria-label="Aumentar zoom">+</button>
-  <div class="toolbar-sep"></div>
-  <button class="mtb-btn" onclick="exitFullscreenMode()" aria-label="Salir"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
-</div>
-<div class="footer-hint">Usa <kbd>←</kbd> <kbd>→</kbd> para navegar · Desliza en móvil · <kbd>F</kbd> pantalla completa · Pellizca para zoom</div>
-<details class="admin-collapse" id="admin-panel"><summary>Configuración y Carga de Fotografías</summary><div class="admin-body">
-  <div class="drive-section"><h3>Carpeta de Google Drive</h3><p>Pega el enlace de tu carpeta compartida.</p><div class="field-group"><label class="field-label">Enlace de la carpeta</label><div class="field-row"><input type="text" class="field-input" id="folder-url-input" placeholder="https://drive.google.com/drive/folders/1aBc..."><button class="field-btn" id="load-folder-btn" onclick="loadDriveFolder()">Cargar Carpeta</button></div></div><div class="drive-status" id="drive-status"></div><div class="auto-fill-bar" id="auto-fill-bar"><span id="auto-fill-count"></span><button class="field-btn secondary" onclick="autoFillBook()" style="font-size:.64rem;padding:6px 12px">Auto-llenar Fotolibro</button></div></div>
-  <div class="url-section"><h4>URL individual</h4><div class="field-row"><input type="text" class="field-input" id="single-url-input" placeholder="Pega enlace de una foto de Drive..."><button class="field-btn" onclick="addSingleUrl()" style="font-size:.64rem">Agregar</button></div></div>
-  <div class="drag-drop-area" id="main-dropzone" onclick="document.getElementById('mass-upload-input').click()" role="button" aria-label="Subir fotos"><span class="drop-icon">⬆</span>O arrastra aquí fotos desde tu dispositivo<input type="file" id="mass-upload-input" multiple accept="image/*" style="display:none" onchange="handleMassUpload(event)"></div>
-  <div class="gallery-strip" id="media-gallery" role="list"><span style="color:#444;font-size:.7rem;margin-left:8px">Carga una carpeta o sube fotos.</span></div>
-  <div id="slots-container" class="slots-container" role="list"></div>
-  <div class="controls-admin"><label class="toggle-container"><label class="toggle-switch"><input type="checkbox" id="toggle-backcover" onchange="toggleBackCover(event)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>Contraportada</label><div style="display:flex;gap:7px"><button class="admin-action-btn" onclick="addEmptySpread()">+ Lienzo</button><button class="admin-action-btn danger" onclick="clearAllData()">Limpiar</button></div></div>
-</div></details>
+
+    <button class="fullscreen-btn" id="fullscreen-btn" onclick="app.toggleFullscreen()" title="Pantalla completa" aria-label="Pantalla completa">⛶</button>
+    <button class="landscape-arrow arrow-left" id="arrow-left" onclick="app.prevPage()" aria-label="Anterior">&#8249;</button>
+    <button class="landscape-arrow arrow-right" id="arrow-right" onclick="app.nextPage()" aria-label="Siguiente">&#8250;</button>
+
+    <header class="header">
+        <div class="header-brand">Foto<span>Libro</span></div>
+        <div class="header-sub">Visor digital premium</div>
+        <div class="header-line"></div>
+    </header>
+
+    <main class="photobook-wrapper" id="photobook-wrapper">
+        <div class="zoom-container" id="zoom-container">
+            <div class="book-ambient" aria-hidden="true"></div>
+            <div id="book" class="book" role="region" aria-label="Fotolibro digital">
+                <div class="page-stack" id="page-stack" aria-hidden="true"></div>
+                <div class="book-flip-shadow" id="book-flip-shadow" aria-hidden="true"></div>
+            </div>
+        </div>
+        <div class="page-indicator" id="page-indicator">
+            <div class="page-dots" id="page-dots"></div>
+            <div class="page-label" id="page-label">Portada</div>
+        </div>
+        <nav class="book-controls" aria-label="Navegación del fotolibro">
+            <button id="btn-home" class="nav-btn restart-btn" onclick="app.goToCover()" aria-label="Ir a portada">Inicio</button>
+            <button id="btn-prev" class="nav-btn" onclick="app.prevPage()" aria-label="Anterior">Anterior</button>
+            <button id="btn-next" class="nav-btn accent-btn" onclick="app.nextPage()" aria-label="Siguiente">Siguiente</button>
+        </nav>
+    </main>
+
+    <div class="mobile-toolbar" id="mobile-toolbar">
+        <button class="mtb-btn" onclick="app.prevPage()" aria-label="Anterior">&#8249;</button>
+        <button class="mtb-btn" onclick="app.goToCover()" aria-label="Inicio"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></button>
+        <button class="mtb-btn" onclick="app.nextPage()" aria-label="Siguiente">&#8250;</button>
+        <div class="toolbar-sep"></div>
+        <button class="mtb-btn" onclick="app.zoomOut()" aria-label="Reducir zoom">&#8722;</button>
+        <span class="zoom-label" id="zoom-label">100%</span>
+        <button class="mtb-btn" onclick="app.zoomIn()" aria-label="Aumentar zoom">+</button>
+        <div class="toolbar-sep"></div>
+        <button class="mtb-btn" onclick="app.exitFullscreenMode()" aria-label="Salir"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
+    </div>
+
+    <div class="footer-hint">Usa <kbd>&#8592;</kbd> <kbd>&#8594;</kbd> para navegar &middot; Desliza en m&oacute;vil &middot; <kbd>F</kbd> pantalla completa &middot; Pellizca para zoom</div>
+
+    <details class="admin-collapse" id="admin-panel">
+        <summary>Configuraci&oacute;n y Carga de Fotograf&iacute;as</summary>
+        <div class="admin-body">
+            <div class="drive-section">
+                <h3>Carpeta de Google Drive</h3>
+                <p>Pega el enlace de tu carpeta compartida p&uacute;blicamente.</p>
+                <div class="field-group">
+                    <label class="field-label" for="folder-url-input">Enlace de la carpeta</label>
+                    <div class="field-row">
+                        <input type="text" class="field-input" id="folder-url-input" placeholder="https://drive.google.com/drive/folders/1aBc...">
+                        <button class="field-btn" id="load-folder-btn" onclick="app.loadDriveFolder()">Cargar</button>
+                    </div>
+                </div>
+                <div class="drive-status" id="drive-status"></div>
+                <div class="auto-fill-bar" id="auto-fill-bar">
+                    <span id="auto-fill-count"></span>
+                    <button class="field-btn secondary" onclick="app.autoFillBook()">Auto-llenar</button>
+                </div>
+            </div>
+            <div class="url-section">
+                <h4>URL individual</h4>
+                <div class="field-row">
+                    <input type="text" class="field-input" id="single-url-input" placeholder="Pega enlace de una foto de Drive...">
+                    <button class="field-btn" onclick="app.addSingleUrl()">Agregar</button>
+                </div>
+            </div>
+            <div class="drag-drop-area" id="main-dropzone" onclick="document.getElementById('mass-upload-input').click()" role="button" aria-label="Subir fotos">
+                <span class="drop-icon">&#8593;</span>
+                Arrastra aqu&iacute; fotos desde tu dispositivo
+                <input type="file" id="mass-upload-input" multiple accept="image/*" style="display:none" onchange="app.handleMassUpload(event)">
+            </div>
+            <div class="gallery-strip" id="media-gallery" role="list"><span style="color:#3a3a45;font-size:.68rem;margin-left:8px">Carga una carpeta o sube fotos.</span></div>
+            <div id="slots-container" class="slots-container" role="list"></div>
+            <div class="controls-admin">
+                <label class="toggle-container">
+                    <span class="toggle-switch"><input type="checkbox" id="toggle-backcover" onchange="app.toggleBackCover(event)"><div class="toggle-track"></div><div class="toggle-thumb"></div></span>
+                    Contraportada
+                </label>
+                <div style="display:flex;gap:7px">
+                    <button class="admin-action-btn" onclick="app.addEmptySpread()">+ Lienzo</button>
+                    <button class="admin-action-btn danger" onclick="app.clearAllData()">Limpiar</button>
+                </div>
+            </div>
+        </div>
+    </details>
+
 <script>
-const MY_API_KEY='AIzaSyCct0SYhLFCkAjrtu7-SISkzMaeiDI908o';
-let photobookData={cover:null,spreads:[null],hasBackCover:false,back:null};
-let mediaLibrary=[],currentBookState=0,isAnimating=false;
-const isTouchDevice=('ontouchstart' in window)||(navigator.maxTouchPoints>0);
-let zoomLevel=1,panX=0,panY=0;
-const ZOOM_MIN=1,ZOOM_MAX=5,ZOOM_DOUBLE=2.5,FLIP_DURATION=850;
+(function() {
+    'use strict';
 
-(function(){const c=document.getElementById('particles');for(let i=0;i<18;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.animationDuration=(14+Math.random()*18)+'s';p.style.animationDelay=(Math.random()*12)+'s';p.style.width=p.style.height=(1+Math.random()*1.5)+'px';c.appendChild(p)}})();
-
-function showToast(m,t='info'){const c=document.getElementById('toast-container'),e=document.createElement('div');e.className='toast '+t;e.textContent=m;c.appendChild(e);setTimeout(()=>{if(e.parentNode)e.remove()},3200)}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
-
-/* ====== Drive ====== */
-function extractFolderId(input){if(!input||!input.trim())return null;input=input.trim();let m=input.match(/\/folders\/([a-zA-Z0-9_-]+)/);if(m)return m[1];m=input.match(/[?&]id=([a-zA-Z0-9_-]+)/);if(m)return m[1];if(/^[a-zA-Z0-9_-]{15,}$/.test(input))return input;return null}
-async function loadDriveFolder(){
-  const fi=document.getElementById('folder-url-input').value.trim(),se=document.getElementById('drive-status'),lb=document.getElementById('load-folder-btn');
-  if(!MY_API_KEY||MY_API_KEY==='AQUÍ_PEGA_TU_API_KEY'){setDS('fail','Pega tu API Key en el código HTML.');return}
-  const fid=extractFolderId(fi);if(!fid){setDS('fail','Enlace no válido.');return}
-  setDS('loading','Conectando...');lb.disabled=true;
-  try{const r=await fetch('https://www.googleapis.com/drive/v3/files?'+new URLSearchParams({q:`'${fid}' in parents and (mimeType contains 'image/jpeg' or mimeType contains 'image/png' or mimeType contains 'image/webp')`,fields:'files(id,name)',orderBy:'name',pageSize:'100',key:MY_API_KEY}));if(!r.ok){const e=await r.json().catch(()=>({}));if(r.status===403)throw new Error('Activa Google Drive API en Cloud Console.');if(r.status===400)throw new Error('API Key no válida.');if(r.status===404)throw new Error('Carpeta no encontrada.');throw new Error(e.error?.message||'Error')}const d=await r.json();const f=d.files||[];if(!f.length){setDS('fail','Sin imágenes en la carpeta.');lb.disabled=false;return}f.forEach(file=>{mediaLibrary.push({src:'https://drive.google.com/thumbnail?id='+file.id+'&sz=w1920',type:'url',name:file.name})});renderGallery();saveData();document.getElementById('auto-fill-count').textContent=f.length+' imágenes';document.getElementById('auto-fill-bar').classList.add('visible');setDS('ok',f.length+' imagen(es). Usa "Auto-llenar".');showToast(f.length+' imágenes cargadas','success')}catch(err){setDS('fail',err.message);showToast('Error: '+err.message,'error')}lb.disabled=false}
-function setDS(t,m){const e=document.getElementById('drive-status');e.className='drive-status '+t;e.innerHTML=t==='loading'?'<div class="spinner"></div><span>'+m+'</span>':'<span>'+m+'</span>';if(t==='ok')setTimeout(()=>{e.className='drive-status'},12000)}
-function autoFillBook(){const u=mediaLibrary.filter(i=>i.type==='url');if(!u.length){showToast('Sin imágenes','error');return}let idx=0;if(!photobookData.cover&&idx<u.length){photobookData.cover=u[idx].src;idx++}for(let i=0;i<photobookData.spreads.length&&idx<u.length;i++){if(!photobookData.spreads[i]){photobookData.spreads[i]=u[idx].src;idx++}}while(idx<u.length){photobookData.spreads.push(u[idx].src);idx++}saveData();renderAdmin();renderBook();showToast('Fotolibro llenado con '+idx+' imágenes','success');document.getElementById('auto-fill-count').textContent=idx+' asignadas'}
-function convertDriveUrl(input){if(!input||!input.trim())return null;input=input.trim();if(/\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(input))return input;if(input.includes('drive.google.com/thumbnail'))return input;let id=null;let m=input.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);if(m)id=m[1];if(!id){m=input.match(/[?&]id=([a-zA-Z0-9_-]+)/);if(m)id=m[1]}if(!id){m=input.match(/\/d\/([a-zA-Z0-9_-]+)/);if(m)id=m[1]}if(!id&&/^[a-zA-Z0-9_-]{15,}$/.test(input))id=input;return id?'https://drive.google.com/thumbnail?id='+id+'&sz=w1920':null}
-function addSingleUrl(){const inp=document.getElementById('single-url-input');const u=convertDriveUrl(inp.value.trim());if(!u){showToast('Enlace no válido','error');return}mediaLibrary.push({src:u,type:'url',name:'Drive'});renderGallery();saveData();inp.value='';showToast('Imagen agregada','success')}
-
-/* ====== Persistencia ====== */
-function loadData(){try{const s=localStorage.getItem('pb_f2_data');if(s){const p=JSON.parse(s);photobookData.cover=p.cover||null;photobookData.spreads=p.spreads?.length?p.spreads:[null];photobookData.hasBackCover=p.hasBackCover||false;photobookData.back=p.back||null;document.getElementById('toggle-backcover').checked=photobookData.hasBackCover}}catch(e){}try{const g=localStorage.getItem('pb_f2_gal');if(g)mediaLibrary=JSON.parse(g)}catch(e){}}
-function saveData(){try{localStorage.setItem('pb_f2_data',JSON.stringify(photobookData));localStorage.setItem('pb_f2_gal',JSON.stringify(mediaLibrary.filter(i=>i.type==='url')))}catch(e){}}
-function clearAllData(){if(!confirm('¿Limpiar todo?'))return;localStorage.removeItem('pb_f2_data');localStorage.removeItem('pb_f2_gal');photobookData={cover:null,spreads:[null],hasBackCover:false,back:null};mediaLibrary=[];document.getElementById('toggle-backcover').checked=false;currentBookState=0;renderGallery();renderAdmin();renderBook();document.getElementById('auto-fill-bar').classList.remove('visible');showToast('Todo limpiado','info')}
-function addEmptySpread(){photobookData.spreads.push(null);saveData();renderAdmin();renderBook();showToast('Lienzo agregado','success')}
-function removeSpread(i){photobookData.spreads.splice(i,1);saveData();if(currentBookState>getMaxState())currentBookState=getMaxState();renderAdmin();renderBook()}
-function toggleBackCover(e){photobookData.hasBackCover=e.target.checked;saveData();renderAdmin();renderBook()}
-
-/* ====== Imágenes locales ====== */
-function processFile(f,cb){const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');let w=img.width,h=img.height;if(w>1800){h=Math.floor(h*(1800/w));w=1800}c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);cb(c.toDataURL('image/jpeg',.82))};img.src=e.target.result};r.readAsDataURL(f)}
-function handleMassUpload(e){const f=e.target.files;if(!f)return;Array.from(f).forEach(file=>{processFile(file,b64=>{mediaLibrary.push({src:b64,type:'local',name:file.name});renderGallery()})});setTimeout(()=>showToast(f.length+' foto(s) cargada(s)','success'),300);e.target.value=''}
-
-/* ====== Drag & Drop ====== */
-const dropzone=document.getElementById('main-dropzone');
-dropzone.addEventListener('dragover',e=>{e.preventDefault();dropzone.classList.add('drag-over')});
-dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('drag-over'));
-dropzone.addEventListener('drop',e=>{e.preventDefault();dropzone.classList.remove('drag-over');if(e.dataTransfer.files){let c=0;Array.from(e.dataTransfer.files).forEach(f=>{if(f.type.startsWith('image/'))processFile(f,b64=>{mediaLibrary.push({src:b64,type:'local',name:f.name});renderGallery();c++})});setTimeout(()=>showToast(c+' foto(s)','success'),300)}});
-function dragStart(e,i){e.dataTransfer.setData("mi",i.toString())}
-function allowDrop(e){e.preventDefault()}
-function slotDE(e){e.currentTarget.classList.add('drag-over')}
-function slotDL(e){e.currentTarget.classList.remove('drag-over')}
-function dropOnSlot(e,type,idx=null){e.preventDefault();e.currentTarget.classList.remove('drag-over');const mi=e.dataTransfer.getData("mi");if(!mi)return;const src=mediaLibrary[parseInt(mi)].src;if(type==='cover')photobookData.cover=src;else if(type==='back')photobookData.back=src;else photobookData.spreads[idx]=src;saveData();renderAdmin();renderBook();showToast('Imagen asignada','success')}
-function handleSingleUpload(e,type,idx=null){const f=e.target.files[0];if(!f)return;processFile(f,b64=>{if(type==='cover')photobookData.cover=b64;else if(type==='back')photobookData.back=b64;else photobookData.spreads[idx]=b64;saveData();renderAdmin();renderBook();showToast('Imagen asignada','success')});e.target.value=''}
-
-/* ====== Galería ====== */
-function renderGallery(){const g=document.getElementById('media-gallery');if(!mediaLibrary.length){g.innerHTML='<span style="color:#444;font-size:.7rem;margin-left:8px">Carga una carpeta o sube fotos.</span>';return}g.innerHTML='';mediaLibrary.forEach((item,i)=>{const b=item.type==='url'?'<div class="gallery-item-badge badge-url">D</div>':'<div class="gallery-item-badge badge-local">L</div>';g.innerHTML+=`<div class="gallery-item-wrap" title="${item.name||'Foto'}"><img src="${item.src}" class="gallery-item" draggable="true" ondragstart="dragStart(event,${i})" alt="${item.name||'Foto'}" onerror="this.style.opacity='.3'">${b}</div>`})}
-
-/* ====== Admin ====== */
-function renderAdmin(){const c=document.getElementById('slots-container');c.innerHTML='';c.innerHTML+=`<div class="slot" ondragover="allowDrop(event)" ondragenter="slotDE(event)" ondragleave="slotDL(event)" ondrop="dropOnSlot(event,'cover')"><label>Portada 12×12</label><img class="slot-img" src="${photobookData.cover||'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='}" style="${photobookData.cover?'opacity:1':'opacity:.15'}" alt="Portada"><input type="file" class="slot-file-input" accept="image/*" onchange="handleSingleUpload(event,'cover')"></div>`;photobookData.spreads.forEach((s,i)=>{c.innerHTML+=`<div class="slot" ondragover="allowDrop(event)" ondragenter="slotDE(event)" ondragleave="slotDL(event)" ondrop="dropOnSlot(event,'spread',${i})"><label>Lienzo ${i+1} — 12×24</label><img class="slot-img" src="${s||'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='}" style="${s?'opacity:1':'opacity:.15'}" alt="Lienzo"><button class="remove-btn" onclick="removeSpread(${i})">×</button><input type="file" class="slot-file-input" accept="image/*" onchange="handleSingleUpload(event,'spread',${i})"></div>`});if(photobookData.hasBackCover)c.innerHTML+=`<div class="slot" ondragover="allowDrop(event)" ondragenter="slotDE(event)" ondragleave="slotDL(event)" ondrop="dropOnSlot(event,'back')"><label>Contraportada</label><img class="slot-img" src="${photobookData.back||'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='}" style="${photobookData.back?'opacity:1':'opacity:.15'}" alt="Contraportada"><input type="file" class="slot-file-input" accept="image/*" onchange="handleSingleUpload(event,'back')"></div>`}
-
-/* ====== Render Libro ====== */
-function imgTag(src,pano,side){if(!src)return '';const err='<div class="img-error-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><span>Error al cargar</span></div>';if(!pano)return `<img src="${src}" class="img-fit" alt="" onerror="imgErr(this)">${err}`;return `<img src="${src}" class="panoramic-img pano-${side}" alt="" onerror="imgErr(this)">${err}`}
-function imgErr(el){setTimeout(()=>{if(el.naturalWidth>0)return;el.style.display='none';const o=el.nextElementSibling;if(o)o.classList.add('visible')},3000)}
-function placeholder(t){return `<div class="placeholder-text">${t}</div>`}
-
-function renderBook(){const book=document.getElementById('book');book.querySelectorAll('.paper').forEach(p=>p.remove());const n=photobookData.spreads.length,total=n+1;for(let i=0;i<total;i++){let fC='',bC='',fx='';if(i===0){fC=imgTag(photobookData.cover,false)||placeholder("Portada");fx='<div class="acrylic-led-glass"></div><div class="beveled-edge"></div>'}else{const s=photobookData.spreads[i-1];fC=imgTag(s,true,'right')||placeholder(`Lienzo ${i}<br>Derecha`)}if(i===total-1){bC=photobookData.hasBackCover?(imgTag(photobookData.back,false)||placeholder("Final")):''}else{const s=photobookData.spreads[i];bC=imgTag(s,true,'left')||placeholder(`Lienzo ${i+1}<br>Izquierda`)}const p=document.createElement('div');p.className='paper';p.id='paper-'+i;p.innerHTML=`<div class="front">${fC}${fx}</div><div class="back">${bC}</div><div class="curl-highlight"></div>`;book.appendChild(p)}setBookState(false)}
-
-/* ====== Estado del libro ====== */
-function setBookState(animate){const book=document.getElementById('book'),papers=book.querySelectorAll('.paper'),total=papers.length;if(!animate)book.classList.add('no-transition');else book.classList.remove('no-transition');papers.forEach((p,i)=>{p.style.zIndex=i<currentBookState?i+1:total-i;p.style.transform=i<currentBookState?'rotateY(-180deg) translateZ(0)':'rotateY(0deg) translateZ(0)';/* Asegurar que ambas caras sean visibles */p.querySelector('.front').style.opacity='1';p.querySelector('.back').style.opacity='1'});if(currentBookState===0)book.style.transform='translateX(0%)';else if(currentBookState>=total)book.style.transform='translateX(100%)';else book.style.transform='translateX(50%)';if(!animate){book.offsetHeight;book.classList.remove('no-transition')}updatePageIndicator();updateNavButtons();updatePageStack()}
-function updatePageStack(){const s=document.getElementById('page-stack'),total=document.querySelectorAll('.paper').length,rem=total-currentBookState,edges=Math.min(rem-1,6);s.innerHTML='';if(edges<=0){s.style.display='none';return}s.style.display='block';for(let i=0;i<edges;i++){const e=document.createElement('div');e.className='stack-edge';e.style.right=(i*1.5)+'px';e.style.opacity=(1-i/edges*.75).toString();s.appendChild(e)}}
-
-/* ====== ANIMACIÓN DE GIRO SIN FLASHEO ====== */
-function easeInOutQuart(t){return t<.5?8*t*t*t*t:1-Math.pow(-2*t+2,4)/4}
-
-function animateFlip(paperEl,direction,toState,customDur){
-  const dur=customDur||FLIP_DURATION;
-  return new Promise(resolve=>{
-    const fromA=direction==='forward'?0:-180,toA=direction==='forward'?-180:0;
-    const shadowEl=document.getElementById('book-flip-shadow');
-    const curlEl=paperEl.querySelector('.curl-highlight');
-    const frontEl=paperEl.querySelector('.front');
-    const backEl=paperEl.querySelector('.back');
-    const book=document.getElementById('book');
-    const totalPapers=document.querySelectorAll('.paper').length;
-    const start=performance.now();
-
-    /* CLAVE: Ocultar la cara que NO debe verse al inicio del giro.
-       Forward: la espalda se oculta hasta pasar los 90°
-       Backward: el frente se oculta hasta pasar los 90° */
-    if(direction==='forward') backEl.style.opacity='0';
-    else frontEl.style.opacity='0';
-
-    let faceSwapped=false;
-
-    function step(now){
-      const t=Math.min(1,(now-start)/dur);
-      const ease=easeInOutQuart(t);
-      let angle=fromA+(toA-fromA)*ease;
-
-      /* Micro-rebote al final */
-      if(t>.82){
-        const ot=(t-.82)/.18;
-        angle+=Math.sin(ot*Math.PI)*2.8*(direction==='forward'?-1:1);
-      }
-
-      /* Elevación */
-      const norm=Math.abs(angle)/180;
-      const lift=Math.sin(norm*Math.PI)*12;
-      paperEl.style.transform=`rotateY(${angle}deg) translateZ(${lift}px)`;
-
-      /* Cambiar z-index al pasar 90° */
-      if(direction==='forward'){
-        paperEl.style.zIndex=angle>-90?totalPapers+10:currentBookState;
-      }else{
-        paperEl.style.zIndex=angle<-90?totalPapers+10:currentBookState;
-      }
-
-      /* CLAVE: Mostrar la cara oculta exactamente al pasar 90° */
-      if(!faceSwapped){
-        const passed=(direction==='forward'&&angle<-90)||(direction==='backward'&&angle>-90);
-        if(passed){
-          if(direction==='forward') backEl.style.opacity='1';
-          else frontEl.style.opacity='1';
-          faceSwapped=true;
+    class PhotobookApp {
+        constructor() {
+            this.API_KEY = 'AIzaSyCct0SYhLFCkAjrtu7-SISkzMaeiDI908o';
+            this.ZOOM_MIN = 1;
+            this.ZOOM_MAX = 5;
+            this.ZOOM_STEP = 0.35;
+            this.FLIP_DURATION = 820;
+            this.photobookData = { cover: null, spreads: [null], hasBackCover: false, back: null };
+            this.mediaLibrary = [];
+            this.currentBookState = 0;
+            this.isAnimating = false;
+            this.flipRAF = null;
+            this.zoomLevel = 1;
+            this.panX = 0;
+            this.panY = 0;
+            this.ctaDismissed = false;
+            this.ctaTimer = null;
+            this.cacheDOM();
+            this.isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+            this.gesture = { mode: 'idle', startX: 0, startY: 0, lastX: 0, lastY: 0, startDist: 0, startScale: 1, moved: false, lastTap: 0 };
+            this.init();
         }
-      }
 
-      /* Sombra dinámica */
-      const si=Math.sin(norm*Math.PI);
-      if(shadowEl&&si>.015){
-        if(norm<.5){
-          shadowEl.style.background=`linear-gradient(to left,transparent 8%,rgba(0,0,0,${si*.1}) 35%,rgba(0,0,0,${si*.35}) 80%,rgba(0,0,0,${si*.2}) 100%)`;
-          shadowEl.style.clipPath='inset(0 0 0 50%)';
-        }else{
-          shadowEl.style.background=`linear-gradient(to right,transparent 8%,rgba(0,0,0,${si*.08}) 35%,rgba(0,0,0,${si*.3}) 80%,rgba(0,0,0,${si*.15}) 100%)`;
-          shadowEl.style.clipPath='inset(0 50% 0 0)';
+        cacheDOM() {
+            this.els = {
+                book: document.getElementById('book'),
+                zoomContainer: document.getElementById('zoom-container'),
+                zoomLabel: document.getElementById('zoom-label'),
+                pageDots: document.getElementById('page-dots'),
+                pageLabel: document.getElementById('page-label'),
+                pageStack: document.getElementById('page-stack'),
+                flipShadow: document.getElementById('book-flip-shadow'),
+                btnPrev: document.getElementById('btn-prev'),
+                btnNext: document.getElementById('btn-next'),
+                btnHome: document.getElementById('btn-home'),
+                arrowLeft: document.getElementById('arrow-left'),
+                arrowRight: document.getElementById('arrow-right'),
+                driveStatus: document.getElementById('drive-status'),
+                autoFillBar: document.getElementById('auto-fill-bar'),
+                autoFillCount: document.getElementById('auto-fill-count'),
+                loadFolderBtn: document.getElementById('load-folder-btn'),
+                folderUrlInput: document.getElementById('folder-url-input'),
+                singleUrlInput: document.getElementById('single-url-input'),
+                mediaGallery: document.getElementById('media-gallery'),
+                slotsContainer: document.getElementById('slots-container'),
+                toggleBackcover: document.getElementById('toggle-backcover'),
+                dropzone: document.getElementById('main-dropzone'),
+                mobileCta: document.getElementById('mobile-cta'),
+                toastContainer: document.getElementById('toast-container'),
+                particlesContainer: document.getElementById('particles')
+            };
         }
-        shadowEl.style.opacity='1';
-      }else if(shadowEl) shadowEl.style.opacity='0';
 
-      /* Brillo de curvatura */
-      if(curlEl) curlEl.style.opacity=(si*.8).toString();
+        init() {
+            this.createParticles();
+            this.loadData();
+            this.renderGallery();
+            this.renderAdmin();
+            this.renderBook();
+            this.updateZoom();
+            this.bindEvents();
+            this.preloadAdjacent();
+            setTimeout(() => this.showCTA(), 2400);
+        }
 
-      if(t<1) requestAnimationFrame(step);
-      else{
-        paperEl.style.transform=`rotateY(${toA}deg) translateZ(0)`;
-        paperEl.style.zIndex=toA===-180?currentBookState:totalPapers-currentBookState;
-        /* Asegurar ambas caras visibles al terminar */
-        frontEl.style.opacity='1';
-        backEl.style.opacity='1';
-        if(shadowEl) shadowEl.style.opacity='0';
-        if(curlEl) curlEl.style.opacity='0';
-        resolve();
-      }
+        /* ── Utilidades ── */
+        sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+        clamp(v, mn, mx) { return Math.max(mn, Math.min(mx, v)); }
+        easeInOutQuart(t) { return t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 4; }
+        getMaxState() { return this.photobookData.hasBackCover ? this.photobookData.spreads.length + 1 : this.photobookData.spreads.length; }
+
+        showToast(msg, type) {
+            type = type || 'info';
+            var t = document.createElement('div');
+            t.className = 'toast ' + type;
+            t.textContent = msg;
+            this.els.toastContainer.appendChild(t);
+            setTimeout(function() { if (t.parentNode) t.remove(); }, 3600);
+        }
+
+        /* ── Partículas ── */
+        createParticles() {
+            var c = this.els.particlesContainer, f = document.createDocumentFragment();
+            for (var i = 0; i < 18; i++) {
+                var p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = (18 + Math.random() * 22) + 's';
+                p.style.animationDelay = (Math.random() * 16) + 's';
+                var s = 1 + Math.random() * 1.8;
+                p.style.width = p.style.height = s + 'px';
+                f.appendChild(p);
+            }
+            c.appendChild(f);
+        }
+
+        /* ── Persistencia ── */
+        loadData() {
+            try {
+                var s = localStorage.getItem('pb_f2_data');
+                if (s) {
+                    var d = JSON.parse(s);
+                    this.photobookData.cover = d.cover || null;
+                    this.photobookData.spreads = (d.spreads && d.spreads.length) ? d.spreads : [null];
+                    this.photobookData.hasBackCover = d.hasBackCover || false;
+                    this.photobookData.back = d.back || null;
+                    this.els.toggleBackcover.checked = this.photobookData.hasBackCover;
+                }
+            } catch (e) { /* ignorar */ }
+            try {
+                var g = localStorage.getItem('pb_f2_gal');
+                if (g) this.mediaLibrary = JSON.parse(g);
+            } catch (e) { /* ignorar */ }
+        }
+
+        saveData() {
+            try {
+                localStorage.setItem('pb_f2_data', JSON.stringify(this.photobookData));
+                localStorage.setItem('pb_f2_gal', JSON.stringify(this.mediaLibrary.filter(function(i) { return i.type === 'url'; })));
+            } catch (e) {
+                this.showToast('Almacenamiento lleno', 'error');
+            }
+        }
+
+        clearAllData() {
+            if (!confirm('¿Limpiar todo el contenido?')) return;
+            localStorage.removeItem('pb_f2_data');
+            localStorage.removeItem('pb_f2_gal');
+            this.photobookData = { cover: null, spreads: [null], hasBackCover: false, back: null };
+            this.mediaLibrary = [];
+            this.els.toggleBackcover.checked = false;
+            this.currentBookState = 0;
+            this.renderGallery();
+            this.renderAdmin();
+            this.renderBook();
+            this.els.autoFillBar.classList.remove('visible');
+            this.showToast('Todo limpiado', 'info');
+        }
+
+        addEmptySpread() {
+            this.photobookData.spreads.push(null);
+            this.saveData();
+            this.renderAdmin();
+            this.renderBook();
+            this.showToast('Lienzo vacío añadido', 'success');
+        }
+
+        removeSpread(i) {
+            if (this.photobookData.spreads.length <= 1) { this.showToast('Mínimo un lienzo', 'error'); return; }
+            this.photobookData.spreads.splice(i, 1);
+            this.saveData();
+            if (this.currentBookState > this.getMaxState()) this.currentBookState = this.getMaxState();
+            this.renderAdmin();
+            this.renderBook();
+        }
+
+        toggleBackCover(e) {
+            this.photobookData.hasBackCover = e.target.checked;
+            this.saveData();
+            this.renderAdmin();
+            this.renderBook();
+        }
+
+        /* ── Google Drive ── */
+        extractFolderId(input) {
+            if (!input || !input.trim()) return null;
+            input = input.trim();
+            var m = input.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+            if (m) return m[1];
+            m = input.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            if (m) return m[1];
+            if (/^[a-zA-Z0-9_-]{15,}$/.test(input)) return input;
+            return null;
+        }
+
+        setDriveStatus(type, msg) {
+            var el = this.els.driveStatus;
+            el.className = 'drive-status ' + type;
+            el.innerHTML = type === 'loading' ? '<div class="spinner"></div><span>' + msg + '</span>' : '<span>' + msg + '</span>';
+            if (type === 'ok') setTimeout(function() { el.className = 'drive-status'; }, 12000);
+        }
+
+        loadDriveFolder() {
+            var self = this;
+            var u = self.els.folderUrlInput.value.trim();
+            if (!self.API_KEY) { self.setDriveStatus('fail', 'Configura tu API Key.'); return; }
+            var fid = self.extractFolderId(u);
+            if (!fid) { self.setDriveStatus('fail', 'Enlace no válido. Pega la URL de una carpeta de Drive.'); return; }
+            self.setDriveStatus('loading', 'Conectando con Drive...');
+            self.els.loadFolderBtn.disabled = true;
+            fetch('https://www.googleapis.com/drive/v3/files?' + new URLSearchParams({
+                q: '\'' + fid + '\' in parents and (mimeType contains \'image/jpeg\' or mimeType contains \'image/png\' or mimeType contains \'image/webp\')',
+                fields: 'files(id,name)', orderBy: 'name', pageSize: '100', key: self.API_KEY
+            })).then(function(r) {
+                if (!r.ok) throw new Error('Error de conexión');
+                return r.json();
+            }).then(function(d) {
+                var files = d.files || [];
+                if (!files.length) { self.setDriveStatus('fail', 'La carpeta no contiene imágenes.'); self.els.loadFolderBtn.disabled = false; return; }
+                files.forEach(function(f) {
+                    self.mediaLibrary.push({ src: 'https://drive.google.com/thumbnail?id=' + f.id + '&sz=w1920', type: 'url', name: f.name });
+                });
+                self.renderGallery();
+                self.saveData();
+                self.els.autoFillCount.textContent = files.length + ' imágenes listas';
+                self.els.autoFillBar.classList.add('visible');
+                self.setDriveStatus('ok', files.length + ' imagen(es) cargada(s).');
+                self.showToast(files.length + ' imágenes cargadas', 'success');
+            }).catch(function(e) {
+                self.setDriveStatus('fail', e.message || 'No se pudo conectar.');
+                self.showToast('Error al cargar', 'error');
+            }).finally(function() { self.els.loadFolderBtn.disabled = false; });
+        }
+
+        autoFillBook() {
+            var urls = this.mediaLibrary.filter(function(i) { return i.type === 'url'; });
+            if (!urls.length) { this.showToast('Sin imágenes en la biblioteca', 'error'); return; }
+            var idx = 0;
+            if (!this.photobookData.cover && idx < urls.length) { this.photobookData.cover = urls[idx].src; idx++; }
+            for (var i = 0; i < this.photobookData.spreads.length && idx < urls.length; i++) {
+                if (!this.photobookData.spreads[i]) { this.photobookData.spreads[i] = urls[idx].src; idx++; }
+            }
+            while (idx < urls.length) { this.photobookData.spreads.push(urls[idx].src); idx++; }
+            this.saveData();
+            this.renderAdmin();
+            this.renderBook();
+            this.preloadAdjacent();
+            this.showToast('Llenado con ' + idx + ' imágenes', 'success');
+        }
+
+        convertDriveUrl(input) {
+            if (!input || !input.trim()) return null;
+            input = input.trim();
+            if (/\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(input)) return input;
+            if (input.indexOf('drive.google.com/thumbnail') !== -1) return input;
+            var id = null, m;
+            m = input.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (m) id = m[1];
+            if (!id) { m = input.match(/[?&]id=([a-zA-Z0-9_-]+)/); if (m) id = m[1]; }
+            if (!id && /^[a-zA-Z0-9_-]{15,}$/.test(input)) id = input;
+            return id ? 'https://drive.google.com/thumbnail?id=' + id + '&sz=w1920' : null;
+        }
+
+        addSingleUrl() {
+            var u = this.convertDriveUrl(this.els.singleUrlInput.value.trim());
+            if (!u) { this.showToast('Enlace no válido', 'error'); return; }
+            this.mediaLibrary.push({ src: u, type: 'url', name: 'Drive' });
+            this.renderGallery();
+            this.saveData();
+            this.els.singleUrlInput.value = '';
+            this.showToast('Imagen agregada a la biblioteca', 'success');
+        }
+
+        /* ── Archivos locales ── */
+        processFile(file, cb) {
+            var r = new FileReader();
+            r.onload = function(e) {
+                var img = new Image();
+                img.onload = function() {
+                    var c = document.createElement('canvas');
+                    var w = img.width, h = img.height;
+                    if (w > 1600) { h = Math.floor(h * (1600 / w)); w = 1600; }
+                    c.width = w; c.height = h;
+                    c.getContext('2d').drawImage(img, 0, 0, w, h);
+                    cb(c.toDataURL('image/jpeg', 0.8));
+                };
+                img.src = e.target.result;
+            };
+            r.readAsDataURL(file);
+        }
+
+        handleMassUpload(e) {
+            var self = this, files = e.target.files;
+            if (!files || !files.length) return;
+            var count = 0;
+            Array.from(files).forEach(function(f) {
+                self.processFile(f, function(b64) {
+                    self.mediaLibrary.push({ src: b64, type: 'local', name: f.name });
+                    self.renderGallery();
+                    count++;
+                    if (count === files.length) self.showToast(count + ' foto(s) cargada(s)', 'success');
+                });
+            });
+            e.target.value = '';
+        }
+
+        setupDragDrop() {
+            var self = this, dz = self.els.dropzone;
+            dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('drag-over'); });
+            dz.addEventListener('dragleave', function() { dz.classList.remove('drag-over'); });
+            dz.addEventListener('drop', function(e) {
+                e.preventDefault(); dz.classList.remove('drag-over');
+                if (e.dataTransfer.files && e.dataTransfer.files.length) {
+                    var count = 0;
+                    Array.from(e.dataTransfer.files).forEach(function(f) {
+                        if (f.type.startsWith('image/')) {
+                            self.processFile(f, function(b64) {
+                                self.mediaLibrary.push({ src: b64, type: 'local', name: f.name });
+                                self.renderGallery();
+                                count++;
+                            });
+                        }
+                    });
+                    setTimeout(function() { if (count) self.showToast(count + ' foto(s) agregada(s)', 'success'); }, 300);
+                }
+            });
+        }
+
+        /* ── Galería ── */
+        renderGallery() {
+            var g = this.els.mediaGallery, self = this;
+            if (!this.mediaLibrary.length) {
+                g.innerHTML = '<span style="color:#3a3a45;font-size:.66rem;margin-left:8px">Carga una carpeta o sube fotos.</span>';
+                return;
+            }
+            g.innerHTML = '';
+            this.mediaLibrary.forEach(function(item, i) {
+                var badge = item.type === 'url'
+                    ? '<div class="gallery-item-badge badge-url">D</div>'
+                    : '<div class="gallery-item-badge badge-local">L</div>';
+                var wrap = document.createElement('div');
+                wrap.className = 'gallery-item-wrap';
+                wrap.title = item.name || 'Foto';
+                wrap.innerHTML = '<img src="' + item.src + '" class="gallery-item" draggable="true" alt="' + (item.name || 'Foto') + '" onerror="this.style.opacity=\'.25\'">' + badge;
+                wrap.querySelector('img').addEventListener('dragstart', function(e) { e.dataTransfer.setData('mi', i.toString()); });
+                g.appendChild(wrap);
+            });
+        }
+
+        /* ── Panel admin ── */
+        renderAdmin() {
+            var c = this.els.slotsContainer, self = this;
+            c.innerHTML = '';
+            c.appendChild(self.createSlot('Portada 12×12', self.photobookData.cover, 'cover', null));
+            self.photobookData.spreads.forEach(function(s, i) {
+                c.appendChild(self.createSlot('Lienzo ' + (i + 1) + ' — 12×24', s, 'spread', i));
+            });
+            if (self.photobookData.hasBackCover) {
+                c.appendChild(self.createSlot('Contraportada', self.photobookData.back, 'back', null));
+            }
+        }
+
+        createSlot(label, src, type, idx) {
+            var self = this, slot = document.createElement('div');
+            slot.className = 'slot';
+            var placeholder = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+            slot.innerHTML = '<label>' + label + '</label>'
+                + '<img class="slot-img" src="' + (src || placeholder) + '" style="' + (src ? 'opacity:1' : 'opacity:.12') + '" alt="' + label + '">'
+                + (type === 'spread' ? '<button class="remove-btn">&times;</button>' : '')
+                + '<input type="file" class="slot-file-input" accept="image/*">';
+            slot.addEventListener('dragover', function(e) { e.preventDefault(); slot.classList.add('drag-over'); });
+            slot.addEventListener('dragleave', function() { slot.classList.remove('drag-over'); });
+            slot.addEventListener('drop', function(e) { self.dropOnSlot(e, type, idx, slot); });
+            slot.querySelector('.slot-file-input').addEventListener('change', function(e) { self.handleSingleUpload(e, type, idx); });
+            if (type === 'spread') slot.querySelector('.remove-btn').addEventListener('click', function() { self.removeSpread(idx); });
+            return slot;
+        }
+
+        dropOnSlot(e, type, idx, slot) {
+            e.preventDefault(); slot.classList.remove('drag-over');
+            var mi = e.dataTransfer.getData('mi');
+            if (!mi && mi !== '0') return;
+            var src = this.mediaLibrary[parseInt(mi)].src;
+            this.assignImage(type, idx, src);
+        }
+
+        handleSingleUpload(e, type, idx) {
+            var self = this, file = e.target.files[0];
+            if (!file) return;
+            self.processFile(file, function(b64) {
+                self.assignImage(type, idx, b64);
+                self.mediaLibrary.push({ src: b64, type: 'local', name: file.name });
+                self.renderGallery();
+            });
+            e.target.value = '';
+        }
+
+        assignImage(type, idx, src) {
+            if (type === 'cover') this.photobookData.cover = src;
+            else if (type === 'back') this.photobookData.back = src;
+            else this.photobookData.spreads[idx] = src;
+            this.saveData();
+            this.renderAdmin();
+            this.renderBook();
+            this.preloadAdjacent();
+            this.showToast('Imagen asignada', 'success');
+        }
+
+        /* ── Construcción del libro ── */
+        imgTag(src, pano, side) {
+            if (!src) return '';
+            var err = '<div class="img-error-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><span>Error</span></div>';
+            if (!pano) return '<img src="' + src + '" class="img-fit" alt="" loading="eager" onerror="this.style.opacity=\'.15\';this.nextElementSibling&&this.nextElementSibling.classList.add(\'visible\')">' + err;
+            return '<img src="' + src + '" class="panoramic-img pano-' + side + '" alt="" loading="eager" onerror="this.style.opacity=\'.15\';this.nextElementSibling&&this.nextElementSibling.classList.add(\'visible\')">' + err;
+        }
+
+        placeholder(t) {
+            return '<div class="placeholder-text">' + t + '</div>';
+        }
+
+        renderBook() {
+            var book = this.els.book;
+            // Cancelar animación en curso
+            if (this.flipRAF) { cancelAnimationFrame(this.flipRAF); this.flipRAF = null; this.isAnimating = false; }
+            // Limpiar páginas anteriores
+            var oldPapers = book.querySelectorAll('.paper');
+            for (var k = 0; k < oldPapers.length; k++) oldPapers[k].remove();
+
+            var data = this.photobookData;
+            var total = data.spreads.length + 1; // papers = cover + spreads
+            var frag = document.createDocumentFragment();
+
+            for (var i = 0; i < total; i++) {
+                var fc = '', bc = '', fx = '';
+
+                if (i === 0) {
+                    // Portada: frente muestra cover, efecto especial
+                    fc = data.cover ? this.imgTag(data.cover, false) : this.placeholder('Portada');
+                    fx = '<div class="acrylic-led-glass"></div><div class="beveled-edge"></div>';
+                } else {
+                    // Frente del paper i muestra la mitad DERECHA del spread i-1
+                    var sRight = data.spreads[i - 1];
+                    fc = sRight ? this.imgTag(sRight, true, 'right') : this.placeholder('Lienzo ' + i + '<br>Derecha');
+                }
+
+                if (i === total - 1 && data.hasBackCover) {
+                    // Último paper: dorso muestra contraportada
+                    bc = data.back ? this.imgTag(data.back, false) : this.placeholder('Final');
+                } else if (i < total - 1) {
+                    // Dorso del paper i muestra la mitad IZQUIERDA del spread i
+                    var sLeft = data.spreads[i];
+                    bc = sLeft ? this.imgTag(sLeft, true, 'left') : this.placeholder('Lienzo ' + (i + 1) + '<br>Izquierda');
+                }
+
+                var paper = document.createElement('div');
+                paper.className = 'paper';
+                paper.id = 'paper-' + i;
+                paper.innerHTML = '<div class="front">' + fc + fx + '</div><div class="back">' + bc + '</div><div class="curl-highlight"></div>';
+                frag.appendChild(paper);
+            }
+
+            book.appendChild(frag);
+            this.setBookStateInstant();
+            this.preloadAdjacent();
+        }
+
+        /* ── Estado instantáneo (sin animación) ── */
+        setBookStateInstant() {
+            var book = this.els.book;
+            var papers = book.querySelectorAll('.paper');
+            var total = papers.length;
+            var state = this.currentBookState;
+
+            // Sin transiciones
+            book.style.transition = 'none';
+            for (var i = 0; i < papers.length; i++) {
+                papers[i].style.transition = 'none';
+            }
+
+            for (var i = 0; i < papers.length; i++) {
+                var flipped = i < state;
+                papers[i].style.zIndex = flipped ? (i + 1) : (total - i);
+                papers[i].style.transform = flipped ? 'rotateY(-180deg)' : 'rotateY(0deg)';
+                var front = papers[i].querySelector('.front');
+                var back = papers[i].querySelector('.back');
+                front.style.visibility = flipped ? 'hidden' : 'visible';
+                back.style.visibility = flipped ? 'visible' : 'hidden';
+                var curl = papers[i].querySelector('.curl-highlight');
+                if (curl) curl.style.opacity = '0';
+            }
+
+            // Posición del libro
+            if (state === 0) book.style.transform = 'translateX(0%)';
+            else if (state >= total) book.style.transform = 'translateX(100%)';
+            else book.style.transform = 'translateX(50%)';
+
+            this.els.flipShadow.style.opacity = '0';
+
+            // Forzar reflow y re-habilitar transiciones para futuras operaciones
+            void book.offsetHeight;
+            book.style.transition = '';
+            for (var i = 0; i < papers.length; i++) {
+                papers[i].style.transition = '';
+            }
+
+            this.updatePageIndicator();
+            this.updateNavButtons();
+            this.updatePageStack();
+        }
+
+        /* ── Animación de volteo ADELANTE ── */
+        flipForward() {
+            var self = this;
+            if (self.isAnimating || self.currentBookState >= self.getMaxState()) return Promise.resolve();
+
+            var idx = self.currentBookState;
+            var paper = document.getElementById('paper-' + idx);
+            if (!paper) return Promise.resolve();
+
+            self.isAnimating = true;
+
+            var front = paper.querySelector('.front');
+            var back = paper.querySelector('.back');
+            var curl = paper.querySelector('.curl-highlight');
+            var book = self.els.book;
+            var papers = book.querySelectorAll('.paper');
+            var total = papers.length;
+            var targetState = idx + 1;
+
+            // Deshabilitar transiciones CSS — control total con rAF
+            paper.style.transition = 'none';
+            book.style.transition = 'none';
+
+            // Z-index alto durante la animación
+            paper.style.zIndex = total + 2;
+
+            // Estado inicial
+            front.style.visibility = 'visible';
+            back.style.visibility = 'hidden';
+
+            var duration = self.FLIP_DURATION;
+            var t0 = performance.now();
+
+            return new Promise(function(resolve) {
+                function frame(now) {
+                    var elapsed = now - t0;
+                    var t = Math.min(elapsed / duration, 1);
+                    var e = self.easeInOutQuart(t);
+                    var deg = -180 * e;
+                    var absDeg = Math.abs(deg);
+
+                    // Rotación de la página
+                    paper.style.transform = 'rotateY(' + deg + 'deg)';
+
+                    // Control manual de visibilidad: SIN GAP en 90°
+                    if (absDeg <= 90) {
+                        front.style.visibility = 'visible';
+                        back.style.visibility = 'hidden';
+                    } else {
+                        front.style.visibility = 'hidden';
+                        back.style.visibility = 'visible';
+                    }
+
+                    // Curl highlight
+                    if (curl) {
+                        curl.style.opacity = String(Math.sin(absDeg * Math.PI / 180) * 0.7);
+                    }
+
+                    // Sombra dinámica sobre el libro
+                    var si = Math.sin(absDeg * Math.PI / 180);
+                    if (si > 0.02) {
+                        var shadow = self.els.flipShadow;
+                        shadow.style.opacity = String(si * 0.45);
+                        if (t < 0.5) {
+                            shadow.style.background = 'linear-gradient(to left, rgba(0,0,0,' + (si * 0.35).toFixed(3) + ') 0%, transparent 45%)';
+                        } else {
+                            shadow.style.background = 'linear-gradient(to right, rgba(0,0,0,' + (si * 0.35).toFixed(3) + ') 0%, transparent 45%)';
+                        }
+                    } else {
+                        self.els.flipShadow.style.opacity = '0';
+                    }
+
+                    // Desplazamiento del libro
+                    if (targetState >= total) {
+                        book.style.transform = 'translateX(' + (50 + 50 * e).toFixed(2) + '%)';
+                    } else {
+                        book.style.transform = 'translateX(' + (50 * e).toFixed(2) + '%)';
+                    }
+
+                    // Z-index: bajar al pasar la mitad
+                    if (t >= 0.5 && parseInt(paper.style.zIndex) > total) {
+                        paper.style.zIndex = idx + 1;
+                    }
+
+                    if (t < 1) {
+                        self.flipRAF = requestAnimationFrame(frame);
+                    } else {
+                        self.flipRAF = null;
+                        self.currentBookState = targetState;
+                        self.els.flipShadow.style.opacity = '0';
+                        if (curl) curl.style.opacity = '0';
+                        self.isAnimating = false;
+                        self.setBookStateInstant();
+                        self.preloadAdjacent();
+                        resolve();
+                    }
+                }
+                self.flipRAF = requestAnimationFrame(frame);
+            });
+        }
+
+        /* ── Animación de volteo ATRÁS ── */
+        flipBackward() {
+            var self = this;
+            if (self.isAnimating || self.currentBookState <= 0) return Promise.resolve();
+
+            var idx = self.currentBookState - 1;
+            var paper = document.getElementById('paper-' + idx);
+            if (!paper) return Promise.resolve();
+
+            self.isAnimating = true;
+
+            var front = paper.querySelector('.front');
+            var back = paper.querySelector('.back');
+            var curl = paper.querySelector('.curl-highlight');
+            var book = self.els.book;
+            var papers = book.querySelectorAll('.paper');
+            var total = papers.length;
+            var targetState = idx;
+
+            paper.style.transition = 'none';
+            book.style.transition = 'none';
+            paper.style.zIndex = total + 2;
+
+            // Estado inicial: página volteada mostrando el back
+            front.style.visibility = 'hidden';
+            back.style.visibility = 'visible';
+
+            var duration = self.FLIP_DURATION;
+            var t0 = performance.now();
+
+            return new Promise(function(resolve) {
+                function frame(now) {
+                    var elapsed = now - t0;
+                    var t = Math.min(elapsed / duration, 1);
+                    var e = self.easeInOutQuart(t);
+                    // De -180° a 0°
+                    var deg = -180 + 180 * e;
+                    var absDeg = Math.abs(deg);
+
+                    paper.style.transform = 'rotateY(' + deg + 'deg)';
+
+                    // Control manual de visibilidad
+                    if (absDeg <= 90) {
+                        front.style.visibility = 'visible';
+                        back.style.visibility = 'hidden';
+                    } else {
+                        front.style.visibility = 'hidden';
+                        back.style.visibility = 'visible';
+                    }
+
+                    if (curl) {
+                        curl.style.opacity = String(Math.sin(absDeg * Math.PI / 180) * 0.7);
+                    }
+
+                    var si = Math.sin(absDeg * Math.PI / 180);
+                    if (si > 0.02) {
+                        var shadow = self.els.flipShadow;
+                        shadow.style.opacity = String(si * 0.45);
+                        if (t < 0.5) {
+                            shadow.style.background = 'linear-gradient(to right, rgba(0,0,0,' + (si * 0.35).toFixed(3) + ') 0%, transparent 45%)';
+                        } else {
+                            shadow.style.background = 'linear-gradient(to left, rgba(0,0,0,' + (si * 0.35).toFixed(3) + ') 0%, transparent 45%)';
+                        }
+                    } else {
+                        self.els.flipShadow.style.opacity = '0';
+                    }
+
+                    // Desplazamiento del libro (de vuelta)
+                    var currentState = self.currentBookState;
+                    if (currentState >= total) {
+                        book.style.transform = 'translateX(' + (100 - 50 * e).toFixed(2) + '%)';
+                    } else {
+                        book.style.transform = 'translateX(' + (50 - 50 * e).toFixed(2) + '%)';
+                    }
+
+                    if (t >= 0.5 && parseInt(paper.style.zIndex) > total) {
+                        paper.style.zIndex = total - idx;
+                    }
+
+                    if (t < 1) {
+                        self.flipRAF = requestAnimationFrame(frame);
+                    } else {
+                        self.flipRAF = null;
+                        self.currentBookState = targetState;
+                        self.els.flipShadow.style.opacity = '0';
+                        if (curl) curl.style.opacity = '0';
+                        self.isAnimating = false;
+                        self.setBookStateInstant();
+                        self.preloadAdjacent();
+                        resolve();
+                    }
+                }
+                self.flipRAF = requestAnimationFrame(frame);
+            });
+        }
+
+        /* ── Navegación ── */
+        nextPage() { return this.flipForward(); }
+
+        prevPage() { return this.flipBackward(); }
+
+        goToCover() {
+            if (this.currentBookState === 0 || this.isAnimating) return;
+            this.isAnimating = true;
+            var self = this;
+            function step() {
+                if (self.currentBookState > 0 && self.isAnimating) {
+                    self.flipBackward().then(function() {
+                        if (self.currentBookState > 0) {
+                            setTimeout(step, 30);
+                        } else {
+                            self.isAnimating = false;
+                        }
+                    });
+                } else {
+                    self.isAnimating = false;
+                }
+            }
+            step();
+        }
+
+        /* ── Precarga de imágenes adyacentes ── */
+        preloadAdjacent() {
+            var state = this.currentBookState;
+            var data = this.photobookData;
+            var n = data.spreads.length;
+            var urls = [];
+
+            // Imágenes visibles actualmente
+            // Frente del paper[state] → spread[state-1] derecho
+            if (state > 0 && state - 1 < n && data.spreads[state - 1]) urls.push(data.spreads[state - 1]);
+            // Dorso del paper[state-1] → spread[state] izquierdo
+            if (state < n + 1 && state < n && data.spreads[state]) urls.push(data.spreads[state]);
+            // Portada
+            if (state === 0 && data.cover) urls.push(data.cover);
+            // Contraportada
+            if (data.hasBackCover && data.back && state >= this.getMaxState() - 1) urls.push(data.back);
+
+            // Página siguiente
+            if (state + 1 < n && data.spreads[state + 1]) urls.push(data.spreads[state + 1]);
+            // Página anterior
+            if (state - 2 >= 0 && state - 2 < n && data.spreads[state - 2]) urls.push(data.spreads[state - 2]);
+
+            urls.forEach(function(u) {
+                if (u && u.indexOf('data:') !== 0) {
+                    var img = new Image();
+                    img.src = u;
+                }
+            });
+        }
+
+        /* ── Actualizaciones de UI ── */
+        updatePageStack() {
+            var stack = this.els.pageStack;
+            var total = document.querySelectorAll('.paper').length;
+            var rem = total - this.currentBookState;
+            var edges = Math.min(rem - 1, 5);
+            stack.innerHTML = '';
+            if (edges <= 0) { stack.style.display = 'none'; return; }
+            stack.style.display = 'block';
+            for (var i = 0; i < edges; i++) {
+                var e = document.createElement('div');
+                e.className = 'stack-edge';
+                e.style.right = (i * 1.6) + 'px';
+                e.style.opacity = String(1 - i / edges * 0.75);
+                stack.appendChild(e);
+            }
+        }
+
+        updatePageIndicator() {
+            var total = this.getMaxState() + 1;
+            var n = this.photobookData.spreads.length;
+            var dots = '';
+            for (var i = 0; i < total; i++) {
+                dots += '<div class="page-dot' + (i === this.currentBookState ? ' active' : '') + '"></div>';
+            }
+            this.els.pageDots.innerHTML = dots;
+            if (this.currentBookState === 0) this.els.pageLabel.textContent = 'Portada';
+            else if (this.currentBookState >= this.getMaxState()) this.els.pageLabel.textContent = 'Final';
+            else this.els.pageLabel.textContent = 'Lienzo ' + this.currentBookState + ' de ' + n;
+        }
+
+        updateNavButtons() {
+            var max = this.getMaxState();
+            this.els.btnPrev.disabled = this.currentBookState <= 0;
+            this.els.btnNext.disabled = this.currentBookState >= max;
+            this.els.arrowLeft.style.opacity = this.currentBookState <= 0 ? '0.25' : '1';
+            this.els.arrowRight.style.opacity = this.currentBookState >= max ? '0.25' : '1';
+        }
+
+        /* ── Zoom ── */
+        zoomIn() {
+            this.zoomLevel = Math.min(this.ZOOM_MAX, this.zoomLevel + this.ZOOM_STEP);
+            this.panX = 0; this.panY = 0;
+            this.updateZoom();
+        }
+
+        zoomOut() {
+            this.zoomLevel = Math.max(this.ZOOM_MIN, this.zoomLevel - this.ZOOM_STEP);
+            this.panX = 0; this.panY = 0;
+            this.updateZoom();
+        }
+
+        resetZoom() {
+            this.zoomLevel = 1; this.panX = 0; this.panY = 0;
+            this.updateZoom();
+        }
+
+        updateZoom() {
+            this.els.zoomContainer.style.transform = 'scale(' + this.zoomLevel + ') translate(' + this.panX + 'px, ' + this.panY + 'px)';
+            this.els.zoomLabel.textContent = Math.round(this.zoomLevel * 100) + '%';
+        }
+
+        /* ── Pantalla completa ── */
+        toggleFullscreen() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                var el = document.documentElement;
+                (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+                document.body.classList.add('fullscreen-mode');
+            } else {
+                (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+                document.body.classList.remove('fullscreen-mode');
+            }
+        }
+
+        enterImmersive() {
+            this.dismissCTA();
+            this.toggleFullscreen();
+        }
+
+        exitFullscreenMode() {
+            if (document.fullscreenElement || document.webkitFullscreenElement) {
+                (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+            }
+            document.body.classList.remove('fullscreen-mode');
+            this.resetZoom();
+        }
+
+        /* ── CTA móvil ── */
+        showCTA() {
+            if (this.ctaDismissed || !this.isTouchDevice) return;
+            // Solo mostrar en portrait
+            if (window.innerWidth > window.innerHeight) return;
+            this.els.mobileCta.classList.add('visible');
+            this.ctaTimer = setTimeout(function() {
+                document.getElementById('mobile-cta').classList.remove('visible');
+            }, 8000);
+        }
+
+        dismissCTA() {
+            this.ctaDismissed = true;
+            this.els.mobileCta.classList.remove('visible');
+            if (this.ctaTimer) { clearTimeout(this.ctaTimer); this.ctaTimer = null; }
+        }
+
+        /* ── Gestos ── */
+        handleGestureStart(x, y) {
+            this.gesture.mode = 'idle';
+            this.gesture.startX = x;
+            this.gesture.startY = y;
+            this.gesture.lastX = x;
+            this.gesture.lastY = y;
+            this.gesture.moved = false;
+        }
+
+        handleGestureMove(x, y) {
+            var g = this.gesture;
+            var dx = x - g.startX;
+            var dy = y - g.startY;
+
+            if (g.mode === 'idle') {
+                if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+                    g.mode = Math.abs(dx) > Math.abs(dy) ? 'swipe' : 'pan';
+                }
+            }
+
+            if (g.mode === 'swipe') {
+                g.moved = true;
+            }
+
+            if (g.mode === 'pan' && this.zoomLevel > 1) {
+                this.panX += (x - g.lastX);
+                this.panY += (y - g.lastY);
+                this.panX = this.clamp(this.panX, -200, 200);
+                this.panY = this.clamp(this.panY, -200, 200);
+                this.updateZoom();
+            }
+
+            g.lastX = x;
+            g.lastY = y;
+        }
+
+        handleGestureEnd(x, y) {
+            var g = this.gesture;
+            var now = Date.now();
+
+            // Doble toque para zoom
+            if (!g.moved && this.isTouchDevice) {
+                if (now - g.lastTap < 350) {
+                    if (this.zoomLevel > 1) this.resetZoom();
+                    else { this.zoomLevel = this.ZOOM_DOUBLE; this.updateZoom(); }
+                    g.lastTap = 0;
+                    return;
+                }
+                g.lastTap = now;
+
+                // Toque simple: mitad derecha = siguiente, mitad izquierda = anterior
+                var rect = this.els.book.getBoundingClientRect();
+                var relX = x - rect.left;
+                if (relX > rect.width * 0.5) this.nextPage();
+                else this.prevPage();
+                return;
+            }
+
+            // Swipe
+            if (g.mode === 'swipe') {
+                var dx = x - g.startX;
+                if (dx < -40) this.nextPage();
+                else if (dx > 40) this.prevPage();
+            }
+
+            g.mode = 'idle';
+        }
+
+        handlePinchStart(dist) {
+            this.gesture.startDist = dist;
+            this.gesture.startScale = this.zoomLevel;
+            this.gesture.mode = 'pinch';
+        }
+
+        handlePinchMove(dist) {
+            if (this.gesture.mode !== 'pinch') return;
+            var scale = this.gesture.startScale * (dist / this.gesture.startDist);
+            this.zoomLevel = this.clamp(scale, this.ZOOM_MIN, this.ZOOM_MAX);
+            this.updateZoom();
+        }
+
+        handlePinchEnd() {
+            this.gesture.mode = 'idle';
+        }
+
+        /* ── Eventos ── */
+        bindEvents() {
+            var self = this;
+
+            // Teclado
+            document.addEventListener('keydown', function(e) {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+                switch (e.key) {
+                    case 'ArrowRight': case 'ArrowDown': e.preventDefault(); self.nextPage(); break;
+                    case 'ArrowLeft': case 'ArrowUp': e.preventDefault(); self.prevPage(); break;
+                    case 'Home': e.preventDefault(); self.goToCover(); break;
+                    case 'End': e.preventDefault(); self.currentBookState = self.getMaxState(); self.setBookStateInstant(); break;
+                    case 'f': case 'F': self.toggleFullscreen(); break;
+                    case '+': case '=': self.zoomIn(); break;
+                    case '-': case '_': self.zoomOut(); break;
+                    case '0': self.resetZoom(); break;
+                    case 'Escape': if (document.fullscreenElement) self.exitFullscreenMode(); break;
+                }
+            });
+
+            // Mouse wheel para zoom
+            self.els.book.addEventListener('wheel', function(e) {
+                if (e.ctrlKey || e.metaKey) {
+                    e.preventDefault();
+                    if (e.deltaY < 0) self.zoomIn(); else self.zoomOut();
+                }
+            }, { passive: false });
+
+            // Click en el libro para voltear (desktop)
+            self.els.book.addEventListener('click', function(e) {
+                if (self.isTouchDevice) return; // En móvil se maneja por gestos
+                if (self.isAnimating) return;
+                var rect = self.els.book.getBoundingClientRect();
+                var relX = e.clientX - rect.left;
+                if (relX > rect.width * 0.55) self.nextPage();
+                else if (relX < rect.width * 0.45) self.prevPage();
+            });
+
+            // Touch events
+            self.els.book.addEventListener('touchstart', function(e) {
+                if (e.touches.length === 1) {
+                    self.handleGestureStart(e.touches[0].clientX, e.touches[0].clientY);
+                } else if (e.touches.length === 2) {
+                    var dx = e.touches[0].clientX - e.touches[1].clientX;
+                    var dy = e.touches[0].clientY - e.touches[1].clientY;
+                    self.handlePinchStart(Math.sqrt(dx * dx + dy * dy));
+                }
+            }, { passive: true });
+
+            self.els.book.addEventListener('touchmove', function(e) {
+                if (e.touches.length === 1) {
+                    self.handleGestureMove(e.touches[0].clientX, e.touches[0].clientY);
+                } else if (e.touches.length === 2) {
+                    e.preventDefault();
+                    var dx = e.touches[0].clientX - e.touches[1].clientX;
+                    var dy = e.touches[0].clientY - e.touches[1].clientY;
+                    self.handlePinchMove(Math.sqrt(dx * dx + dy * dy));
+                }
+            }, { passive: false });
+
+            self.els.book.addEventListener('touchend', function(e) {
+                if (self.gesture.mode === 'pinch') {
+                    self.handlePinchEnd();
+                } else {
+                    var touch = e.changedTouches[0];
+                    if (touch) self.handleGestureEnd(touch.clientX, touch.clientY);
+                }
+            }, { passive: true });
+
+            // Drag & drop en el panel admin
+            self.setupDragDrop();
+
+            // Fullscreen change
+            document.addEventListener('fullscreenchange', function() {
+                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                    document.body.classList.remove('fullscreen-mode');
+                    self.resetZoom();
+                }
+            });
+            document.addEventListener('webkitfullscreenchange', function() {
+                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                    document.body.classList.remove('fullscreen-mode');
+                    self.resetZoom();
+                }
+            });
+
+            // Orientación para CTA
+            window.addEventListener('orientationchange', function() {
+                setTimeout(function() {
+                    if (window.innerWidth > window.innerHeight) {
+                        self.els.mobileCta.classList.remove('visible');
+                    }
+                }, 300);
+            });
+        }
     }
-    requestAnimationFrame(step);
-  });
-}
 
-/* ====== Animación de cerrar libro ====== */
-async function closeBookAnimation(){
-  isAnimating=true;resetZoom();
-  const book=document.getElementById('book');
-  book.classList.add('no-transition');book.style.transform='translateX(0%)';
-  void book.offsetHeight;book.classList.remove('no-transition');
-  const n=currentBookState;if(n===0){isAnimating=false;return}
-  for(let i=n-1;i>=0;i--){const p=1-(i/n);const fd=Math.round(520-p*180);const gap=Math.round(110-p*55);currentBookState=i;await animateFlip(document.getElementById('paper-'+i),'backward',i,fd);updatePageIndicator();updatePageStack();if(i>0)await sleep(gap)}
-  currentBookState=0;updatePageIndicator();updateNavButtons();updatePageStack();
-  const zc=document.getElementById('zoom-container');zc.classList.add('smooth-transition');zc.style.transform='scale(1.006)';await sleep(100);zc.style.transform='scale(1)';await sleep(350);zc.classList.remove('smooth-transition');
-  isAnimating=false;
-}
+    // Inicializar la aplicación
+    window.app = new PhotobookApp();
 
-/* ====== Navegación ====== */
-function getMaxState(){return photobookData.hasBackCover?photobookData.spreads.length+1:photobookData.spreads.length}
-function updatePageIndicator(){const d=document.getElementById('page-dots'),l=document.getElementById('page-label'),total=getMaxState()+1,n=photobookData.spreads.length;let h='';for(let i=0;i<total;i++)h+=`<div class="page-dot${i===currentBookState?' active':''}"></div>`;d.innerHTML=h;if(currentBookState===0)l.textContent='Portada';else if(currentBookState>=getMaxState())l.textContent='Final';else l.textContent=`Lienzo ${currentBookState} de ${n}`}
-function updateNavButtons(){const m=getMaxState();document.getElementById('btn-prev').disabled=currentBookState<=0;document.getElementById('btn-home').disabled=currentBookState<=0;document.getElementById('arrow-left').style.opacity=currentBookState<=0?'.2':'1';document.getElementById('arrow-right').style.opacity=currentBookState>=m?'.2':'1';const nb=document.getElementById('btn-next');if(currentBookState>=m){nb.textContent='⟲ Reiniciar';nb.className='nav-btn restart-btn'}else{nb.textContent='Siguiente';nb.className='nav-btn accent-btn'}}
-async function nextPage(){if(isAnimating)return;if(currentBookState>=getMaxState()){await closeBookAnimation();return}resetZoom();currentBookState++;await animateFlip(document.getElementById('paper-'+(currentBookState-1)),'forward',currentBookState);updatePageIndicator();updateNavButtons();updatePageStack()}
-async function prevPage(){if(isAnimating||currentBookState<=0)return;resetZoom();currentBookState--;await animateFlip(document.getElementById('paper-'+currentBookState),'backward',currentBookState);updatePageIndicator();updateNavButtons();updatePageStack()}
-async function goToCover(){if(isAnimating||currentBookState===0)return;await closeBookAnimation()}
-
-/* ====== Zoom ====== */
-const zoomContainer=document.getElementById('zoom-container'),bookEl=document.getElementById('book'),zoomLabelEl=document.getElementById('zoom-label');
-const gesture={mode:'idle',startX:0,startY:0,lastX:0,lastY:0,startDist:0,startScale:1,moved:false,lastTap:0};
-function getDist(a,b){return Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)}
-function clamp(v,mn,mx){return Math.max(mn,Math.min(mx,v))}
-function updateZoom(){const tx=panX/zoomLevel,ty=panY/zoomLevel;zoomContainer.style.transform=`scale(${zoomLevel}) translate(${tx}px,${ty}px)`;zoomLabelEl.textContent=Math.round(zoomLevel*100)+'%'}
-function resetZoom(){zoomLevel=1;panX=0;panY=0;updateZoom()}
-function zoomIn(){const t=clamp(zoomLevel*1.4,ZOOM_MIN,ZOOM_MAX);animZoom(t<=ZOOM_MIN+.05?1:t,panX,panY)}
-function zoomOut(){if(zoomLevel<=ZOOM_MIN+.05)return;const t=clamp(zoomLevel/1.4,ZOOM_MIN,ZOOM_MAX);animZoom(t<=ZOOM_MIN+.05?1:t,panX,panY)}
-function animZoom(ts,tpx,tpy){const s0=zoomLevel,px0=panX,py0=panY,dur=260,t0=performance.now();zoomContainer.classList.add('smooth-transition');function step(now){const t=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-t,3);zoomLevel=s0+(ts-s0)*e;panX=px0+(tpx-px0)*e;panY=py0+(tpy-py0)*e;updateZoom();if(t<1)requestAnimationFrame(step);else zoomContainer.classList.remove('smooth-transition')}requestAnimationFrame(step)}
-
-bookEl.addEventListener('touchstart',e=>{e.preventDefault();if(e.touches.length===2){gesture.mode='pinch';gesture.startDist=getDist(e.touches[0],e.touches[1]);gesture.startScale=zoomLevel}else if(e.touches.length===1){gesture.mode='single';gesture.startX=gesture.lastX=e.touches[0].clientX;gesture.startY=gesture.lastY=e.touches[0].clientY;gesture.moved=false}},{passive:false});
-bookEl.addEventListener('touchmove',e=>{e.preventDefault();if(gesture.mode==='pinch'&&e.touches.length===2){const d=getDist(e.touches[0],e.touches[1]);zoomLevel=clamp(gesture.startScale*(d/gesture.startDist),ZOOM_MIN,ZOOM_MAX);if(zoomLevel<=ZOOM_MIN+.05){zoomLevel=1;panX=0;panY=0}updateZoom()}else if(gesture.mode==='single'&&e.touches.length===1){const dx=e.touches[0].clientX-gesture.startX,dy=e.touches[0].clientY-gesture.startY;if(Math.abs(dx)>6||Math.abs(dy)>6)gesture.moved=true;if(zoomLevel>ZOOM_MIN+.05&&gesture.moved){panX+=e.touches[0].clientX-gesture.lastX;panY+=e.touches[0].clientY-gesture.lastY;gesture.lastX=e.touches[0].clientX;gesture.lastY=e.touches[0].clientY;updateZoom()}}},{passive:false});
-bookEl.addEventListener('touchend',e=>{if(gesture.mode==='single'&&!gesture.moved&&e.changedTouches.length){const now=Date.now(),touch=e.changedTouches[0];if(now-gesture.lastTap<320){zoomLevel>ZOOM_MIN+.05?animZoom(1,0,0):animZoom(ZOOM_DOUBLE,0,0);gesture.lastTap=0}else{gesture.lastTap=now;if(zoomLevel<=ZOOM_MIN+.05){const r=bookEl.getBoundingClientRect();(touch.clientX-r.left)>r.width/2?nextPage():prevPage()}}}else if(gesture.mode==='single'&&gesture.moved&&zoomLevel<=ZOOM_MIN+.05){const dx=e.changedTouches[0].clientX-gesture.startX;if(Math.abs(dx)>35){dx<0?nextPage():prevPage()}}if(!e.touches.length)gesture.mode='idle';else if(e.touches.length===1&&gesture.mode==='pinch'){gesture.mode='single';gesture.lastX=gesture.startX=e.touches[0].clientX;gesture.lastY=gesture.startY=e.touches[0].clientY;gesture.moved=false}},{passive:false});
-bookEl.addEventListener('touchcancel',()=>{gesture.mode='idle'});
-bookEl.addEventListener('click',e=>{if(isTouchDevice)return;const r=bookEl.getBoundingClientRect();(e.clientX-r.left)>r.width/2?nextPage():prevPage()});
-bookEl.addEventListener('wheel',e=>{e.preventDefault();const d=e.deltaY>0?-.15:.15;let ns=clamp(zoomLevel+d,ZOOM_MIN,ZOOM_MAX);if(ns<=ZOOM_MIN+.05&&zoomLevel<=ZOOM_MIN+.05)return;zoomLevel=ns;if(zoomLevel<=ZOOM_MIN+.05){zoomLevel=1;panX=0;panY=0}updateZoom()},{passive:false});
-
-/* ====== Fullscreen ====== */
-function toggleFullscreen(){document.body.classList.contains('fullscreen-mode')?exitFullscreenMode():enterImmersive()}
-function enterImmersive(){document.body.classList.add('fullscreen-mode');hideCTA();if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{});else if(document.documentElement.webkitRequestFullscreen)document.documentElement.webkitRequestFullscreen();resetZoom()}
-function exitFullscreenMode(){document.body.classList.remove('fullscreen-mode');if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});else if(document.webkitFullscreenElement)document.webkitExitFullscreen();resetZoom();setTimeout(showCTA,800)}
-document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&document.body.classList.contains('fullscreen-mode')){document.body.classList.remove('fullscreen-mode');resetZoom();setTimeout(showCTA,800)}});
-document.addEventListener('webkitfullscreenchange',()=>{if(!document.webkitFullscreenElement&&document.body.classList.contains('fullscreen-mode')){document.body.classList.remove('fullscreen-mode');resetZoom();setTimeout(showCTA,800)}});
-
-/* ====== CTA Móvil ====== */
-let ctaDismissed=false,ctaTimer=null;
-function showCTA(){if(!isTouchDevice||document.body.classList.contains('fullscreen-mode'))return;if(ctaDismissed)return;const el=document.getElementById('mobile-cta');el.classList.add('visible');clearTimeout(ctaTimer);ctaTimer=setTimeout(()=>el.classList.remove('visible'),8000)}
-function hideCTA(){document.getElementById('mobile-cta').classList.remove('visible')}
-function dismissCTA(){ctaDismissed=true;hideCTA()}
-
-/* ====== Teclado ====== */
-document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();nextPage()}else if(e.key==='ArrowLeft'){e.preventDefault();prevPage()}else if(e.key==='Home'){e.preventDefault();goToCover()}else if(e.key==='f'||e.key==='F')toggleFullscreen();else if(e.key==='+'||e.key==='=')zoomIn();else if(e.key==='-')zoomOut();else if(e.key==='0')animZoom(1,0,0);else if(e.key==='Escape'&&document.body.classList.contains('fullscreen-mode'))exitFullscreenMode()});
-
-/* ====== Init ====== */
-window.onload=()=>{loadData();renderGallery();renderAdmin();renderBook();updateZoom();setTimeout(showCTA,2200)};
+})();
 </script>
 </body>
 </html>
