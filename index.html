@@ -7,663 +7,229 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #060608;
-    --surface: #0e0e12;
-    --card: #16161c;
-    --border: rgba(255,255,255,0.06);
-    --fg: #f0ece4;
-    --muted: #6b6878;
-    --accent: #c9a84c;
-    --accent-dim: rgba(201,168,76,0.15);
-    --accent-glow: rgba(201,168,76,0.25);
-    --btn-bg: rgba(255,255,255,0.05);
-    --btn-hover: rgba(255,255,255,0.12);
-    --danger: #e04848;
+    --bg: #060608; --surface: #0e0e12; --card: #16161c;
+    --border: rgba(255,255,255,0.06); --fg: #f0ece4; --muted: #6b6878;
+    --accent: #c9a84c; --accent-dim: rgba(201,168,76,0.15);
+    --accent-glow: rgba(201,168,76,0.25); --btn-bg: rgba(255,255,255,0.05);
+    --btn-hover: rgba(255,255,255,0.12); --danger: #e04848;
   }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;min-height:100dvh;overflow-x:hidden;display:flex;flex-direction:column;align-items:center;position:relative;-webkit-tap-highlight-color:transparent}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 35%,rgba(201,168,76,0.04) 0%,transparent 70%),radial-gradient(ellipse 120% 100% at 50% 50%,#0c0c10 0%,#060608 100%);pointer-events:none;z-index:0}
+  body::after{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.6}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  .particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .particle{position:absolute;width:2px;height:2px;background:var(--accent);border-radius:50%;opacity:0;animation:floatP linear infinite}
+  @keyframes floatP{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:.5}90%{opacity:.2}100%{opacity:0;transform:translateY(-10vh) scale(1)}}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--fg);
-    min-height: 100vh;
-    min-height: 100dvh;
-    overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    -webkit-tap-highlight-color: transparent;
-  }
+  /* --- Header --- */
+  .header{position:relative;z-index:2;text-align:center;padding:28px 20px 6px;width:100%;flex-shrink:0}
+  .header-brand{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.3rem,4vw,2.4rem);letter-spacing:5px;text-transform:uppercase;color:var(--fg);margin-bottom:3px}
+  .header-brand span{color:var(--accent);font-weight:600}
+  .header-sub{font-size:.68rem;color:var(--muted);letter-spacing:3px;text-transform:uppercase;font-weight:300}
+  .header-line{width:50px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:10px auto 0}
 
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 35%, rgba(201,168,76,0.04) 0%, transparent 70%),
-      radial-gradient(ellipse 120% 100% at 50% 50%, #0c0c10 0%, #060608 100%);
-    pointer-events: none; z-index: 0;
-  }
-  body::after {
-    content: '';
-    position: fixed; inset: 0;
-    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none; z-index: 0; opacity: 0.6;
-  }
-
-  .particles {
-    position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
-  }
-  .particle {
-    position: absolute;
-    width: 2px; height: 2px;
-    background: var(--accent);
-    border-radius: 50%;
-    opacity: 0;
-    animation: floatParticle linear infinite;
-  }
-  @keyframes floatParticle {
-    0% { opacity: 0; transform: translateY(100vh) scale(0); }
-    10% { opacity: 0.6; }
-    90% { opacity: 0.3; }
-    100% { opacity: 0; transform: translateY(-10vh) scale(1); }
-  }
-
-  .header {
-    position: relative; z-index: 2;
-    text-align: center;
-    padding: 32px 20px 8px;
-    width: 100%;
-    flex-shrink: 0;
-  }
-  .header-brand {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 300;
-    font-size: clamp(1.4rem, 4vw, 2.4rem);
-    letter-spacing: 6px;
-    text-transform: uppercase;
-    color: var(--fg);
-    margin-bottom: 4px;
-  }
-  .header-brand span { color: var(--accent); font-weight: 600; }
-  .header-sub {
-    font-size: 0.7rem;
-    color: var(--muted);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    font-weight: 300;
-  }
-  .header-line {
-    width: 50px; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-    margin: 12px auto 0;
-  }
-
-  /* --- Contenedor Principal --- */
-  .photobook-wrapper {
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    perspective: 3500px;
-    width: 100%; max-width: 1200px;
-    position: relative; z-index: 2;
-    margin-bottom: 20px;
-    margin-top: 16px;
-    flex: 1 1 auto;
-    min-height: 0;
-  }
+  /* --- Wrapper --- */
+  .photobook-wrapper{display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%;max-width:1200px;position:relative;z-index:2;margin-bottom:16px;margin-top:12px;flex:1 1 auto;min-height:0}
 
   /* --- Zoom Container --- */
-  .zoom-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    transform-origin: center center;
-    will-change: transform;
-    flex-shrink: 0;
-  }
-  .zoom-container.smooth-transition {
-    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-  }
+  .zoom-container{display:flex;justify-content:center;align-items:center;position:relative;transform-origin:center center;will-change:transform;flex-shrink:0;filter:drop-shadow(0 25px 50px rgba(0,0,0,.65)) drop-shadow(0 4px 12px rgba(0,0,0,.45))}
+  .zoom-container.smooth-transition{transition:transform .32s cubic-bezier(.22,1,.36,1)}
 
-  .book-ambient {
-    position: absolute;
-    width: 600px; height: 600px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
-    filter: blur(60px);
-    pointer-events: none;
-    transition: opacity 0.8s;
-    z-index: -1;
-  }
+  .book-ambient{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.05) 0%,transparent 70%);filter:blur(50px);pointer-events:none;z-index:-1}
 
-  .book {
-    width: 420px; aspect-ratio: 1 / 1; position: relative;
-    transform-style: preserve-3d;
-    transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
-    filter: drop-shadow(0 30px 60px rgba(0,0,0,0.7)) drop-shadow(0 5px 15px rgba(0,0,0,0.5));
-    touch-action: none;
-    cursor: pointer;
-  }
+  /* --- Libro --- */
+  .book{width:400px;aspect-ratio:1/1;position:relative;transform-style:preserve-3d;transition:transform 800ms cubic-bezier(.76,0,.24,1);touch-action:none;cursor:pointer}
+  .book.no-transition{transition:none!important}
 
-  .paper {
-    position: absolute; width: 100%; height: 100%; top: 0; left: 0;
-    transform-style: preserve-3d;
-    transform-origin: left center;
-    transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
-    border-radius: 2px 5px 5px 2px;
-    cursor: pointer;
-  }
+  /* --- Lomo del libro --- */
+  .book-spine{position:absolute;left:0;top:0;bottom:0;width:14px;background:linear-gradient(to right,rgba(0,0,0,.5) 0%,rgba(0,0,0,.2) 30%,rgba(0,0,0,.05) 60%,transparent 100%);z-index:60;pointer-events:none;border-radius:2px 0 0 2px}
 
-  .front, .back {
-    position: absolute; width: 100%; height: 100%;
-    backface-visibility: hidden;
-    background: #0a0a0e;
-    overflow: hidden;
-    border-radius: 2px 5px 5px 2px;
-  }
-  .back { transform: rotateY(180deg); border-radius: 5px 2px 2px 5px; }
+  /* --- Pila de páginas (bordes) --- */
+  .page-stack{position:absolute;top:2%;bottom:2%;right:-1px;width:14px;z-index:1;pointer-events:none}
+  .stack-edge{position:absolute;top:0;bottom:0;width:1.5px;border-radius:0 1px 1px 0;background:linear-gradient(to bottom,rgba(255,255,255,.02) 0%,rgba(255,255,255,.05) 20%,rgba(255,255,255,.06) 50%,rgba(255,255,255,.05) 80%,rgba(255,255,255,.02) 100%)}
 
-  .img-fit { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .panoramic-img { height: 100%; width: 200%; max-width: none; position: absolute; top: 0; display: block; }
-  .pano-left { left: 0; object-fit: cover; object-position: left center; }
-  .pano-right { right: 0; object-fit: cover; object-position: right center; }
+  /* --- Sombra dinámica del giro --- */
+  .book-flip-shadow{position:absolute;inset:0;pointer-events:none;z-index:55;opacity:0;border-radius:2px 5px 5px 2px;transition:opacity .05s}
 
-  .acrylic-led-glass {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background:
-      linear-gradient(115deg,
-        transparent 0%, transparent 38%,
-        rgba(255,255,255,0.03) 41%,
-        rgba(255,255,255,0.35) 44%,
-        rgba(255,255,255,0.7) 46%,
-        rgba(255,255,255,0.35) 48%,
-        rgba(255,255,255,0.03) 51%,
-        transparent 54%, transparent 100%
-      );
-    background-size: 300% 300%;
-    animation: ledReflection 10s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
-    pointer-events: none; z-index: 10;
-    border-radius: 2px 5px 5px 2px;
-    mix-blend-mode: screen;
-  }
+  /* --- Hojas --- */
+  .paper{position:absolute;width:100%;height:100%;top:0;left:0;transform-style:preserve-3d;transform-origin:left center;border-radius:2px 5px 5px 2px;cursor:pointer}
+  .front,.back{position:absolute;width:100%;height:100%;backface-visibility:hidden;background:#0a0a0e;overflow:hidden;border-radius:2px 5px 5px 2px}
+  .back{transform:rotateY(180deg);border-radius:5px 2px 2px 5px}
 
-  .beveled-edge {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    box-sizing: border-box;
-    pointer-events: none; z-index: 11;
-    border-top: 10px solid rgba(255,255,255,0.18);
-    border-right: 10px solid rgba(255,255,255,0.04);
-    border-bottom: 10px solid rgba(0,0,0,0.3);
-    border-left: 10px solid rgba(0,0,0,0.12);
-    box-shadow:
-      inset 0 0 1px 1px rgba(255,255,255,0.15),
-      inset 0 0 12px rgba(0,0,0,0.3),
-      0 0 0 1px rgba(255,255,255,0.06);
-    border-radius: 2px 5px 5px 2px;
-  }
+  /* Textura sutil de papel */
+  .front::before,.back::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,.004) 3px,rgba(255,255,255,.004) 6px);pointer-events:none;z-index:5}
 
-  @keyframes ledReflection {
-    0% { background-position: 120% 120%; }
-    100% { background-position: -20% -20%; }
-  }
+  .img-fit{width:100%;height:100%;object-fit:cover;display:block}
+  .panoramic-img{height:100%;width:200%;max-width:none;position:absolute;top:0;display:block}
+  .pano-left{left:0;object-fit:cover;object-position:left center}
+  .pano-right{right:0;object-fit:cover;object-position:right center}
 
-  .flipped { transform: rotateY(-180deg); }
+  /* --- Brillo de curvatura (curl highlight) --- */
+  .curl-highlight{position:absolute;right:-1px;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,transparent 3%,rgba(255,255,255,.12) 25%,rgba(255,255,255,.18) 50%,rgba(255,255,255,.12) 75%,transparent 97%);opacity:0;z-index:15;pointer-events:none;border-radius:0 2px 2px 0}
 
-  .placeholder-text {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    text-align: center; color: #333; font-weight: 300; letter-spacing: 3px;
-    pointer-events: none; font-size: 0.8em; z-index: 5; text-transform: uppercase;
-    font-family: 'Cormorant Garamond', serif;
-    line-height: 1.8;
-  }
+  /* --- Cristal Acrílico --- */
+  .acrylic-led-glass{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(115deg,transparent 0%,transparent 38%,rgba(255,255,255,.03) 41%,rgba(255,255,255,.35) 44%,rgba(255,255,255,.7) 46%,rgba(255,255,255,.35) 48%,rgba(255,255,255,.03) 51%,transparent 54%,transparent 100%);background-size:300% 300%;animation:ledR 10s cubic-bezier(.4,0,.2,1) infinite alternate;pointer-events:none;z-index:10;border-radius:2px 5px 5px 2px;mix-blend-mode:screen}
+  .beveled-edge{position:absolute;top:0;left:0;width:100%;height:100%;box-sizing:border-box;pointer-events:none;z-index:11;border-top:10px solid rgba(255,255,255,.18);border-right:10px solid rgba(255,255,255,.04);border-bottom:10px solid rgba(0,0,0,.3);border-left:10px solid rgba(0,0,0,.12);box-shadow:inset 0 0 1px 1px rgba(255,255,255,.15),inset 0 0 12px rgba(0,0,0,.3),0 0 0 1px rgba(255,255,255,.06);border-radius:2px 5px 5px 2px}
+  @keyframes ledR{0%{background-position:120% 120%}100%{background-position:-20% -20%}}
+
+  .placeholder-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#333;font-weight:300;letter-spacing:3px;pointer-events:none;font-size:.8em;z-index:5;text-transform:uppercase;font-family:'Cormorant Garamond',serif;line-height:1.8}
 
   /* --- Indicador de Página --- */
-  .page-indicator {
-    position: relative; z-index: 2;
-    display: flex; align-items: center; gap: 14px;
-    margin-top: 14px; margin-bottom: 12px;
-    user-select: none;
-    flex-shrink: 0;
-  }
-  .page-dots {
-    display: flex; gap: 5px; align-items: center;
-  }
-  .page-dot {
-    width: 5px; height: 5px; border-radius: 50%;
-    background: var(--muted); opacity: 0.3;
-    transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .page-dot.active {
-    width: 20px; border-radius: 3px;
-    background: var(--accent); opacity: 1;
-  }
-  .page-label {
-    font-size: 0.65rem; color: var(--muted);
-    letter-spacing: 2px; text-transform: uppercase;
-    font-weight: 400; min-width: 70px; text-align: center;
-    transition: color 0.4s;
-  }
+  .page-indicator{position:relative;z-index:2;display:flex;align-items:center;gap:12px;margin-top:12px;margin-bottom:10px;user-select:none;flex-shrink:0}
+  .page-dots{display:flex;gap:5px;align-items:center}
+  .page-dot{width:5px;height:5px;border-radius:50%;background:var(--muted);opacity:.3;transition:all .5s cubic-bezier(.22,1,.36,1)}
+  .page-dot.active{width:20px;border-radius:3px;background:var(--accent);opacity:1}
+  .page-label{font-size:.62rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-weight:400;min-width:65px;text-align:center}
 
-  /* --- Controles de Navegación --- */
-  .book-controls {
-    display: flex; gap: 10px; align-items: center;
-    position: relative; z-index: 2;
-    flex-shrink: 0;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .nav-btn {
-    padding: 9px 20px;
-    background: var(--btn-bg);
-    color: var(--fg);
-    border: 1px solid var(--border);
-    border-radius: 40px;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 400; font-size: 0.75rem;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    backdrop-filter: blur(12px);
-    outline: none;
-    position: relative;
-    overflow: hidden;
-  }
-  .nav-btn::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, var(--accent-dim), transparent);
-    opacity: 0; transition: opacity 0.4s;
-  }
-  .nav-btn:hover::before { opacity: 1; }
-  .nav-btn:hover {
-    border-color: rgba(201,168,76,0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-  }
-  .nav-btn:active { transform: translateY(0) scale(0.97); }
-  .nav-btn:disabled {
-    opacity: 0.25; cursor: default; transform: none !important;
-    box-shadow: none !important;
-  }
-  .nav-btn:disabled::before { display: none; }
-  .nav-btn.accent-btn {
-    background: linear-gradient(135deg, var(--accent), #b8943f);
-    color: #0a0a0a; border-color: transparent; font-weight: 600;
-  }
-  .nav-btn.accent-btn:hover {
-    box-shadow: 0 8px 30px var(--accent-glow);
-    transform: translateY(-2px);
-  }
+  /* --- Controles --- */
+  .book-controls{display:flex;gap:8px;align-items:center;position:relative;z-index:2;flex-shrink:0;flex-wrap:wrap;justify-content:center}
+  .nav-btn{padding:8px 18px;background:var(--btn-bg);color:var(--fg);border:1px solid var(--border);border-radius:40px;cursor:pointer;transition:all .35s cubic-bezier(.22,1,.36,1);font-family:'DM Sans',sans-serif;font-weight:400;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;backdrop-filter:blur(12px);outline:none;position:relative;overflow:hidden}
+  .nav-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--accent-dim),transparent);opacity:0;transition:opacity .4s}
+  .nav-btn:hover::before{opacity:1}
+  .nav-btn:hover{border-color:rgba(201,168,76,.3);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+  .nav-btn:active{transform:translateY(0) scale(.97)}
+  .nav-btn:disabled{opacity:.2;cursor:default;transform:none!important;box-shadow:none!important}
+  .nav-btn:disabled::before{display:none}
+  .nav-btn.accent-btn{background:linear-gradient(135deg,var(--accent),#b8943f);color:#0a0a0a;border-color:transparent;font-weight:600}
+  .nav-btn.accent-btn:hover{box-shadow:0 8px 30px var(--accent-glow);transform:translateY(-2px)}
 
-  /* --- Botón Fullscreen Flotante --- */
-  .fullscreen-btn {
-    position: fixed; top: 16px; right: 16px; z-index: 50;
-    width: 42px; height: 42px; border-radius: 12px;
-    background: var(--btn-bg); border: 1px solid var(--border);
-    color: var(--muted); cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.3s; backdrop-filter: blur(12px);
-    font-size: 1.1rem;
-  }
-  .fullscreen-btn:hover { color: var(--fg); border-color: rgba(255,255,255,0.15); background: var(--btn-hover); }
-  .fullscreen-btn:active { transform: scale(0.92); }
+  /* --- Botón Fullscreen --- */
+  .fullscreen-btn{position:fixed;top:14px;right:14px;z-index:50;width:42px;height:42px;border-radius:12px;background:var(--btn-bg);border:1px solid var(--border);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;backdrop-filter:blur(12px);font-size:1.1rem}
+  .fullscreen-btn:hover{color:var(--fg);border-color:rgba(255,255,255,.15);background:var(--btn-hover)}
+
+  /* --- Flechas Landscape --- */
+  .landscape-arrow{display:none;position:fixed;top:50%;z-index:60;width:46px;height:46px;border-radius:50%;background:rgba(10,10,14,.75);border:1px solid var(--border);color:var(--fg);cursor:pointer;align-items:center;justify-content:center;font-size:1.4rem;backdrop-filter:blur(10px);transition:all .3s;transform:translateY(-50%)}
+  .landscape-arrow:hover{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.3)}
+  .landscape-arrow:active{transform:translateY(-50%) scale(.9)}
+  .landscape-arrow.arrow-left{left:10px}
+  .landscape-arrow.arrow-right{right:10px}
 
   /* --- Barra Móvil Inferior --- */
-  .mobile-toolbar {
-    display: none;
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    z-index: 90;
-    background: rgba(10,10,14,0.92);
-    border-top: 1px solid var(--border);
-    backdrop-filter: blur(20px);
-    padding: 8px 12px;
-    padding-bottom: max(8px, env(safe-area-inset-bottom));
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-  }
-  .mobile-toolbar-btn {
-    width: 38px; height: 38px;
-    border-radius: 10px;
-    background: var(--btn-bg);
-    border: 1px solid var(--border);
-    color: var(--muted);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1rem;
-    transition: all 0.25s;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .mobile-toolbar-btn:hover { color: var(--fg); background: var(--btn-hover); }
-  .mobile-toolbar-btn:active { transform: scale(0.9); }
-  .mobile-toolbar-btn.active { color: var(--accent); border-color: rgba(201,168,76,0.3); background: var(--accent-dim); }
-  .zoom-label {
-    font-size: 0.7rem;
-    color: var(--muted);
-    min-width: 40px;
-    text-align: center;
-    letter-spacing: 0.5px;
-    font-variant-numeric: tabular-nums;
-  }
-  .toolbar-sep {
-    width: 1px; height: 20px;
-    background: var(--border);
-    margin: 0 4px;
-  }
+  .mobile-toolbar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:90;background:rgba(10,10,14,.93);border-top:1px solid var(--border);backdrop-filter:blur(20px);padding:7px 10px;padding-bottom:max(7px,env(safe-area-inset-bottom));justify-content:center;align-items:center;gap:5px}
+  .mtb-btn{width:38px;height:38px;border-radius:10px;background:var(--btn-bg);border:1px solid var(--border);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .25s;font-family:'DM Sans',sans-serif}
+  .mtb-btn:hover{color:var(--fg);background:var(--btn-hover)}
+  .mtb-btn:active{transform:scale(.9)}
+  .zoom-label{font-size:.68rem;color:var(--muted);min-width:38px;text-align:center;letter-spacing:.5px;font-variant-numeric:tabular-nums}
+  .toolbar-sep{width:1px;height:20px;background:var(--border);margin:0 3px}
 
-  /* --- Flechas Laterales en Fullscreen Landscape --- */
-  .landscape-arrow {
-    display: none;
-    position: fixed;
-    top: 50%; z-index: 60;
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    background: rgba(10,10,14,0.7);
-    border: 1px solid var(--border);
-    color: var(--fg);
-    cursor: pointer;
-    align-items: center; justify-content: center;
-    font-size: 1.3rem;
-    backdrop-filter: blur(10px);
-    transition: all 0.3s;
-    transform: translateY(-50%);
-  }
-  .landscape-arrow:hover { background: rgba(201,168,76,0.15); border-color: rgba(201,168,76,0.3); }
-  .landscape-arrow:active { transform: translateY(-50%) scale(0.9); }
-  .landscape-arrow.arrow-left { left: 10px; }
-  .landscape-arrow.arrow-right { right: 10px; }
-
-  /* --- Indicador de Rotación --- */
-  .rotate-hint {
-    position: fixed;
-    top: 60px; left: 50%;
-    transform: translateX(-50%) translateY(-20px);
-    background: rgba(14,14,18,0.92);
-    border: 1px solid rgba(201,168,76,0.2);
-    padding: 10px 20px;
-    border-radius: 30px;
-    display: none;
-    align-items: center;
-    gap: 10px;
-    z-index: 110;
-    font-size: 0.75rem;
-    color: var(--muted);
-    backdrop-filter: blur(16px);
-    opacity: 0;
-    transition: opacity 0.5s, transform 0.5s;
-    pointer-events: none;
-    white-space: nowrap;
-  }
-  .rotate-hint.visible {
-    display: flex;
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-  .rotate-hint svg {
-    width: 20px; height: 20px;
-    fill: none; stroke: var(--accent);
-    stroke-width: 1.5; stroke-linecap: round;
-    animation: rotateHintAnim 2s ease-in-out infinite;
-  }
-  @keyframes rotateHintAnim {
-    0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(-10deg); }
-    75% { transform: rotate(80deg); }
-  }
+  /* --- CTA Móvil Prominente --- */
+  .mobile-cta{position:fixed;bottom:0;left:0;right:0;z-index:95;padding:12px 14px;padding-bottom:max(12px,env(safe-area-inset-bottom));transform:translateY(110%);transition:transform .65s cubic-bezier(.22,1,.36,1);pointer-events:none}
+  .mobile-cta.visible{transform:translateY(0);pointer-events:auto}
+  .mobile-cta-card{max-width:440px;margin:0 auto;background:rgba(12,12,16,.97);border:1px solid rgba(201,168,76,.28);border-radius:18px;padding:16px 18px;display:flex;align-items:center;gap:14px;backdrop-filter:blur(24px);box-shadow:0 -8px 40px rgba(0,0,0,.6),0 0 50px rgba(201,168,76,.04);position:relative}
+  .cta-phone{flex-shrink:0;color:var(--accent);animation:ctaRotate 3.2s ease-in-out infinite}
+  @keyframes ctaRotate{0%,15%{transform:rotate(0deg)}35%,55%{transform:rotate(90deg)}75%,100%{transform:rotate(0deg)}}
+  .cta-text{flex:1;min-width:0}
+  .cta-text strong{display:block;font-size:.82rem;color:var(--fg);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:2px}
+  .cta-text span{font-size:.68rem;color:var(--muted);letter-spacing:.3px;display:block;line-height:1.4}
+  .cta-fs-btn{flex-shrink:0;padding:10px 18px;background:linear-gradient(135deg,var(--accent),#b8943f);color:#0a0a0a;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .3s;white-space:nowrap}
+  .cta-fs-btn:hover{box-shadow:0 6px 24px var(--accent-glow);transform:translateY(-1px)}
+  .cta-fs-btn:active{transform:scale(.96)}
+  .cta-close{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:4px;transition:color .2s}
+  .cta-close:hover{color:var(--fg)}
 
   /* --- Toast --- */
-  .toast-container {
-    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-    z-index: 200; display: flex; flex-direction: column; gap: 8px; align-items: center;
-    pointer-events: none;
-  }
-  .toast {
-    padding: 9px 22px; border-radius: 40px;
-    background: var(--card); border: 1px solid var(--border);
-    color: var(--fg); font-size: 0.78rem; letter-spacing: 0.5px;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-    animation: toastIn 0.4s cubic-bezier(0.22,1,0.36,1) forwards, toastOut 0.4s 2.2s ease forwards;
-    pointer-events: auto;
-  }
-  .toast.success { border-color: rgba(76,201,120,0.3); }
-  .toast.info { border-color: var(--accent-dim); }
-  @keyframes toastIn { from { opacity: 0; transform: translateY(-20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
-  @keyframes toastOut { to { opacity: 0; transform: translateY(-10px) scale(0.95); } }
+  .toast-container{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+  .toast{padding:9px 20px;border-radius:40px;background:var(--card);border:1px solid var(--border);color:var(--fg);font-size:.76rem;letter-spacing:.5px;backdrop-filter:blur(20px);box-shadow:0 10px 40px rgba(0,0,0,.5);animation:tIn .4s cubic-bezier(.22,1,.36,1) forwards,tOut .4s 2.2s ease forwards;pointer-events:auto}
+  .toast.success{border-color:rgba(76,201,120,.3)}
+  .toast.info{border-color:var(--accent-dim)}
+  @keyframes tIn{from{opacity:0;transform:translateY(-20px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+  @keyframes tOut{to{opacity:0;transform:translateY(-10px) scale(.95)}}
 
-  /* --- Panel Administrador --- */
-  .admin-collapse {
-    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-    background: rgba(14,14,18,0.96); border: 1px solid var(--border);
-    border-radius: 16px 16px 0 0; padding: 0; color: var(--fg); z-index: 100;
-    width: 100%; max-width: 1020px;
-    backdrop-filter: blur(30px);
-    box-shadow: 0 -10px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03) inset;
-    overflow: hidden;
-    max-height: 60vh;
-    display: flex;
-    flex-direction: column;
-  }
-  .admin-collapse summary {
-    cursor: pointer; font-weight: 400; outline: none; list-style: none;
-    text-align: center; color: var(--muted);
-    transition: all 0.3s; font-size: 0.72rem;
-    letter-spacing: 2px; text-transform: uppercase;
-    padding: 14px 24px;
-    position: relative;
-    flex-shrink: 0;
-  }
-  .admin-collapse summary::-webkit-details-marker { display: none; }
-  .admin-collapse summary::before {
-    content: '◆'; margin-right: 8px; font-size: 0.5em;
-    vertical-align: middle; color: var(--accent); opacity: 0.6;
-    transition: transform 0.3s;
-  }
-  .admin-collapse summary:hover { color: var(--fg); }
-  .admin-collapse[open] summary { margin-bottom: 0; padding-bottom: 14px; border-bottom: 1px solid var(--border); color: var(--fg); }
-  .admin-collapse[open] summary::before { transform: rotate(45deg); }
+  /* --- Panel Admin --- */
+  .admin-collapse{position:fixed;bottom:0;left:50%;transform:translateX(-50%);background:rgba(14,14,18,.96);border:1px solid var(--border);border-radius:16px 16px 0 0;padding:0;color:var(--fg);z-index:100;width:100%;max-width:1020px;backdrop-filter:blur(30px);box-shadow:0 -10px 60px rgba(0,0,0,.6);overflow:hidden;max-height:60vh;display:flex;flex-direction:column}
+  .admin-collapse summary{cursor:pointer;font-weight:400;outline:none;list-style:none;text-align:center;color:var(--muted);transition:all .3s;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;padding:13px 24px;flex-shrink:0}
+  .admin-collapse summary::-webkit-details-marker{display:none}
+  .admin-collapse summary::before{content:'◆';margin-right:8px;font-size:.5em;vertical-align:middle;color:var(--accent);opacity:.6;transition:transform .3s}
+  .admin-collapse summary:hover{color:var(--fg)}
+  .admin-collapse[open] summary{padding-bottom:13px;border-bottom:1px solid var(--border);color:var(--fg)}
+  .admin-collapse[open] summary::before{transform:rotate(45deg)}
+  .admin-body{padding:14px 18px 18px;overflow-y:auto;flex:1}
+  .drag-drop-area{width:100%;border:1.5px dashed rgba(255,255,255,.1);border-radius:12px;padding:18px;text-align:center;color:var(--muted);transition:all .4s;margin-bottom:12px;cursor:pointer;background:rgba(255,255,255,.015);font-size:.75rem;letter-spacing:.5px}
+  .drag-drop-area:hover,.drag-drop-area.drag-over{border-color:var(--accent);background:var(--accent-dim);color:var(--fg)}
+  .drag-drop-area .drop-icon{display:block;margin-bottom:5px;font-size:1.3rem;opacity:.4}
+  .gallery-strip{display:flex;gap:7px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px;border-bottom:1px solid var(--border);min-height:60px;align-items:center}
+  .gallery-strip::-webkit-scrollbar{height:3px}
+  .gallery-strip::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
+  .gallery-item{width:50px;height:50px;object-fit:cover;border-radius:7px;cursor:grab;border:2px solid transparent;transition:all .3s;flex-shrink:0;background:var(--card)}
+  .gallery-item:hover{border-color:var(--accent);transform:scale(1.08)}
+  .slots-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:9px;max-height:26vh;overflow-y:auto;padding-right:5px}
+  .slots-container::-webkit-scrollbar{width:3px}
+  .slots-container::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
+  .slot{display:flex;flex-direction:column;position:relative;background:var(--card);padding:10px;border-radius:9px;border:1.5px dashed rgba(255,255,255,.06);transition:all .3s;text-align:center}
+  .slot.drag-over{border-color:var(--accent);background:rgba(201,168,76,.05)}
+  .slot label{font-weight:500;margin-bottom:7px;font-size:.6rem;color:var(--muted);pointer-events:none;letter-spacing:1px;text-transform:uppercase}
+  .slot-img{width:100%;height:45px;object-fit:cover;border-radius:5px;background:var(--surface);pointer-events:none;transition:opacity .3s}
+  .remove-btn{position:absolute;top:5px;right:5px;background:rgba(224,72,72,.15);color:var(--danger);border:1px solid rgba(224,72,72,.2);border-radius:50%;width:19px;height:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;transition:all .3s}
+  .remove-btn:hover{background:var(--danger);color:#fff;border-color:var(--danger)}
+  .slot-file-input{margin-top:5px;font-size:.58rem;color:#555;width:100%}
+  .controls-admin{display:flex;gap:9px;justify-content:space-between;margin-top:12px;align-items:center;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border)}
+  .admin-action-btn{padding:6px 12px;background:rgba(255,255,255,.04);color:var(--fg);border:1px solid var(--border);border-radius:7px;cursor:pointer;transition:all .3s;font-size:.68rem;font-family:'DM Sans',sans-serif}
+  .admin-action-btn:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12)}
+  .admin-action-btn.danger{background:rgba(224,72,72,.06);color:var(--danger);border-color:rgba(224,72,72,.15)}
+  .admin-action-btn.danger:hover{background:var(--danger);color:#fff;border-color:var(--danger)}
+  .toggle-container{display:flex;align-items:center;gap:9px;font-size:.68rem;color:var(--muted)}
+  .toggle-switch{position:relative;width:36px;height:20px;cursor:pointer}
+  .toggle-switch input{display:none}
+  .toggle-track{position:absolute;inset:0;background:#222;border-radius:10px;border:1px solid var(--border);transition:all .3s}
+  .toggle-thumb{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--muted);transition:all .3s}
+  .toggle-switch input:checked~.toggle-track{background:var(--accent-dim);border-color:var(--accent)}
+  .toggle-switch input:checked~.toggle-thumb{left:18px;background:var(--accent)}
 
-  .admin-body { padding: 16px 20px 20px; overflow-y: auto; flex: 1; }
+  .footer-hint{position:relative;z-index:2;text-align:center;padding:0 20px 105px;color:#333;font-size:.6rem;letter-spacing:2px;text-transform:uppercase}
+  .footer-hint kbd{display:inline-block;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);font-family:'DM Sans',sans-serif;font-size:.56rem;color:#555;margin:0 2px}
 
-  .drag-drop-area {
-    width: 100%; border: 1.5px dashed rgba(255,255,255,0.1); border-radius: 12px;
-    padding: 20px; text-align: center; color: var(--muted);
-    transition: all 0.4s; margin-bottom: 14px; cursor: pointer;
-    background: rgba(255,255,255,0.015);
-    font-size: 0.78rem; letter-spacing: 0.5px;
-  }
-  .drag-drop-area:hover, .drag-drop-area.drag-over {
-    border-color: var(--accent); background: var(--accent-dim); color: var(--fg);
-  }
-  .drag-drop-area .drop-icon { display: block; margin-bottom: 6px; font-size: 1.4rem; opacity: 0.4; }
-
-  .gallery-strip {
-    display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 14px;
-    border-bottom: 1px solid var(--border); min-height: 66px; align-items: center;
-  }
-  .gallery-strip::-webkit-scrollbar { height: 3px; }
-  .gallery-strip::-webkit-scrollbar-track { background: transparent; }
-  .gallery-strip::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-
-  .gallery-item {
-    width: 54px; height: 54px; object-fit: cover; border-radius: 8px;
-    cursor: grab; border: 2px solid transparent;
-    transition: all 0.3s; flex-shrink: 0; background: var(--card);
-  }
-  .gallery-item:active { cursor: grabbing; }
-  .gallery-item:hover { border-color: var(--accent); transform: scale(1.08); box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
-
-  .slots-container {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px; max-height: 28vh; overflow-y: auto; padding-right: 6px;
-  }
-  .slots-container::-webkit-scrollbar { width: 3px; }
-  .slots-container::-webkit-scrollbar-track { background: transparent; }
-  .slots-container::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-
-  .slot {
-    display: flex; flex-direction: column; position: relative;
-    background: var(--card); padding: 12px; border-radius: 10px;
-    border: 1.5px dashed rgba(255,255,255,0.06);
-    transition: all 0.3s; text-align: center;
-  }
-  .slot.drag-over { border-color: var(--accent); background: rgba(201,168,76,0.05); }
-  .slot label {
-    font-weight: 500; margin-bottom: 8px; font-size: 0.65rem;
-    color: var(--muted); pointer-events: none; letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  .slot-img {
-    width: 100%; height: 50px; object-fit: cover; border-radius: 6px;
-    background: var(--surface); pointer-events: none;
-    transition: opacity 0.3s;
-  }
-  .remove-btn {
-    position: absolute; top: 6px; right: 6px;
-    background: rgba(224,72,72,0.15); color: var(--danger);
-    border: 1px solid rgba(224,72,72,0.2); border-radius: 50%;
-    width: 20px; height: 20px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 10px; transition: all 0.3s;
-  }
-  .remove-btn:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
-  .slot-file-input { margin-top: 6px; font-size: 0.6rem; color: #555; width: 100%; letter-spacing: 0.5px; }
-
-  .controls-admin {
-    display: flex; gap: 10px; justify-content: space-between;
-    margin-top: 14px; align-items: center; flex-wrap: wrap;
-    padding-top: 14px; border-top: 1px solid var(--border);
-  }
-
-  .admin-action-btn {
-    padding: 7px 14px; background: rgba(255,255,255,0.04); color: var(--fg);
-    border: 1px solid var(--border); border-radius: 8px;
-    cursor: pointer; transition: all 0.3s; font-size: 0.72rem;
-    font-family: 'DM Sans', sans-serif; letter-spacing: 0.5px;
-  }
-  .admin-action-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.12); }
-  .admin-action-btn.danger {
-    background: rgba(224,72,72,0.06); color: var(--danger);
-    border-color: rgba(224,72,72,0.15);
-  }
-  .admin-action-btn.danger:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
-
-  .toggle-container {
-    display: flex; align-items: center; gap: 10px;
-    font-size: 0.72rem; color: var(--muted);
-  }
-  .toggle-switch { position: relative; width: 38px; height: 20px; cursor: pointer; }
-  .toggle-switch input { display: none; }
-  .toggle-track {
-    position: absolute; inset: 0; background: #222; border-radius: 10px;
-    border: 1px solid var(--border); transition: all 0.3s;
-  }
-  .toggle-thumb {
-    position: absolute; top: 2px; left: 2px;
-    width: 16px; height: 16px; border-radius: 50%;
-    background: var(--muted); transition: all 0.3s;
-  }
-  .toggle-switch input:checked ~ .toggle-track { background: var(--accent-dim); border-color: var(--accent); }
-  .toggle-switch input:checked ~ .toggle-thumb { left: 20px; background: var(--accent); }
-
-  .footer-hint {
-    position: relative; z-index: 2;
-    text-align: center; padding: 0 20px 110px;
-    color: #333; font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase;
-  }
-  .footer-hint kbd {
-    display: inline-block; padding: 2px 7px; border-radius: 4px;
-    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
-    font-family: 'DM Sans', sans-serif; font-size: 0.58rem; color: #555;
-    margin: 0 2px;
-  }
-
-  /* ===================== */
-  /*  MODO PANTALLA COMPLETA */
-  /* ===================== */
+  /* ========================= */
+  /*  MODO PANTALLA COMPLETA   */
+  /* ========================= */
   body.fullscreen-mode .header,
   body.fullscreen-mode .footer-hint,
-  body.fullscreen-mode .admin-collapse { display: none !important; }
-  body.fullscreen-mode .photobook-wrapper {
-    margin-bottom: 0; margin-top: 0;
-    height: 100vh; height: 100dvh;
-    justify-content: center;
-  }
-  body.fullscreen-mode .book {
-    width: min(420px, 65vh);
-  }
-  body.fullscreen-mode .mobile-toolbar { display: flex; }
-  body.fullscreen-mode .fullscreen-btn { display: none; }
-  body.fullscreen-mode .book-controls { display: none; }
-  body.fullscreen-mode .page-indicator {
-    margin-bottom: 60px;
-    margin-bottom: calc(60px + env(safe-area-inset-bottom));
+  body.fullscreen-mode .admin-collapse{display:none!important}
+  body.fullscreen-mode .photobook-wrapper{margin:0;height:100vh;height:100dvh;justify-content:center}
+  body.fullscreen-mode .book{width:min(400px,62vh)}
+  body.fullscreen-mode .mobile-toolbar{display:flex}
+  body.fullscreen-mode .fullscreen-btn{display:none}
+  body.fullscreen-mode .book-controls{display:none}
+  body.fullscreen-mode .page-indicator{margin-bottom:56px;margin-bottom:calc(56px + env(safe-area-inset-bottom))}
+  body.fullscreen-mode .mobile-cta{display:none!important}
+
+  @media(orientation:landscape){
+    body.fullscreen-mode .book{width:min(460px,80vh)}
+    body.fullscreen-mode .page-indicator{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);margin:0;z-index:80;background:rgba(10,10,14,.75);padding:5px 14px;border-radius:18px;border:1px solid var(--border);backdrop-filter:blur(10px)}
+    body.fullscreen-mode .landscape-arrow{display:flex}
+    body.fullscreen-mode .mobile-toolbar{display:none}
   }
 
-  /* --- Fullscreen + Horizontal (landscape) --- */
-  @media (orientation: landscape) {
-    body.fullscreen-mode .book {
-      width: min(460px, 78vh);
-    }
-    body.fullscreen-mode .page-indicator {
-      position: fixed;
-      bottom: 12px; left: 50%;
-      transform: translateX(-50%);
-      margin: 0;
-      z-index: 80;
-      background: rgba(10,10,14,0.7);
-      padding: 6px 16px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      backdrop-filter: blur(10px);
-    }
-    body.fullscreen-mode .landscape-arrow { display: flex; }
-    body.fullscreen-mode .mobile-toolbar {
-      display: none;
-    }
+  /* ========================= */
+  /*     RESPONSIVE MÓVIL      */
+  /* ========================= */
+  @media(max-width:768px){
+    .book{width:min(320px,82vw)}
+    .book-ambient{width:350px;height:350px}
+    .nav-btn{padding:7px 13px;font-size:.66rem}
+    .header{padding:18px 14px 4px}
+    .header-brand{letter-spacing:3px}
+    .footer-hint{display:none}
+    .slots-container{grid-template-columns:repeat(auto-fill,minmax(125px,1fr))}
+    .admin-body{padding:10px 14px 14px}
+    .page-indicator{margin-top:8px;margin-bottom:8px}
   }
-
-  /* ===================== */
-  /*     RESPONSIVE MÓVIL    */
-  /* ===================== */
-  @media (max-width: 768px) {
-    .book { width: min(320px, 70vw); }
-    .book-ambient { width: 400px; height: 400px; }
-    .nav-btn { padding: 8px 14px; font-size: 0.68rem; }
-    .header { padding: 20px 16px 4px; }
-    .header-brand { letter-spacing: 3px; }
-    .footer-hint { display: none; }
-    .slots-container { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
-    .admin-body { padding: 12px 16px 16px; }
-    .page-indicator { margin-top: 10px; margin-bottom: 10px; }
+  @media(max-width:420px){
+    .book{width:min(290px,86vw)}
+    .book-controls{gap:5px}
+    .nav-btn{padding:6px 10px;font-size:.6rem;letter-spacing:1px}
+    .header-brand{letter-spacing:2px;font-size:1.1rem}
   }
-
-  @media (max-width: 420px) {
-    .book { width: min(280px, 75vw); }
-    .book-controls { gap: 6px; }
-    .nav-btn { padding: 7px 10px; font-size: 0.62rem; letter-spacing: 1px; }
-    .header-brand { letter-spacing: 2px; font-size: 1.2rem; }
+  @media(orientation:landscape) and (max-height:500px){
+    .book{width:min(300px,72vh)}
+    .header{padding:8px 14px 2px}
+    .header-brand{font-size:1rem;letter-spacing:3px}
+    .header-sub{font-size:.55rem}
+    .header-line{margin:5px auto 0}
+    .page-indicator{margin-top:4px;margin-bottom:4px}
+    .nav-btn{padding:5px 10px;font-size:.58rem}
   }
-
-  @media (orientation: landscape) and (max-height: 500px) {
-    .book { width: min(320px, 70vh); }
-    .header { padding: 10px 16px 2px; }
-    .header-brand { font-size: 1.1rem; letter-spacing: 3px; }
-    .header-sub { font-size: 0.6rem; }
-    .header-line { margin: 6px auto 0; }
-    .page-indicator { margin-top: 6px; margin-bottom: 6px; }
-    .book-controls { gap: 6px; }
-    .nav-btn { padding: 6px 12px; font-size: 0.62rem; }
-  }
-
-  /* --- Reduced Motion --- */
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-    .particle { display: none; }
-  }
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}.particle{display:none}}
 </style>
 </head>
 <body>
@@ -671,59 +237,66 @@
 <div class="particles" id="particles" aria-hidden="true"></div>
 <div class="toast-container" id="toast-container" aria-live="polite"></div>
 
-<!-- Indicador de rotación -->
-<div class="rotate-hint" id="rotate-hint">
-  <svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
-  <span>Rota tu dispositivo para mejor experiencia</span>
+<!-- CTA Móvil Prominente -->
+<div class="mobile-cta" id="mobile-cta">
+  <div class="mobile-cta-card">
+    <button class="cta-close" onclick="dismissCTA()" aria-label="Cerrar">&times;</button>
+    <svg class="cta-phone" viewBox="0 0 48 56" width="32" height="38" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="10" y="2" width="28" height="52" rx="4"/>
+      <circle cx="24" cy="48" r="1.5" fill="currentColor" stroke="none" opacity=".4"/>
+      <line x1="18" y1="8" x2="30" y2="8" opacity=".3"/>
+    </svg>
+    <div class="cta-text">
+      <strong>Rota tu dispositivo</strong>
+      <span>Para ver el fotolibro a pantalla completa como un libro real</span>
+    </div>
+    <button class="cta-fs-btn" onclick="enterImmersive()">Pantalla Completa</button>
+  </div>
 </div>
 
-<!-- Botón Fullscreen -->
 <button class="fullscreen-btn" id="fullscreen-btn" onclick="toggleFullscreen()" title="Pantalla completa" aria-label="Pantalla completa">⛶</button>
+<button class="landscape-arrow arrow-left" id="arrow-left" onclick="prevPage()" aria-label="Anterior">&#8249;</button>
+<button class="landscape-arrow arrow-right" id="arrow-right" onclick="nextPage()" aria-label="Siguiente">&#8250;</button>
 
-<!-- Flechas laterales (solo en landscape fullscreen) -->
-<button class="landscape-arrow arrow-left" id="arrow-left" onclick="prevPage()" aria-label="Página anterior">&#8249;</button>
-<button class="landscape-arrow arrow-right" id="arrow-right" onclick="nextPage()" aria-label="Página siguiente">&#8250;</button>
-
-<!-- Header -->
 <header class="header">
   <div class="header-brand">Foto<span>Libro</span></div>
   <div class="header-sub">Visor digital premium</div>
   <div class="header-line"></div>
 </header>
 
-<!-- Visor del Libro -->
 <main class="photobook-wrapper" id="photobook-wrapper">
   <div class="zoom-container" id="zoom-container">
     <div class="book-ambient" aria-hidden="true"></div>
-    <div id="book" class="book" role="region" aria-label="Fotolibro digital"></div>
+    <div id="book" class="book" role="region" aria-label="Fotolibro digital">
+      <div class="book-spine" aria-hidden="true"></div>
+      <div class="page-stack" id="page-stack" aria-hidden="true"></div>
+      <div class="book-flip-shadow" id="book-flip-shadow" aria-hidden="true"></div>
+    </div>
   </div>
-
   <div class="page-indicator" id="page-indicator">
     <div class="page-dots" id="page-dots"></div>
     <div class="page-label" id="page-label">Portada</div>
   </div>
-
   <nav class="book-controls" aria-label="Navegación del fotolibro">
     <button id="btn-home" class="nav-btn" onclick="goToCover()" aria-label="Ir a portada">Inicio</button>
-    <button id="btn-prev" class="nav-btn" onclick="prevPage()" aria-label="Página anterior">Anterior</button>
-    <button id="btn-next" class="nav-btn accent-btn" onclick="nextPage()" aria-label="Página siguiente">Siguiente</button>
+    <button id="btn-prev" class="nav-btn" onclick="prevPage()" aria-label="Anterior">Anterior</button>
+    <button id="btn-next" class="nav-btn accent-btn" onclick="nextPage()" aria-label="Siguiente">Siguiente</button>
   </nav>
 </main>
 
-<!-- Barra Móvil Inferior -->
 <div class="mobile-toolbar" id="mobile-toolbar">
-  <button class="mobile-toolbar-btn" onclick="prevPage()" aria-label="Anterior">&#8249;</button>
-  <button class="mobile-toolbar-btn" onclick="goToCover()" aria-label="Inicio" title="Inicio">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+  <button class="mtb-btn" onclick="prevPage()" aria-label="Anterior">&#8249;</button>
+  <button class="mtb-btn" onclick="goToCover()" aria-label="Inicio" title="Inicio">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
   </button>
-  <button class="mobile-toolbar-btn" onclick="nextPage()" aria-label="Siguiente">&#8250;</button>
+  <button class="mtb-btn" onclick="nextPage()" aria-label="Siguiente">&#8250;</button>
   <div class="toolbar-sep"></div>
-  <button class="mobile-toolbar-btn" onclick="zoomOut()" aria-label="Reducir zoom">−</button>
+  <button class="mtb-btn" onclick="zoomOut()" aria-label="Reducir zoom">−</button>
   <span class="zoom-label" id="zoom-label">100%</span>
-  <button class="mobile-toolbar-btn" onclick="zoomIn()" aria-label="Aumentar zoom">+</button>
+  <button class="mtb-btn" onclick="zoomIn()" aria-label="Aumentar zoom">+</button>
   <div class="toolbar-sep"></div>
-  <button class="mobile-toolbar-btn" id="fs-mobile-btn" onclick="toggleFullscreen()" aria-label="Pantalla completa">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+  <button class="mtb-btn" onclick="exitFullscreenMode()" aria-label="Salir">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
   </button>
 </div>
 
@@ -731,696 +304,370 @@
   Usa <kbd>←</kbd> <kbd>→</kbd> para navegar &nbsp;·&nbsp; Desliza en móvil &nbsp;·&nbsp; <kbd>F</kbd> pantalla completa &nbsp;·&nbsp; Pellizca para zoom
 </div>
 
-<!-- Panel Administrador -->
 <details class="admin-collapse" id="admin-panel">
   <summary>Configuración y Carga de Fotografías</summary>
   <div class="admin-body">
-    <div class="drag-drop-area" id="main-dropzone" onclick="document.getElementById('mass-upload-input').click()" role="button" aria-label="Arrastra fotos o haz clic para subir">
+    <div class="drag-drop-area" id="main-dropzone" onclick="document.getElementById('mass-upload-input').click()" role="button" aria-label="Arrastra fotos o haz clic">
       <span class="drop-icon">⬆</span>
       Arrastra aquí múltiples fotos o haz clic para subir
       <input type="file" id="mass-upload-input" multiple accept="image/*" style="display:none" onchange="handleMassUpload(event)">
     </div>
-    <div class="gallery-strip" id="media-gallery" role="list" aria-label="Galería de medios">
-      <span style="color:#444; font-size:0.75rem; margin-left:8px; letter-spacing:0.5px;">Las fotos subidas aparecerán aquí. Arrástralas a los lienzos.</span>
-    </div>
-    <div id="slots-container" class="slots-container" role="list" aria-label="Lienzos del fotolibro"></div>
+    <div class="gallery-strip" id="media-gallery" role="list"><span style="color:#444;font-size:.72rem;margin-left:8px">Las fotos subidas aparecerán aquí.</span></div>
+    <div id="slots-container" class="slots-container" role="list"></div>
     <div class="controls-admin">
       <label class="toggle-container">
-        <label class="toggle-switch">
-          <input type="checkbox" id="toggle-backcover" onchange="toggleBackCover(event)">
-          <div class="toggle-track"></div>
-          <div class="toggle-thumb"></div>
-        </label>
+        <label class="toggle-switch"><input type="checkbox" id="toggle-backcover" onchange="toggleBackCover(event)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
         Contraportada
       </label>
-      <div style="display: flex; gap: 8px;">
-        <button class="admin-action-btn" onclick="addEmptySpread()">+ Lienzo 12×24</button>
-        <button class="admin-action-btn danger" onclick="clearAllData()">Limpiar Todo</button>
+      <div style="display:flex;gap:7px">
+        <button class="admin-action-btn" onclick="addEmptySpread()">+ Lienzo</button>
+        <button class="admin-action-btn danger" onclick="clearAllData()">Limpiar</button>
       </div>
     </div>
   </div>
 </details>
 
 <script>
-  /* ====== Estado ====== */
-  let photobookData = { cover: null, spreads: [null], hasBackCover: false, back: null };
-  let mediaLibrary = [];
-  let currentBookState = 0;
+/* ====== Estado ====== */
+let photobookData = { cover: null, spreads: [null], hasBackCover: false, back: null };
+let mediaLibrary = [];
+let currentBookState = 0;
+let isAnimating = false;
+const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
-  /* ====== Estado del Zoom ====== */
-  let zoomLevel = 1;
-  let panX = 0, panY = 0;
-  const ZOOM_MIN = 1;
-  const ZOOM_MAX = 5;
-  const ZOOM_DOUBLE_TAP = 2.5;
+/* ====== Zoom ====== */
+let zoomLevel = 1, panX = 0, panY = 0;
+const ZOOM_MIN = 1, ZOOM_MAX = 5, ZOOM_DOUBLE = 2.5;
+const FLIP_DURATION = 820;
 
-  /* ====== Detección de dispositivo táctil ====== */
-  const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+/* ====== Partículas ====== */
+(function(){const c=document.getElementById('particles');for(let i=0;i<20;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.animationDuration=(14+Math.random()*16)+'s';p.style.animationDelay=(Math.random()*10)+'s';p.style.width=p.style.height=(1+Math.random()*1.5)+'px';c.appendChild(p)}})();
 
-  /* ====== Partículas ====== */
-  (function initParticles() {
-    const container = document.getElementById('particles');
-    for (let i = 0; i < 25; i++) {
-      const p = document.createElement('div');
-      p.className = 'particle';
-      p.style.left = Math.random() * 100 + '%';
-      p.style.animationDuration = (14 + Math.random() * 18) + 's';
-      p.style.animationDelay = (Math.random() * 12) + 's';
-      p.style.width = p.style.height = (1 + Math.random() * 2) + 'px';
-      container.appendChild(p);
-    }
-  })();
+/* ====== Toast ====== */
+function showToast(m,t='info'){const c=document.getElementById('toast-container'),e=document.createElement('div');e.className='toast '+t;e.textContent=m;c.appendChild(e);setTimeout(()=>{if(e.parentNode)e.remove()},2800)}
 
-  /* ====== Toast ====== */
-  function showToast(msg, type = 'info') {
-    const c = document.getElementById('toast-container');
-    const t = document.createElement('div');
-    t.className = 'toast ' + type;
-    t.textContent = msg;
-    c.appendChild(t);
-    setTimeout(() => { if (t.parentNode) t.remove(); }, 2800);
+/* ====== Persistencia ====== */
+function loadData(){try{const s=localStorage.getItem('pb_v8_data');if(s){const p=JSON.parse(s);photobookData.cover=p.cover||null;photobookData.spreads=p.spreads&&p.spreads.length?p.spreads:[null];photobookData.hasBackCover=p.hasBackCover||false;photobookData.back=p.back||null;document.getElementById('toggle-backcover').checked=photobookData.hasBackCover}}catch(e){}}
+function saveData(){try{localStorage.setItem('pb_v8_data',JSON.stringify(photobookData))}catch(e){}}
+function clearAllData(){if(!confirm('¿Limpiar todas las imágenes?'))return;localStorage.removeItem('pb_v8_data');photobookData={cover:null,spreads:[null],hasBackCover:false,back:null};mediaLibrary=[];document.getElementById('toggle-backcover').checked=false;currentBookState=0;renderGallery();renderAdmin();renderBook();showToast('Todo limpiado','info')}
+function addEmptySpread(){photobookData.spreads.push(null);saveData();renderAdmin();renderBook();showToast('Lienzo agregado','success')}
+function removeSpread(i){photobookData.spreads.splice(i,1);saveData();if(currentBookState>getMaxState())currentBookState=getMaxState();renderAdmin();renderBook()}
+function toggleBackCover(e){photobookData.hasBackCover=e.target.checked;saveData();renderAdmin();renderBook()}
+
+/* ====== Imágenes ====== */
+function processFile(f,cb){const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');let w=img.width,h=img.height;if(w>1800){h=Math.floor(h*(1800/w));w=1800}c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);cb(c.toDataURL('image/jpeg',.82))};img.src=e.target.result};r.readAsDataURL(f)}
+function handleMassUpload(e){const f=e.target.files;if(!f)return;Array.from(f).forEach(file=>processFile(file,b64=>{mediaLibrary.push(b64);renderGallery()}));setTimeout(()=>showToast(f.length+' foto(s) cargada(s)','success'),300);e.target.value=''}
+
+/* ====== Drag & Drop ====== */
+const dropzone=document.getElementById('main-dropzone');
+dropzone.addEventListener('dragover',e=>{e.preventDefault();dropzone.classList.add('drag-over')});
+dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('drag-over'));
+dropzone.addEventListener('drop',e=>{e.preventDefault();dropzone.classList.remove('drag-over');if(e.dataTransfer.files){let c=0;Array.from(e.dataTransfer.files).forEach(f=>{if(f.type.startsWith('image/'))processFile(f,b64=>{mediaLibrary.push(b64);renderGallery();c++})});setTimeout(()=>showToast(c+' foto(s) cargada(s)','success'),300)}});
+function dragStart(e,i){e.dataTransfer.setData("mediaIndex",i)}
+function allowDrop(e){e.preventDefault()}
+function slotDragEnter(e){e.currentTarget.classList.add('drag-over')}
+function slotDragLeave(e){e.currentTarget.classList.remove('drag-over')}
+function dropOnSlot(e,type,idx=null){e.preventDefault();e.currentTarget.classList.remove('drag-over');const mi=e.dataTransfer.getData("mediaIndex");if(mi==="")return;const src=mediaLibrary[mi];if(type==='cover')photobookData.cover=src;else if(type==='back')photobookData.back=src;else photobookData.spreads[idx]=src;saveData();renderAdmin();renderBook();showToast('Imagen asignada','success')}
+function handleSingleUpload(e,type,idx=null){const f=e.target.files[0];if(!f)return;processFile(f,b64=>{if(type==='cover')photobookData.cover=b64;else if(type==='back')photobookData.back=b64;else photobookData.spreads[idx]=b64;saveData();renderAdmin();renderBook();showToast('Imagen asignada','success')});e.target.value=''}
+
+/* ====== Galería ====== */
+function renderGallery(){const g=document.getElementById('media-gallery');if(!mediaLibrary.length){g.innerHTML='<span style="color:#444;font-size:.72rem;margin-left:8px">Las fotos subidas aparecerán aquí.</span>';return}g.innerHTML='';mediaLibrary.forEach((s,i)=>{g.innerHTML+=`<img src="${s}" class="gallery-item" draggable="true" ondragstart="dragStart(event,${i})" role="listitem" alt="Foto ${i+1}">`})}
+
+/* ====== Admin ====== */
+function renderAdmin(){const c=document.getElementById('slots-container');c.innerHTML='';c.innerHTML+=`<div class="slot" ondragover="allowDrop(event)" ondragenter="slotDragEnter(event)" ondragleave="slotDragLeave(event)" ondrop="dropOnSlot(event,'cover')"><label>Portada 12×12</label><img class="slot-img" src="${photobookData.cover||'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='}" style="${photobookData.cover?'opacity:1':'opacity:.15'}" alt="Portada"><input type="file" class="slot-file-input" accept="image/*" onchange="handleSingleUpload(event,'cover')"></div>`;photobookData.spreads.forEach((s,i)=>{c.innerHTML+=`<div class="slot" ondragover="allowDrop(event)" ondragenter="slotDragEnter(event)" ondragleave="slotDragLeave(event)" ondrop="dropOnSlot(event,'spread',${i})"><label>Lienzo ${i+1} — 12×24</label><img class="slot-img" src="${s||'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='}" style="${s?'opacity:1':'opacity:.15'}" alt="Lienzo ${i+1}"><button class="remove-btn" onclick="removeSpread(${i})" aria-label="Quitar">×</button><input type="file" class="slot-file-input" accept="image/*" onchange="handleSingleUpload(event,'spread',${i})"></div>`});if(photobookData.hasBackCover){c.innerHTML+=`<div class="slot" ondragover="allowDrop(event)" ondragenter="slotDragEnter(event)" ondragleave="slotDragLeave(event)" ondrop="dropOnSlot(event,'back')"><label>Contraportada 12×12</label><img class="slot-img" src="${photobookData.back||'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='}" style="${photobookData.back?'opacity:1':'opacity:.15'}" alt="Contraportada"><input type="file" class="slot-file-input" accept="image/*" onchange="handleSingleUpload(event,'back')"></div>`}}
+
+/* ====== Render del Libro ====== */
+function imgTag(src,pano,side){if(!src)return '';if(!pano)return `<img src="${src}" class="img-fit" alt="">`;return `<img src="${src}" class="panoramic-img pano-${side}" alt="">`}
+function placeholder(t){return `<div class="placeholder-text">${t}</div>`}
+
+function renderBook(){
+  const book=document.getElementById('book');
+  /* Conservar elementos fijos */
+  const spine=book.querySelector('.book-spine');
+  const stack=book.querySelector('.page-stack');
+  const shadow=book.querySelector('.book-flip-shadow');
+  /* Limpiar solo los papers */
+  book.querySelectorAll('.paper').forEach(p=>p.remove());
+
+  const numS=photobookData.spreads.length;
+  const total=numS+1;
+
+  for(let i=0;i<total;i++){
+    let fC='',bC='',fx='';
+    if(i===0){fC=imgTag(photobookData.cover,false)||placeholder("Portada");fx='<div class="acrylic-led-glass"></div><div class="beveled-edge"></div>'}
+    else{const s=photobookData.spreads[i-1];fC=imgTag(s,true,'right')||placeholder(`Lienzo ${i}<br>Derecha`)}
+    if(i===total-1){bC=photobookData.hasBackCover?(imgTag(photobookData.back,false)||placeholder("Final")):''}
+    else{const s=photobookData.spreads[i];bC=imgTag(s,true,'left')||placeholder(`Lienzo ${i+1}<br>Izquierda`)}
+
+    const paper=document.createElement('div');
+    paper.className='paper';paper.id='paper-'+i;
+    paper.innerHTML=`<div class="front">${fC}${fx}</div><div class="back">${bC}</div><div class="curl-highlight"></div>`;
+    book.appendChild(paper);
   }
+  setBookState(false);
+}
 
-  /* ====== Persistencia ====== */
-  function loadData() {
-    const saved = localStorage.getItem('pb_v7_data');
-    if (saved) {
-      try {
-        let p = JSON.parse(saved);
-        photobookData.cover = p.cover || null;
-        photobookData.spreads = p.spreads && p.spreads.length ? p.spreads : [null];
-        photobookData.hasBackCover = p.hasBackCover || false;
-        photobookData.back = p.back || null;
-        document.getElementById('toggle-backcover').checked = photobookData.hasBackCover;
-      } catch(e) {}
-    }
-  }
+/* ====== Estado visual del libro ====== */
+function setBookState(animate){
+  const book=document.getElementById('book');
+  const papers=book.querySelectorAll('.paper');
+  const total=papers.length;
 
-  function saveData() {
-    try { localStorage.setItem('pb_v7_data', JSON.stringify(photobookData)); }
-    catch(e) { console.warn("Memoria local llena."); }
-  }
+  if(!animate) book.classList.add('no-transition');
+  else book.classList.remove('no-transition');
 
-  function clearAllData() {
-    if (!confirm('¿Limpiar todas las imágenes y la galería?')) return;
-    localStorage.removeItem('pb_v7_data');
-    photobookData = { cover: null, spreads: [null], hasBackCover: false, back: null };
-    mediaLibrary = [];
-    document.getElementById('toggle-backcover').checked = false;
-    currentBookState = 0;
-    renderGallery(); renderAdmin(); renderBook();
-    showToast('Todo ha sido limpiado', 'info');
-  }
-
-  function addEmptySpread() {
-    photobookData.spreads.push(null);
-    saveData(); renderAdmin(); renderBook();
-    showToast('Lienzo agregado', 'success');
-  }
-
-  function removeSpread(index) {
-    photobookData.spreads.splice(index, 1);
-    saveData();
-    const maxS = getMaxState();
-    if (currentBookState > maxS) currentBookState = maxS;
-    renderAdmin(); renderBook();
-  }
-
-  function toggleBackCover(e) {
-    photobookData.hasBackCover = e.target.checked;
-    saveData(); renderAdmin(); renderBook();
-  }
-
-  /* ====== Procesamiento de imágenes ====== */
-  function processFile(file, callback) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const MAX = 1800;
-        let w = img.width, h = img.height;
-        if (w > MAX) { h = Math.floor(h * (MAX / w)); w = MAX; }
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        callback(canvas.toDataURL('image/jpeg', 0.82));
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  /* ====== Carga masiva ====== */
-  function handleMassUpload(e) {
-    const files = e.target.files;
-    if (!files) return;
-    Array.from(files).forEach(file => {
-      processFile(file, (b64) => { mediaLibrary.push(b64); renderGallery(); });
-    });
-    setTimeout(() => showToast(files.length + ' foto(s) cargada(s)', 'success'), 300);
-    e.target.value = '';
-  }
-
-  /* ====== Drag & Drop zona principal ====== */
-  const dropzone = document.getElementById('main-dropzone');
-  dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('drag-over'); });
-  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
-  dropzone.addEventListener('drop', (e) => {
-    e.preventDefault(); dropzone.classList.remove('drag-over');
-    if (e.dataTransfer.files) {
-      let count = 0;
-      Array.from(e.dataTransfer.files).forEach(file => {
-        if (file.type.startsWith('image/')) {
-          processFile(file, (b64) => { mediaLibrary.push(b64); renderGallery(); count++; });
-        }
-      });
-      setTimeout(() => showToast(count + ' foto(s) cargada(s)', 'success'), 300);
-    }
+  papers.forEach((p,i)=>{
+    p.style.zIndex=i<currentBookState?i+1:total-i;
+    p.style.transform=i<currentBookState?'rotateY(-180deg) translateZ(0)':'rotateY(0deg) translateZ(0)';
   });
 
-  /* ====== Galería ====== */
-  function renderGallery() {
-    const gallery = document.getElementById('media-gallery');
-    if (mediaLibrary.length === 0) {
-      gallery.innerHTML = '<span style="color:#444; font-size:0.75rem; margin-left:8px; letter-spacing:0.5px;">Las fotos subidas aparecerán aquí. Arrástralas a los lienzos.</span>';
-      return;
-    }
-    gallery.innerHTML = '';
-    mediaLibrary.forEach((src, i) => {
-      gallery.innerHTML += `<img src="${src}" class="gallery-item" draggable="true" ondragstart="dragStart(event, ${i})" role="listitem" alt="Foto ${i+1}">`;
-    });
+  if(currentBookState===0) book.style.transform='translateX(0%)';
+  else if(currentBookState>=total) book.style.transform='translateX(100%)';
+  else book.style.transform='translateX(50%)';
+
+  if(!animate){book.offsetHeight;book.classList.remove('no-transition')}
+
+  updatePageIndicator();
+  updateNavButtons();
+  updatePageStack();
+}
+
+/* ====== Pila de páginas ====== */
+function updatePageStack(){
+  const stack=document.getElementById('page-stack');
+  const total=document.querySelectorAll('.paper').length;
+  const remaining=total-currentBookState;
+  const edges=Math.min(remaining-1,5);
+  stack.innerHTML='';
+  if(edges<=0){stack.style.display='none';return}
+  stack.style.display='block';
+  for(let i=0;i<edges;i++){
+    const e=document.createElement('div');e.className='stack-edge';
+    e.style.right=(i*1.5)+'px';
+    e.style.opacity=(1-i/edges*.7).toString();
+    stack.appendChild(e);
   }
+}
 
-  /* ====== Drag entre slots ====== */
-  function dragStart(e, index) { e.dataTransfer.setData("mediaIndex", index); }
-  function allowDrop(e) { e.preventDefault(); }
-  function handleSlotDragEnter(e) { e.currentTarget.classList.add('drag-over'); }
-  function handleSlotDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+/* ====== Animación de giro realista ====== */
+function easeInOutQuart(t){return t<.5?8*t*t*t*t:1-Math.pow(-2*t+2,4)/2}
 
-  function dropOnSlot(e, type, index = null) {
-    e.preventDefault();
-    e.currentTarget.classList.remove('drag-over');
-    const mi = e.dataTransfer.getData("mediaIndex");
-    if (mi === "") return;
-    const src = mediaLibrary[mi];
-    if (type === 'cover') photobookData.cover = src;
-    else if (type === 'back') photobookData.back = src;
-    else if (type === 'spread') photobookData.spreads[index] = src;
-    saveData(); renderAdmin(); renderBook();
-    showToast('Imagen asignada', 'success');
-  }
+function animateFlip(paperEl, direction, toState){
+  return new Promise(resolve=>{
+    const fromAngle=direction==='forward'?0:-180;
+    const toAngle=direction==='forward'?-180:0;
+    const shadowEl=document.getElementById('book-flip-shadow');
+    const curlEl=paperEl.querySelector('.curl-highlight');
+    const book=document.getElementById('book');
+    const totalPapers=document.querySelectorAll('.paper').length;
 
-  function handleSingleUpload(e, type, index = null) {
-    const file = e.target.files[0];
-    if (!file) return;
-    processFile(file, (b64) => {
-      if (type === 'cover') photobookData.cover = b64;
-      else if (type === 'back') photobookData.back = b64;
-      else if (type === 'spread') photobookData.spreads[index] = b64;
-      saveData(); renderAdmin(); renderBook();
-      showToast('Imagen asignada', 'success');
-    });
-    e.target.value = '';
-  }
+    /* Elevar z-index durante la animación */
+    paperEl.style.zIndex=totalPapers+10;
 
-  /* ====== Panel administrador ====== */
-  function renderAdmin() {
-    const container = document.getElementById('slots-container');
-    container.innerHTML = '';
+    /* Posicionar el libro (CSS transition se encarga) */
+    const toX=toState===0?0:(toState>=totalPapers?100:50);
+    book.style.transform=`translateX(${toX}%)`;
 
-    container.innerHTML += `
-      <div class="slot" ondragover="allowDrop(event)" ondragenter="handleSlotDragEnter(event)" ondragleave="handleSlotDragLeave(event)" ondrop="dropOnSlot(event, 'cover')" role="listitem">
-        <label>Portada 12×12</label>
-        <img class="slot-img" src="${photobookData.cover || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='}" style="${photobookData.cover ? 'opacity:1' : 'opacity:0.15'}" alt="Vista previa portada">
-        <input type="file" class="slot-file-input" accept="image/*" onchange="handleSingleUpload(event, 'cover')">
-      </div>`;
+    const start=performance.now();
 
-    photobookData.spreads.forEach((spread, i) => {
-      container.innerHTML += `
-        <div class="slot" ondragover="allowDrop(event)" ondragenter="handleSlotDragEnter(event)" ondragleave="handleSlotDragLeave(event)" ondrop="dropOnSlot(event, 'spread', ${i})" role="listitem">
-          <label>Lienzo ${i + 1} — 12×24</label>
-          <img class="slot-img" src="${spread || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='}" style="${spread ? 'opacity:1' : 'opacity:0.15'}" alt="Vista previa lienzo ${i+1}">
-          <button class="remove-btn" title="Quitar lienzo" onclick="removeSpread(${i})" aria-label="Quitar lienzo ${i+1}">×</button>
-          <input type="file" class="slot-file-input" accept="image/*" onchange="handleSingleUpload(event, 'spread', ${i})">
-        </div>`;
-    });
+    function step(now){
+      const elapsed=now-start;
+      let t=Math.min(1,elapsed/FLIP_DURATION);
+      const ease=easeInOutQuart(t);
 
-    if (photobookData.hasBackCover) {
-      container.innerHTML += `
-        <div class="slot" ondragover="allowDrop(event)" ondragenter="handleSlotDragEnter(event)" ondragleave="handleSlotDragLeave(event)" ondrop="dropOnSlot(event, 'back')" role="listitem">
-          <label>Contraportada 12×12</label>
-          <img class="slot-img" src="${photobookData.back || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='}" style="${photobookData.back ? 'opacity:1' : 'opacity:0.15'}" alt="Vista previa contraportada">
-          <input type="file" class="slot-file-input" accept="image/*" onchange="handleSingleUpload(event, 'back')">
-        </div>`;
-    }
-  }
-
-  /* ====== Render del Libro ====== */
-  function getImgTag(src, isPano, side) {
-    if (!src) return '';
-    if (!isPano) return `<img src="${src}" class="img-fit" alt="">`;
-    return `<img src="${src}" class="panoramic-img pano-${side}" alt="">`;
-  }
-  function getPlaceholder(text) { return `<div class="placeholder-text">${text}</div>`; }
-
-  function renderBook() {
-    const book = document.getElementById('book');
-    book.innerHTML = '';
-    const numSpreads = photobookData.spreads.length;
-    const totalPapers = numSpreads + 1;
-
-    for (let i = 0; i < totalPapers; i++) {
-      let frontContent = '', backContent = '', effectLayer = '';
-
-      if (i === 0) {
-        frontContent = getImgTag(photobookData.cover, false) || getPlaceholder("Portada");
-        effectLayer = '<div class="acrylic-led-glass"></div><div class="beveled-edge"></div>';
-      } else {
-        const s = photobookData.spreads[i - 1];
-        frontContent = getImgTag(s, true, 'right') || getPlaceholder(`Lienzo ${i}<br>Derecha`);
+      /* Ángulo con micro-rebote al final */
+      let angle=fromAngle+(toAngle-fromAngle)*ease;
+      if(t>.8){
+        const ot=(t-.8)/.2;
+        const bounce=Math.sin(ot*Math.PI)*3.5;
+        angle+=bounce*(direction==='forward'?-1:1);
       }
 
-      if (i === totalPapers - 1) {
-        backContent = photobookData.hasBackCover
-          ? (getImgTag(photobookData.back, false) || getPlaceholder("Final"))
-          : '';
-      } else {
-        const s = photobookData.spreads[i];
-        backContent = getImgTag(s, true, 'left') || getPlaceholder(`Lienzo ${i + 1}<br>Izquierda`);
+      /* Elevación (pico a 90°) */
+      const norm=Math.abs(angle)/180;
+      const lift=Math.sin(norm*Math.PI)*10;
+
+      paperEl.style.transform=`rotateY(${angle}deg) translateZ(${lift}px)`;
+
+      /* Sombra dinámica en el libro */
+      const si=Math.sin(norm*Math.PI);
+      if(shadowEl&&si>.02){
+        if(norm<.5){
+          shadowEl.style.background=`linear-gradient(to left, transparent 10%, rgba(0,0,0,${si*.12}) 40%, rgba(0,0,0,${si*.32}) 85%, rgba(0,0,0,${si*.18}) 100%)`;
+          shadowEl.style.clipPath='inset(0 0 0 50%)';
+        }else{
+          shadowEl.style.background=`linear-gradient(to right, transparent 10%, rgba(0,0,0,${si*.1}) 40%, rgba(0,0,0,${si*.28}) 85%, rgba(0,0,0,${si*.14}) 100%)`;
+          shadowEl.style.clipPath='inset(0 50% 0 0)';
+        }
+        shadowEl.style.opacity='1';
+      }else if(shadowEl){
+        shadowEl.style.opacity='0';
       }
 
-      book.innerHTML += `
-        <div class="paper" id="paper-${i}">
-          <div class="front">${frontContent}${effectLayer}</div>
-          <div class="back">${backContent}</div>
-        </div>`;
-    }
-    updateBookTransform();
-  }
+      /* Brillo de curvatura */
+      if(curlEl) curlEl.style.opacity=(si*.75).toString();
 
-  /* ====== Navegación ====== */
-  function getMaxState() {
-    return photobookData.hasBackCover ? photobookData.spreads.length + 1 : photobookData.spreads.length;
-  }
-
-  function updateBookTransform() {
-    const papers = document.querySelectorAll('.paper');
-    const book = document.getElementById('book');
-    const total = papers.length;
-    const maxS = getMaxState();
-
-    papers.forEach((paper, i) => {
-      if (i < currentBookState) {
-        paper.classList.add('flipped');
-        paper.style.zIndex = i + 1;
-      } else {
-        paper.classList.remove('flipped');
-        paper.style.zIndex = total - i;
-      }
-    });
-
-    if (currentBookState === 0) book.style.transform = "translateX(0%)";
-    else if (currentBookState >= total) book.style.transform = "translateX(100%)";
-    else book.style.transform = "translateX(50%)";
-
-    updatePageIndicator();
-    updateNavButtons(maxS);
-  }
-
-  function updatePageIndicator() {
-    const dotsEl = document.getElementById('page-dots');
-    const labelEl = document.getElementById('page-label');
-    const total = getMaxState() + 1;
-    const numSpreads = photobookData.spreads.length;
-
-    let dotsHTML = '';
-    for (let i = 0; i < total; i++) {
-      dotsHTML += `<div class="page-dot${i === currentBookState ? ' active' : ''}"></div>`;
-    }
-    dotsEl.innerHTML = dotsHTML;
-
-    if (currentBookState === 0) labelEl.textContent = 'Portada';
-    else if (currentBookState >= getMaxState()) labelEl.textContent = 'Final';
-    else {
-      const spreadIdx = currentBookState;
-      labelEl.textContent = `Lienzo ${spreadIdx} de ${numSpreads}`;
-    }
-  }
-
-  function updateNavButtons(maxS) {
-    document.getElementById('btn-prev').disabled = currentBookState <= 0;
-    document.getElementById('btn-next').disabled = currentBookState >= maxS;
-    document.getElementById('btn-home').disabled = currentBookState <= 0;
-    document.getElementById('arrow-left').style.opacity = currentBookState <= 0 ? '0.2' : '1';
-    document.getElementById('arrow-right').style.opacity = currentBookState >= maxS ? '0.2' : '1';
-  }
-
-  function nextPage() {
-    if (currentBookState < getMaxState()) {
-      currentBookState++;
-      resetZoom();
-      updateBookTransform();
-    }
-  }
-  function prevPage() {
-    if (currentBookState > 0) {
-      currentBookState--;
-      resetZoom();
-      updateBookTransform();
-    }
-  }
-  function goToCover() {
-    currentBookState = 0;
-    resetZoom();
-    updateBookTransform();
-  }
-
-  /* ============================== */
-  /*  ZOOM: PELLIZCO, DOBLE TOQUE   */
-  /* ============================== */
-
-  const zoomContainer = document.getElementById('zoom-container');
-  const bookEl = document.getElementById('book');
-  const zoomLabel = document.getElementById('zoom-label');
-
-  /* Estado de gestos */
-  const gesture = {
-    mode: 'idle',   // 'idle' | 'single' | 'pinch' | 'pan'
-    startX: 0, startY: 0,
-    lastX: 0, lastY: 0,
-    startDist: 0,
-    startScale: 1,
-    startPanX: 0, startPanY: 0,
-    moved: false,
-    lastTapTime: 0
-  };
-
-  function getDistance(t1, t2) {
-    const dx = t1.clientX - t2.clientX;
-    const dy = t1.clientY - t2.clientY;
-    return Math.sqrt(dx * dx + dy * dy);
-  }
-
-  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
-
-  function updateZoomTransform() {
-    /* scale se aplica primero, luego translate en espacio escalado */
-    const tx = panX / zoomLevel;
-    const ty = panY / zoomLevel;
-    zoomContainer.style.transform = `scale(${zoomLevel}) translate(${tx}px, ${ty}px)`;
-    zoomLabel.textContent = Math.round(zoomLevel * 100) + '%';
-  }
-
-  function resetZoom() {
-    zoomLevel = ZOOM_MIN;
-    panX = 0;
-    panY = 0;
-    updateZoomTransform();
-  }
-
-  function zoomIn() {
-    animateZoomTo(clamp(zoomLevel * 1.4, ZOOM_MIN, ZOOM_MAX), panX, panY);
-  }
-
-  function zoomOut() {
-    if (zoomLevel <= ZOOM_MIN + 0.05) return;
-    const target = clamp(zoomLevel / 1.4, ZOOM_MIN, ZOOM_MAX);
-    if (target <= ZOOM_MIN + 0.05) {
-      animateZoomTo(1, 0, 0);
-    } else {
-      animateZoomTo(target, panX, panY);
-    }
-  }
-
-  function animateZoomTo(targetScale, targetPanX, targetPanY) {
-    const startScale = zoomLevel;
-    const startPanX = panX;
-    const startPanY = panY;
-    const duration = 280;
-    const startTime = performance.now();
-
-    zoomContainer.classList.add('smooth-transition');
-
-    function step(now) {
-      const t = Math.min(1, (now - startTime) / duration);
-      const ease = 1 - Math.pow(1 - t, 3);
-
-      zoomLevel = startScale + (targetScale - startScale) * ease;
-      panX = startPanX + (targetPanX - startPanX) * ease;
-      panY = startPanY + (targetPanY - startPanY) * ease;
-
-      updateZoomTransform();
-
-      if (t < 1) {
-        requestAnimationFrame(step);
-      } else {
-        zoomContainer.classList.remove('smooth-transition');
+      if(t<1){requestAnimationFrame(step)}
+      else{
+        paperEl.style.transform=`rotateY(${toAngle}deg) translateZ(0)`;
+        if(shadowEl) shadowEl.style.opacity='0';
+        if(curlEl) curlEl.style.opacity='0';
+        /* Restaurar z-index */
+        paperEl.style.zIndex=toAngle===-180?currentBookState:totalPapers-currentBookState;
+        resolve();
       }
     }
     requestAnimationFrame(step);
-  }
-
-  /* --- Manejadores de touch en el libro --- */
-  bookEl.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-
-    if (e.touches.length === 2) {
-      /* Inicio de pellizco */
-      gesture.mode = 'pinch';
-      gesture.startDist = getDistance(e.touches[0], e.touches[1]);
-      gesture.startScale = zoomLevel;
-      gesture.startPanX = panX;
-      gesture.startPanY = panY;
-    } else if (e.touches.length === 1) {
-      gesture.mode = 'single';
-      gesture.startX = e.touches[0].clientX;
-      gesture.startY = e.touches[0].clientY;
-      gesture.lastX = gesture.startX;
-      gesture.lastY = gesture.startY;
-      gesture.moved = false;
-    }
-  }, { passive: false });
-
-  bookEl.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-
-    if (gesture.mode === 'pinch' && e.touches.length === 2) {
-      const dist = getDistance(e.touches[0], e.touches[1]);
-      const newScale = gesture.startScale * (dist / gesture.startDist);
-      zoomLevel = clamp(newScale, ZOOM_MIN, ZOOM_MAX);
-
-      if (zoomLevel <= ZOOM_MIN + 0.05) {
-        zoomLevel = 1;
-        panX = 0;
-        panY = 0;
-      }
-
-      updateZoomTransform();
-
-    } else if (gesture.mode === 'single' && e.touches.length === 1) {
-      const dx = e.touches[0].clientX - gesture.startX;
-      const dy = e.touches[0].clientY - gesture.startY;
-
-      if (Math.abs(dx) > 6 || Math.abs(dy) > 6) gesture.moved = true;
-
-      if (zoomLevel > ZOOM_MIN + 0.05 && gesture.moved) {
-        /* Arrastrar (pan) cuando está hecho zoom */
-        const moveX = e.touches[0].clientX - gesture.lastX;
-        const moveY = e.touches[0].clientY - gesture.lastY;
-        panX += moveX;
-        panY += moveY;
-        gesture.lastX = e.touches[0].clientX;
-        gesture.lastY = e.touches[0].clientY;
-        updateZoomTransform();
-      }
-    }
-  }, { passive: false });
-
-  bookEl.addEventListener('touchend', (e) => {
-    if (gesture.mode === 'single' && !gesture.moved && e.changedTouches.length > 0) {
-      /* Toque detectado */
-      const now = Date.now();
-      const touch = e.changedTouches[0];
-
-      if (now - gesture.lastTapTime < 320) {
-        /* Doble toque → zoom */
-        handleDoubleTap(touch);
-        gesture.lastTapTime = 0;
-      } else {
-        gesture.lastTapTime = now;
-        /* Toque simple → navegar (solo sin zoom) */
-        if (zoomLevel <= ZOOM_MIN + 0.05) {
-          const rect = bookEl.getBoundingClientRect();
-          const x = touch.clientX - rect.left;
-          if (x > rect.width / 2) nextPage();
-          else prevPage();
-        }
-      }
-
-    } else if (gesture.mode === 'single' && gesture.moved && zoomLevel <= ZOOM_MIN + 0.05) {
-      /* Deslizar (swipe) para navegar */
-      const dx = e.changedTouches[0].clientX - gesture.startX;
-      const dy = e.changedTouches[0].clientY - gesture.startY;
-      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 35) {
-        if (dx < 0) nextPage();
-        else prevPage();
-      }
-    }
-
-    /* Transiciones de estado */
-    if (e.touches.length === 0) {
-      gesture.mode = 'idle';
-    } else if (e.touches.length === 1 && gesture.mode === 'pinch') {
-      /* Un dedo se levantó durante pellizco → posible pan */
-      gesture.mode = 'single';
-      gesture.lastX = e.touches[0].clientX;
-      gesture.lastY = e.touches[0].clientY;
-      gesture.startX = gesture.lastX;
-      gesture.startY = gesture.lastY;
-      gesture.moved = false;
-    }
-  }, { passive: false });
-
-  /* Cancelar gesto si se interrumpe */
-  bookEl.addEventListener('touchcancel', () => {
-    gesture.mode = 'idle';
   });
+}
 
-  function handleDoubleTap(touch) {
-    if (zoomLevel > ZOOM_MIN + 0.05) {
-      /* Volver a 1x */
-      animateZoomTo(1, 0, 0);
-    } else {
-      /* Hacer zoom al punto tocado */
-      animateZoomTo(ZOOM_DOUBLE_TAP, 0, 0);
-    }
+/* ====== Navegación ====== */
+function getMaxState(){return photobookData.hasBackCover?photobookData.spreads.length+1:photobookData.spreads.length}
+
+function updatePageIndicator(){
+  const d=document.getElementById('page-dots'),l=document.getElementById('page-label');
+  const total=getMaxState()+1,n=photobookData.spreads.length;
+  let h='';for(let i=0;i<total;i++)h+=`<div class="page-dot${i===currentBookState?' active':''}"></div>`;
+  d.innerHTML=h;
+  if(currentBookState===0)l.textContent='Portada';
+  else if(currentBookState>=getMaxState())l.textContent='Final';
+  else l.textContent=`Lienzo ${currentBookState} de ${n}`;
+}
+
+function updateNavButtons(){
+  const m=getMaxState();
+  document.getElementById('btn-prev').disabled=currentBookState<=0;
+  document.getElementById('btn-next').disabled=currentBookState>=m;
+  document.getElementById('btn-home').disabled=currentBookState<=0;
+  document.getElementById('arrow-left').style.opacity=currentBookState<=0?'.2':'1';
+  document.getElementById('arrow-right').style.opacity=currentBookState>=m?'.2':'1';
+}
+
+async function nextPage(){
+  if(isAnimating||currentBookState>=getMaxState())return;
+  isAnimating=true; resetZoom();
+  const paper=document.getElementById('paper-'+currentBookState);
+  currentBookState++;
+  await animateFlip(paper,'forward',currentBookState);
+  updatePageIndicator(); updateNavButtons(); updatePageStack();
+  isAnimating=false;
+}
+
+async function prevPage(){
+  if(isAnimating||currentBookState<=0)return;
+  isAnimating=true; resetZoom();
+  currentBookState--;
+  const paper=document.getElementById('paper-'+currentBookState);
+  await animateFlip(paper,'backward',currentBookState);
+  updatePageIndicator(); updateNavButtons(); updatePageStack();
+  isAnimating=false;
+}
+
+function goToCover(){
+  if(isAnimating||currentBookState===0)return;
+  currentBookState=0; resetZoom(); setBookState(false);
+}
+
+/* ====== Zoom ====== */
+const zoomContainer=document.getElementById('zoom-container');
+const bookEl=document.getElementById('book');
+const zoomLabelEl=document.getElementById('zoom-label');
+const gesture={mode:'idle',startX:0,startY:0,lastX:0,lastY:0,startDist:0,startScale:1,moved:false,lastTap:0};
+
+function getDist(a,b){return Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)}
+function clamp(v,mn,mx){return Math.max(mn,Math.min(mx,v))}
+
+function updateZoom(){
+  const tx=panX/zoomLevel,ty=panY/zoomLevel;
+  zoomContainer.style.transform=`scale(${zoomLevel}) translate(${tx}px,${ty}px)`;
+  zoomLabelEl.textContent=Math.round(zoomLevel*100)+'%';
+}
+function resetZoom(){zoomLevel=1;panX=0;panY=0;updateZoom()}
+function zoomIn(){const t=clamp(zoomLevel*1.4,ZOOM_MIN,ZOOM_MAX);animZoom(t<=ZOOM_MIN+.05?1:t,panX,panY)}
+function zoomOut(){if(zoomLevel<=ZOOM_MIN+.05)return;const t=clamp(zoomLevel/1.4,ZOOM_MIN,ZOOM_MAX);animZoom(t<=ZOOM_MIN+.05?1:t,panX,panY)}
+
+function animZoom(ts,tpx,tpy){
+  const s0=zoomLevel,px0=panX,py0=panY,dur=260,t0=performance.now();
+  zoomContainer.classList.add('smooth-transition');
+  function step(now){const t=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-t,3);zoomLevel=s0+(ts-s0)*e;panX=px0+(tpx-px0)*e;panY=py0+(tpy-py0)*e;updateZoom();if(t<1)requestAnimationFrame(step);else zoomContainer.classList.remove('smooth-transition')}
+  requestAnimationFrame(step);
+}
+
+bookEl.addEventListener('touchstart',e=>{e.preventDefault();if(e.touches.length===2){gesture.mode='pinch';gesture.startDist=getDist(e.touches[0],e.touches[1]);gesture.startScale=zoomLevel}else if(e.touches.length===1){gesture.mode='single';gesture.startX=gesture.lastX=e.touches[0].clientX;gesture.startY=gesture.lastY=e.touches[0].clientY;gesture.moved=false}},{passive:false});
+
+bookEl.addEventListener('touchmove',e=>{e.preventDefault();if(gesture.mode==='pinch'&&e.touches.length===2){const d=getDist(e.touches[0],e.touches[1]);zoomLevel=clamp(gesture.startScale*(d/gesture.startDist),ZOOM_MIN,ZOOM_MAX);if(zoomLevel<=ZOOM_MIN+.05){zoomLevel=1;panX=0;panY=0}updateZoom()}else if(gesture.mode==='single'&&e.touches.length===1){const dx=e.touches[0].clientX-gesture.startX,dy=e.touches[0].clientY-gesture.startY;if(Math.abs(dx)>6||Math.abs(dy)>6)gesture.moved=true;if(zoomLevel>ZOOM_MIN+.05&&gesture.moved){panX+=e.touches[0].clientX-gesture.lastX;panY+=e.touches[0].clientY-gesture.lastY;gesture.lastX=e.touches[0].clientX;gesture.lastY=e.touches[0].clientY;updateZoom()}}},{passive:false});
+
+bookEl.addEventListener('touchend',e=>{
+  if(gesture.mode==='single'&&!gesture.moved&&e.changedTouches.length){
+    const now=Date.now(),touch=e.changedTouches[0];
+    if(now-gesture.lastTap<320){zoomLevel>ZOOM_MIN+.05?animZoom(1,0,0):animZoom(ZOOM_DOUBLE,0,0);gesture.lastTap=0}
+    else{gesture.lastTap=now;if(zoomLevel<=ZOOM_MIN+.05){const r=bookEl.getBoundingClientRect();(touch.clientX-r.left)>r.width/2?nextPage():prevPage()}}
+  }else if(gesture.mode==='single'&&gesture.moved&&zoomLevel<=ZOOM_MIN+.05){
+    const dx=e.changedTouches[0].clientX-gesture.startX,dy=e.changedTouches[0].clientY-gesture.startY;
+    if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>35){dx<0?nextPage():prevPage()}
   }
+  if(!e.touches.length)gesture.mode='idle';
+  else if(e.touches.length===1&&gesture.mode==='pinch'){gesture.mode='single';gesture.lastX=gesture.startX=e.touches[0].clientX;gesture.lastY=gesture.startY=e.touches[0].clientY;gesture.moved=false}
+},{passive:false});
+bookEl.addEventListener('touchcancel',()=>{gesture.mode='idle'});
 
-  /* --- Clic en el libro (solo escritorio) --- */
-  bookEl.addEventListener('click', (e) => {
-    if (isTouchDevice) return;
-    const rect = bookEl.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    if (x > rect.width / 2) nextPage();
-    else prevPage();
-  });
+bookEl.addEventListener('click',e=>{if(isTouchDevice)return;const r=bookEl.getBoundingClientRect();(e.clientX-r.left)>r.width/2?nextPage():prevPage()});
+bookEl.addEventListener('wheel',e=>{e.preventDefault();const d=e.deltaY>0?-.15:.15;let ns=clamp(zoomLevel+d,ZOOM_MIN,ZOOM_MAX);if(ns<=ZOOM_MIN+.05&&zoomLevel<=ZOOM_MIN+.05)return;zoomLevel=ns;if(zoomLevel<=ZOOM_MIN+.05){zoomLevel=1;panX=0;panY=0}updateZoom()},{passive:false});
 
-  /* --- Rueda del ratón para zoom (escritorio) --- */
-  bookEl.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? -0.15 : 0.15;
-    const newScale = clamp(zoomLevel + delta, ZOOM_MIN, ZOOM_MAX);
+/* ====== Fullscreen ====== */
+function toggleFullscreen(){
+  if(document.body.classList.contains('fullscreen-mode'))exitFullscreenMode();
+  else enterImmersive();
+}
+function enterImmersive(){
+  document.body.classList.add('fullscreen-mode');
+  hideCTA();
+  if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{});
+  else if(document.documentElement.webkitRequestFullscreen)document.documentElement.webkitRequestFullscreen();
+  resetZoom();
+}
+function exitFullscreenMode(){
+  document.body.classList.remove('fullscreen-mode');
+  if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+  else if(document.webkitFullscreenElement)document.webkitExitFullscreen();
+  resetZoom();
+  setTimeout(showCTA,800);
+}
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&document.body.classList.contains('fullscreen-mode')){document.body.classList.remove('fullscreen-mode');resetZoom();setTimeout(showCTA,800)}});
+document.addEventListener('webkitfullscreenchange',()=>{if(!document.webkitFullscreenElement&&document.body.classList.contains('fullscreen-mode')){document.body.classList.remove('fullscreen-mode');resetZoom();setTimeout(showCTA,800)}});
 
-    if (newScale <= ZOOM_MIN + 0.05 && zoomLevel <= ZOOM_MIN + 0.05) return;
+/* ====== CTA Móvil ====== */
+let ctaDismissed=false, ctaTimer=null;
+function showCTA(){
+  if(!isTouchDevice||document.body.classList.contains('fullscreen-mode'))return;
+  if(ctaDismissed)return;
+  const el=document.getElementById('mobile-cta');
+  el.classList.add('visible');
+  clearTimeout(ctaTimer);
+  ctaTimer=setTimeout(()=>el.classList.remove('visible'),8000);
+}
+function hideCTA(){document.getElementById('mobile-cta').classList.remove('visible')}
+function dismissCTA(){ctaDismissed=true;hideCTA()}
 
-    zoomLevel = newScale;
-    if (zoomLevel <= ZOOM_MIN + 0.05) {
-      zoomLevel = 1; panX = 0; panY = 0;
-    }
-    updateZoomTransform();
-  }, { passive: false });
+/* ====== Teclado ====== */
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();nextPage()}
+  else if(e.key==='ArrowLeft'){e.preventDefault();prevPage()}
+  else if(e.key==='Home'){e.preventDefault();goToCover()}
+  else if(e.key==='f'||e.key==='F')toggleFullscreen();
+  else if(e.key==='+'||e.key==='=')zoomIn();
+  else if(e.key==='-')zoomOut();
+  else if(e.key==='0')animZoom(1,0,0);
+  else if(e.key==='Escape'&&document.body.classList.contains('fullscreen-mode'))exitFullscreenMode();
+});
 
-  /* ====== Teclado ====== */
-  document.addEventListener('keydown', (e) => {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextPage(); }
-    else if (e.key === 'ArrowLeft') { e.preventDefault(); prevPage(); }
-    else if (e.key === 'Home') { e.preventDefault(); goToCover(); }
-    else if (e.key === 'f' || e.key === 'F') { toggleFullscreen(); }
-    else if (e.key === '+' || e.key === '=') { zoomIn(); }
-    else if (e.key === '-') { zoomOut(); }
-    else if (e.key === '0') { animateZoomTo(1, 0, 0); }
-  });
-
-  /* ====== Fullscreen ====== */
-  let rotateHintTimer = null;
-
-  function toggleFullscreen() {
-    const isFS = document.body.classList.contains('fullscreen-mode');
-
-    if (!isFS) {
-      document.body.classList.add('fullscreen-mode');
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      } else if (document.documentElement.webkitRequestFullscreen) {
-        document.documentElement.webkitRequestFullscreen();
-      }
-      resetZoom();
-      showRotateHint();
-    } else {
-      exitFullscreenMode();
-    }
-  }
-
-  function exitFullscreenMode() {
-    document.body.classList.remove('fullscreen-mode');
-    hideRotateHint();
-    if (document.fullscreenElement) {
-      document.exitFullscreen().catch(() => {});
-    } else if (document.webkitFullscreenElement) {
-      document.webkitExitFullscreen();
-    }
-    resetZoom();
-  }
-
-  document.addEventListener('fullscreenchange', handleFullscreenChange);
-  document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-
-  function handleFullscreenChange() {
-    const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement);
-    if (!isFS && document.body.classList.contains('fullscreen-mode')) {
-      document.body.classList.remove('fullscreen-mode');
-      hideRotateHint();
-      resetZoom();
-    }
-  }
-
-  /* --- Indicador de rotación --- */
-  function showRotateHint() {
-    /* Solo mostrar en dispositivos táctiles en modo portrait */
-    if (!isTouchDevice) return;
-    if (window.innerWidth > window.innerHeight) return; /* Ya está en horizontal */
-
-    const hint = document.getElementById('rotate-hint');
-    hint.classList.add('visible');
-    clearTimeout(rotateHintTimer);
-    rotateHintTimer = setTimeout(hideRotateHint, 4000);
-  }
-
-  function hideRotateHint() {
-    const hint = document.getElementById('rotate-hint');
-    hint.classList.remove('visible');
-    clearTimeout(rotateHintTimer);
-  }
-
-  /* Ocultar hint al rotar a horizontal */
-  if (screen.orientation) {
-    screen.orientation.addEventListener('change', () => {
-      if (screen.orientation.type.includes('landscape')) {
-        hideRotateHint();
-      }
-    });
-  }
-  window.addEventListener('orientationchange', () => {
-    if (window.innerWidth > window.innerHeight) {
-      hideRotateHint();
-    }
-  });
-
-  /* Escuchar escape para salir de fullscreen */
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && document.body.classList.contains('fullscreen-mode')) {
-      exitFullscreenMode();
-    }
-  });
-
-  /* ====== Inicialización ====== */
-  window.onload = () => {
-    loadData();
-    renderAdmin();
-    renderBook();
-    updateZoomTransform();
-  };
+/* ====== Init ====== */
+window.onload=()=>{
+  loadData();renderAdmin();renderBook();updateZoom();
+  /* Mostrar CTA en móvil después de un breve delay */
+  setTimeout(showCTA,2200);
+};
 </script>
 </body>
 </html>
