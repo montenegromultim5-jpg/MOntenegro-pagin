@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+html = r"""<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -1314,7 +1314,10 @@
                 if (c.hasPhotos) badges += '<span class="toggle-badge on">Fotos</span> ';
                 if (c.hasPhotobook) badges += '<span class="toggle-badge on">Fotolibro</span> ';
                 if (!badges) badges = '<span class="toggle-badge off">Sin contenido</span>';
-                body.innerHTML += ('<div class="al-item" style="flex-wrap:wrap"><div class="al-item-info"><div class="al-item-t">' + esc(c.name) + '</div><div class="al-item-s">' + esc(c.event) + ' · Código: <strong>' + esc(code) + '</strong></div><div style="margin-top:.3rem">' + badges + '</div></div><div class="al-acts" style="flex-wrap:wrap"><button class="al-btn" onclick="editClient(\'' + code + '\')">Editar</button>' + (c.hasPhotobook ? '<button class="al-btn" onclick="editPhotobook(\'' + code + '\')">Fotolibro</button>' : '') + '<button class="al-btn del" onclick="delClient(\'' + code + '\')">Eliminar</button></div></div>');
+                
+                var eventUrl = window.location.origin + window.location.pathname + '?evento=' + encodeURIComponent(code);
+
+                body.innerHTML += ('<div class="al-item" style="flex-wrap:wrap"><div class="al-item-info"><div class="al-item-t">' + esc(c.name) + '</div><div class="al-item-s">' + esc(c.event) + ' · Código: <strong>' + esc(code) + '</strong></div><div style="margin-top:.3rem">' + badges + '</div></div><div class="al-acts" style="flex-wrap:wrap"><button class="al-btn" style="background:#e8f5e9;color:#2e7d32;border-color:#c8e6c9;" onclick="copyToClipboard(\'' + eventUrl + '\')">Copiar Link</button><button class="al-btn" onclick="editClient(\'' + code + '\')">Editar</button>' + (c.hasPhotobook ? '<button class="al-btn" onclick="editPhotobook(\'' + code + '\')">Fotolibro</button>' : '') + '<button class="al-btn del" onclick="delClient(\'' + code + '\')">Eliminar</button></div></div>');
             });
         }
         function newClient() { admState.view = 'edit'; admState.editId = null; renderAdmBody(); }
@@ -1386,6 +1389,11 @@
 
                 let folders = data.files.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
                 let looseImages = data.files.filter(f => f.mimeType.includes('image/'));
+
+                // --- NUEVO CÓDIGO: ORDENAR ALFABÉTICAMENTE ---
+                folders.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
+                looseImages.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
+                // ---------------------------------------------
 
                 let allPhotos = [];
 
@@ -1681,6 +1689,31 @@
 
         /* ══════ INICIALIZACIÓN ══════ */
         loadData(); renderPublic();
+        
+        /* ══════ URLs ÚNICAS PARA CLIENTES ══════ */
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                toast('Enlace copiado al portapapeles');
+            }).catch(function(err) {
+                toast('Error al copiar el enlace');
+            });
+        }
+
+        var params = new URLSearchParams(window.location.search);
+        var clientCode = params.get('evento') || params.get('c');
+        if (clientCode) {
+            var code = clientCode.trim().toLowerCase();
+            if (D.clients && D.clients[code]) {
+                document.getElementById('codeIn').value = code;
+                doLogin();
+            } else {
+                setTimeout(function() { toast('El enlace de este evento no es válido o ha expirado.', 4000); }, 1000);
+            }
+        }
     </script>
 </body>
-</html>
+</html>"""
+
+with open('/mnt/data/index_actualizado.html', 'w', encoding='utf-8') as f:
+    f.write(html)
+print("File generated successfully.")
