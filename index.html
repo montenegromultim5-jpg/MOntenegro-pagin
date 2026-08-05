@@ -196,7 +196,6 @@
         .pc .dlb:hover { background: rgba(0, 0, 0, .8); transform: scale(.95); }
         .pc .dlb svg { width: 16px; height: 16px; fill: #fff; }
 
-        /* MODO IMPRESIÓN ACTIVO */
         .gallery-print-mode .pc .chk { display: flex; opacity: 1; pointer-events: auto; }
         .gallery-print-mode .pc .dlb { display: none !important; }
         .gallery-print-mode .pc:hover img { transform: none; filter: brightness(0.85); }
@@ -702,7 +701,6 @@
         }
 
         /* ═══════ DATOS POR DEFECTO ═══════ */
-        // JSON predeterminado en Base64 para ocultar detalles sensibles en el código fuente
         function getDefaults() {
             var defaultExpire = Date.now() + 31536000000;
             return {
@@ -749,9 +747,21 @@
             };
         }
 
-        /* ══════ GESTIÓN DE DATOS Y EXPORTACIÓN ══════ */
+        /* ══════ GESTIÓN DE DATOS Y MIGRACIÓN ══════ */
         var D;
-        function loadData() { try { var s = localStorage.getItem('fvm_data'); D = s ? JSON.parse(s) : null; } catch (e) { D = null; } if (!D) D = getDefaults(); saveData(); }
+        function loadData() { 
+            try { 
+                var s = localStorage.getItem('fvm_data'); 
+                D = s ? JSON.parse(s) : null; 
+                // Migración: Eliminar la contraseña vieja en texto plano si existe
+                if (D && D.adminPass) {
+                    delete D.adminPass;
+                    if (!D.adminPassHash) D.adminPassHash = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+                }
+            } catch (e) { D = null; } 
+            if (!D) D = getDefaults(); 
+            saveData(); 
+        }
         function saveData() { try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch (e) { toast('Error al guardar datos', 4000); } }
 
         /* ══════ ESTADO GLOBAL ══════ */
@@ -771,7 +781,6 @@
         function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
         function uid() { return 'id_' + Math.random().toString(36).substr(2, 8); }
         
-        // Conversión Fecha para Expiración
         function toDateInput(ms) { if (!ms) return ''; let d = new Date(ms); let m = ('0' + (d.getMonth() + 1)).slice(-2); let day = ('0' + d.getDate()).slice(-2); return `${d.getFullYear()}-${m}-${day}`; }
         function toDisplayDate(ms) { if (!ms) return ''; let d = new Date(ms); let m = ('0' + (d.getMonth() + 1)).slice(-2); let day = ('0' + d.getDate()).slice(-2); return `${day}/${m}/${d.getFullYear()}`; }
         function addOneYear() { let el = document.getElementById('ce_expire'); if(!el.value) return; let d = new Date(el.value + 'T12:00:00'); d.setFullYear(d.getFullYear() + 1); el.value = toDateInput(d.getTime()); }
@@ -779,35 +788,61 @@
         /* ══════ RENDERIZADO PÚBLICO ══════ */
         function renderPublic() {
             var s = D.settings;
-            document.getElementById('heroDesc').textContent = s.heroDesc; document.getElementById('ftAddr').textContent = s.address;
-            var pg = document.getElementById('portGrid'); pg.innerHTML = '';
-            D.portfolio.forEach(function(img) {
-                var d = document.createElement('div'); d.className = 'portfolio-item';
-                d.innerHTML = '<img src="' + img.src + '" alt="' + esc(img.label) + '" loading="lazy"><span class="il">' + esc(img.label) + '</span>';
-                d.addEventListener('click', function() { openLBSingle(img.src.replace('w=500', 'w=1600'), img.label); });
-                pg.appendChild(d);
-            });
-            var sg = document.getElementById('servGrid'); sg.innerHTML = '';
-            D.services.sort(function(a, b) { return (a.order || 0) - (b.order || 0); }).forEach(function(svc) {
-                var feat = svc.features ? svc.features.map(function(f) { return '<li>' + esc(f) + '</li>'; }).join('') : '';
-                var d = document.createElement('div'); d.className = 'service-card';
-                d.innerHTML = '<span class="service-icon">' + esc(svc.icon) + '</span><h3>' + esc(svc.title) + '</h3><p>' + esc(svc.desc) + '</p>' + (feat ? '<ul class="service-features">' + feat + '</ul>' : '') + '<span class="service-price">' + esc(svc.price) + '</span>';
-                sg.appendChild(d);
-            });
-            var tg = document.getElementById('testGrid'); tg.innerHTML = '';
-            D.testimonials.forEach(function(t) { var d = document.createElement('div'); d.className = 'testimonial-card'; d.innerHTML = '<div class="stars">★★★★★</div><p class="testimonial-text">' + esc(t.text) + '</p><p class="testimonial-author">' + esc(t.author) + '</p>'; tg.appendChild(d); });
+            var heroDesc = document.getElementById('heroDesc'); if (heroDesc) heroDesc.textContent = s.heroDesc; 
+            var ftAddr = document.getElementById('ftAddr'); if (ftAddr) ftAddr.textContent = s.address;
+            
+            var pg = document.getElementById('portGrid'); 
+            if (pg) {
+                pg.innerHTML = '';
+                D.portfolio.forEach(function(img) {
+                    var d = document.createElement('div'); d.className = 'portfolio-item';
+                    d.innerHTML = '<img src="' + img.src + '" alt="' + esc(img.label) + '" loading="lazy"><span class="il">' + esc(img.label) + '</span>';
+                    d.addEventListener('click', function() { openLBSingle(img.src.replace('w=500', 'w=1600'), img.label); });
+                    pg.appendChild(d);
+                });
+            }
+
+            var sg = document.getElementById('servGrid'); 
+            if (sg) {
+                sg.innerHTML = '';
+                D.services.sort(function(a, b) { return (a.order || 0) - (b.order || 0); }).forEach(function(svc) {
+                    var feat = svc.features ? svc.features.map(function(f) { return '<li>' + esc(f) + '</li>'; }).join('') : '';
+                    var d = document.createElement('div'); d.className = 'service-card';
+                    d.innerHTML = '<span class="service-icon">' + esc(svc.icon) + '</span><h3>' + esc(svc.title) + '</h3><p>' + esc(svc.desc) + '</p>' + (feat ? '<ul class="service-features">' + feat + '</ul>' : '') + '<span class="service-price">' + esc(svc.price) + '</span>';
+                    sg.appendChild(d);
+                });
+            }
+
+            var tg = document.getElementById('testGrid'); 
+            if (tg) {
+                tg.innerHTML = '';
+                D.testimonials.forEach(function(t) { var d = document.createElement('div'); d.className = 'testimonial-card'; d.innerHTML = '<div class="stars">★★★★★</div><p class="testimonial-text">' + esc(t.text) + '</p><p class="testimonial-author">' + esc(t.author) + '</p>'; tg.appendChild(d); });
+            }
+
             var ci = document.getElementById('contactInfo');
-            ci.innerHTML = '<p class="section-desc" style="margin-bottom:1.2rem">Estamos en Capulhuac de Mirafuentes. Llámanos o ven directamente a la tienda.</p>' +
-                '<div class="contact-detail"><span class="icon">📞</span> <a href="tel:' + s.phoneRaw + '" style="color:var(--text-muted);text-decoration:none">' + esc(s.phone) + '</a></div>' +
-                '<div class="contact-detail"><span class="icon">📍</span> ' + esc(s.address) + '</div>' +
-                '<div class="contact-detail"><span class="icon">🕒</span> ' + esc(s.hours) + '</div>' +
-                '<div class="contact-detail"><span class="icon">🔗</span> <a href="' + esc(s.facebook) + '" target="_blank" rel="noopener" style="color:var(--accent)">facebook.com</a></div>' +
-                '<div class="map-container"><iframe src="' + esc(s.mapEmbed) + '" title="Ubicación" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>';
-            var sel = document.getElementById('servSelect'); sel.innerHTML = '<option value="" disabled selected>Tipo de servicio</option>';
-            D.services.forEach(function(svc) { sel.innerHTML += '<option>' + esc(svc.title) + '</option>'; }); sel.innerHTML += '<option>Otro</option>';
-            var pp = document.getElementById('printPrices'); pp.innerHTML = '';
-            D.printPrices.forEach(function(p) { pp.innerHTML += '<tr><td>' + esc(p.label) + '</td><td>' + esc(p.measure) + '</td><td>$' + p.price + '</td></tr>'; });
-            document.getElementById('cpWaLink').href = 'https://wa.me/' + s.waNumber; document.getElementById('cpWaLink').textContent = s.phone;
+            if (ci) {
+                ci.innerHTML = '<p class="section-desc" style="margin-bottom:1.2rem">Estamos en Capulhuac de Mirafuentes. Llámanos o ven directamente a la tienda.</p>' +
+                    '<div class="contact-detail"><span class="icon">📞</span> <a href="tel:' + s.phoneRaw + '" style="color:var(--text-muted);text-decoration:none">' + esc(s.phone) + '</a></div>' +
+                    '<div class="contact-detail"><span class="icon">📍</span> ' + esc(s.address) + '</div>' +
+                    '<div class="contact-detail"><span class="icon">🕒</span> ' + esc(s.hours) + '</div>' +
+                    '<div class="contact-detail"><span class="icon">🔗</span> <a href="' + esc(s.facebook) + '" target="_blank" rel="noopener" style="color:var(--accent)">facebook.com</a></div>' +
+                    '<div class="map-container"><iframe src="' + esc(s.mapEmbed) + '" title="Ubicación" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>';
+            }
+
+            var sel = document.getElementById('servSelect'); 
+            if (sel) {
+                sel.innerHTML = '<option value="" disabled selected>Tipo de servicio</option>';
+                D.services.forEach(function(svc) { sel.innerHTML += '<option>' + esc(svc.title) + '</option>'; }); sel.innerHTML += '<option>Otro</option>';
+            }
+
+            var pp = document.getElementById('printPrices'); 
+            if (pp) {
+                pp.innerHTML = '';
+                D.printPrices.forEach(function(p) { pp.innerHTML += '<tr><td>' + esc(p.label) + '</td><td>' + esc(p.measure) + '</td><td>$' + p.price + '</td></tr>'; });
+            }
+
+            var waLnk = document.getElementById('cpWaLink');
+            if (waLnk) { waLnk.href = 'https://wa.me/' + s.waNumber; waLnk.textContent = s.phone; }
         }
 
         /* ══════ NAVEGACIÓN ══════ */
@@ -1394,6 +1429,56 @@
         function updateClientPhotoSet(idx, val) { while (tempClientPhotos.length <= idx) tempClientPhotos.push({ src: '', name: '', set: 'General' }); tempClientPhotos[idx].set = val.trim() || 'General'; }
         function removeClientPhoto(idx) { tempClientPhotos.splice(idx, 1); renderClientPhotosList(tempClientPhotos); }
         
+        async function downloadHtmlBackup() {
+            try {
+                toast('Generando respaldo HTML...');
+                let response = await fetch(window.location.href.split('#')[0]);
+                let htmlText = await response.text();
+                
+                var rawJson = JSON.stringify(D);
+                var encoded = btoa(unescape(encodeURIComponent(rawJson)));
+                
+                var regex = /\/\* ═══════ DATOS POR DEFECTO ═══════ \*\/[\s\S]*?\/\* ══════ GESTIÓN DE DATOS Y MIGRACIÓN ══════ \*\//;
+                var newBlock = `/* ═══════ DATOS POR DEFECTO ═══════ */\n        function getDefaults() {\n            return JSON.parse(decodeURIComponent(escape(atob('${encoded}'))));\n        }\n\n        /* ══════ GESTIÓN DE DATOS Y MIGRACIÓN ══════ */`;
+                
+                if (!regex.test(htmlText)) {
+                    toast('Error al generar HTML de respaldo.');
+                    return;
+                }
+                
+                let newHtml = htmlText.replace(regex, newBlock);
+                let blob = new Blob([newHtml], {type: "text/html;charset=utf-8"});
+                let a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                
+                let d = new Date();
+                let dateStr = `${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}-${('0'+d.getDate()).slice(-2)}_${('0'+d.getHours()).slice(-2)}-${('0'+d.getMinutes()).slice(-2)}`;
+                
+                a.download = `index_respaldo_${dateStr}.html`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                toast('Respaldo HTML descargado.');
+            } catch(e) {
+                toast('Error al descargar HTML.');
+                console.error(e);
+            }
+        }
+
+        function downloadJsonBackup() {
+            let rawJson = JSON.stringify(D, null, 4);
+            let blob = new Blob([rawJson], {type: "application/json;charset=utf-8"});
+            let a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            let d = new Date();
+            let dateStr = `${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}-${('0'+d.getDate()).slice(-2)}`;
+            a.download = `montenegro_datos_${dateStr}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            toast('Respaldo JSON descargado.');
+        }
+
         function saveClient(oldCode) {
             var code = document.getElementById('ce_code').value.trim().toLowerCase().replace(/\s+/g, ''), name = document.getElementById('ce_name').value.trim(), event = document.getElementById('ce_event').value.trim();
             if (!code || !name) { toast('Código y nombre son obligatorios'); return; } if (!oldCode && D.clients[code]) { toast('Ese código ya existe'); return; }
@@ -1404,6 +1489,11 @@
             if (oldCode && oldCode !== code) { delete D.clients[oldCode]; }
             D.clients[code] = { name: name, event: event, hasVideo: hasVideo, hasPhotos: hasPhotos, hasPhotobook: hasPhotobook, video: hasVideo ? { youtubeId: ytId, title: vidTitle } : { youtubeId: '', title: '' }, photos: hasPhotos ? photos : [], driveFolderUrl: driveUrl, photobook: D.clients[code] && D.clients[code].photobook ? D.clients[code].photobook : { cover: null, spreads: [null], hasBackCover: false, back: null }, expireAt: expireTime };
             saveData(); admState.view = 'list'; renderAdmBody(); toast('Evento guardado');
+            setTimeout(function() {
+                if(confirm("Evento guardado exitosamente.\n\n¿Deseas descargar tu archivo HTML actualizado para respaldarlo o subirlo a GitHub Pages?")) {
+                    downloadHtmlBackup();
+                }
+            }, 600);
         }
         function delClient(code) { if (!confirm('¿Eliminar el evento "' + D.clients[code].name + '"?')) return; delete D.clients[code]; saveData(); renderAdmBody(); toast('Evento eliminado'); }
 
@@ -1571,10 +1661,12 @@
                 '<div class="af-btns"><button class="af-btn af-btn-p" onclick="saveSettings()">Guardar cambios</button></div>' +
                 
                 '<hr style="border:none; border-top:1px solid var(--border-light); margin: 2rem 0;">' +
-                '<h3 style="margin-bottom:1rem; color:#c0392b;">Exportar Datos (Para GitHub Pages)</h3>' +
-                '<p class="adm-hint">Como usas GitHub Pages, los datos se guardan solo en tu navegador. Cuando termines de crear clientes y configuraciones, presiona este botón, copia el código que aparecerá y pégalo en el archivo HTML reemplazando la función <code>getDefaults()</code>.</p>' +
-                '<button class="af-btn" style="background:#111; color:#fff;" onclick="exportDataForGithub()">Generar Código de Respaldo</button>' +
-                '<textarea class="af-i af-ta" id="exportArea" style="display:none; margin-top:1rem; font-family:monospace; font-size:0.75rem; height:200px;" readonly></textarea>';
+                '<h3 style="margin-bottom:1rem; color:#c0392b;">Respaldos y GitHub Pages</h3>' +
+                '<p class="adm-hint">Dado que tu sitio es estático, los datos se guardan en tu navegador. Al terminar de editar, descarga tu página actualizada y súbela a GitHub, o guárdala en tu PC/Drive como respaldo.</p>' +
+                '<div style="display:flex; gap:1rem; flex-wrap:wrap;">' +
+                '<button class="af-btn" style="background:#2ea44f; color:#fff; flex:1;" onclick="downloadHtmlBackup()">⬇ Descargar Página HTML (Lista para GitHub)</button>' +
+                '<button class="af-btn" style="background:#111; color:#fff; flex:1;" onclick="downloadJsonBackup()">⬇ Descargar Respaldo JSON (Datos)</button>' +
+                '</div>';
         }
         
         async function saveSettings() {
@@ -1585,18 +1677,6 @@
                 toast('Contraseña actualizada'); 
             }
             saveData(); renderPublic(); toast('Configuración guardada');
-        }
-        
-        function exportDataForGithub() {
-            var exportArea = document.getElementById('exportArea');
-            var rawJson = JSON.stringify(D);
-            var encoded = btoa(unescape(encodeURIComponent(rawJson)));
-            var exportCode = `function getDefaults() {\n    return JSON.parse(decodeURIComponent(escape(atob('${encoded}'))));\n}`;
-            exportArea.value = exportCode;
-            exportArea.style.display = 'block';
-            exportArea.select();
-            document.execCommand('copy');
-            toast('Código copiado. Pégalo en tu archivo HTML.');
         }
 
         /* ══════ INICIALIZACIÓN ══════ */
