@@ -1,4 +1,4 @@
-html = r"""<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -147,6 +147,7 @@ html = r"""<!DOCTYPE html>
             background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.2);
             padding: 0.6rem 1.2rem; border-radius: 50px; cursor: pointer; backdrop-filter: blur(8px);
             font-family: var(--fb); font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; transition: 0.3s;
+            pointer-events: auto; /* Asegurar que reciba clics */
         }
         .btn-regresar-fijo:hover { background: rgba(0,0,0,0.9); border-color: var(--c-accent); color: var(--c-accent); }
 
@@ -196,6 +197,7 @@ html = r"""<!DOCTYPE html>
         .pc .dlb:hover { background: rgba(0, 0, 0, .8); transform: scale(.95); }
         .pc .dlb svg { width: 16px; height: 16px; fill: #fff; }
 
+        /* MODO IMPRESIÓN ACTIVO */
         .gallery-print-mode .pc .chk { display: flex; opacity: 1; pointer-events: auto; }
         .gallery-print-mode .pc .dlb { display: none !important; }
         .gallery-print-mode .pc:hover img { transform: none; filter: brightness(0.85); }
@@ -204,7 +206,7 @@ html = r"""<!DOCTYPE html>
         .fab-print:hover { transform: scale(1.05); background: var(--c-accent-hover); }
         .fab-print svg { width: 20px; height: 20px; fill: #fff; }
 
-        /* Video View */
+        /* Video YouTube View */
         #cpVideoView { background: var(--c-bg); min-height: 100vh; padding-top: 5rem; position: relative; }
         .vid-sec { max-width: var(--max-w); margin: 0 auto; padding: 0 1rem 2rem; }
         .vid-wrap { position: relative; width: 100%; padding-bottom: 56.25%; border-radius: var(--radius-lg); overflow: hidden; background: #000; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
@@ -694,17 +696,11 @@ html = r"""<!DOCTYPE html>
     <div class="toast" id="toast"></div>
 
     <script>
-        /* ═══════ HASHING DE CONTRASEÑA ═══════ */
-        async function hashPass(p) {
-            const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(p));
-            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
         /* ═══════ DATOS POR DEFECTO ═══════ */
         function getDefaults() {
-            var defaultExpire = Date.now() + 31536000000;
+            var defaultExpire = Date.now() + 31536000000; // +1 year
             return {
-                adminPassHash: '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', // Hash para "admin123"
+                adminPass: 'admin123',
                 settings: {
                     phone: '729 699 0786', phoneRaw: '7296990786',
                     address: 'Porfirio Díaz 280, San Miguelito, 52700 Capulhuac de Mirafuentes, Méx.', hours: 'Lunes a Domingo · 10 a.m. – 7 p.m.',
@@ -747,21 +743,9 @@ html = r"""<!DOCTYPE html>
             };
         }
 
-        /* ══════ GESTIÓN DE DATOS Y MIGRACIÓN ══════ */
+        /* ══════ GESTIÓN DE DATOS Y EXPORTACIÓN ══════ */
         var D;
-        function loadData() { 
-            try { 
-                var s = localStorage.getItem('fvm_data'); 
-                D = s ? JSON.parse(s) : null; 
-                // Migración: Eliminar la contraseña vieja en texto plano si existe
-                if (D && D.adminPass) {
-                    delete D.adminPass;
-                    if (!D.adminPassHash) D.adminPassHash = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
-                }
-            } catch (e) { D = null; } 
-            if (!D) D = getDefaults(); 
-            saveData(); 
-        }
+        function loadData() { try { var s = localStorage.getItem('fvm_data'); D = s ? JSON.parse(s) : null; } catch (e) { D = null; } if (!D) D = getDefaults(); saveData(); }
         function saveData() { try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch (e) { toast('Error al guardar datos', 4000); } }
 
         /* ══════ ESTADO GLOBAL ══════ */
@@ -781,68 +765,54 @@ html = r"""<!DOCTYPE html>
         function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
         function uid() { return 'id_' + Math.random().toString(36).substr(2, 8); }
         
+        // Conversión Fecha para Expiración
         function toDateInput(ms) { if (!ms) return ''; let d = new Date(ms); let m = ('0' + (d.getMonth() + 1)).slice(-2); let day = ('0' + d.getDate()).slice(-2); return `${d.getFullYear()}-${m}-${day}`; }
         function toDisplayDate(ms) { if (!ms) return ''; let d = new Date(ms); let m = ('0' + (d.getMonth() + 1)).slice(-2); let day = ('0' + d.getDate()).slice(-2); return `${day}/${m}/${d.getFullYear()}`; }
         function addOneYear() { let el = document.getElementById('ce_expire'); if(!el.value) return; let d = new Date(el.value + 'T12:00:00'); d.setFullYear(d.getFullYear() + 1); el.value = toDateInput(d.getTime()); }
 
+        /* ══════ GESTIÓN DE URL ══════ */
+        function pushUrlState(client, view) {
+            var cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            if (!client) {
+                window.history.pushState({ path: cleanUrl }, '', cleanUrl);
+                return;
+            }
+            var newUrl = cleanUrl + "?cliente=" + encodeURIComponent(client) + (view ? "-" + view : "");
+            window.history.pushState({ path: newUrl }, '', newUrl);
+        }
+
         /* ══════ RENDERIZADO PÚBLICO ══════ */
         function renderPublic() {
             var s = D.settings;
-            var heroDesc = document.getElementById('heroDesc'); if (heroDesc) heroDesc.textContent = s.heroDesc; 
-            var ftAddr = document.getElementById('ftAddr'); if (ftAddr) ftAddr.textContent = s.address;
-            
-            var pg = document.getElementById('portGrid'); 
-            if (pg) {
-                pg.innerHTML = '';
-                D.portfolio.forEach(function(img) {
-                    var d = document.createElement('div'); d.className = 'portfolio-item';
-                    d.innerHTML = '<img src="' + img.src + '" alt="' + esc(img.label) + '" loading="lazy"><span class="il">' + esc(img.label) + '</span>';
-                    d.addEventListener('click', function() { openLBSingle(img.src.replace('w=500', 'w=1600'), img.label); });
-                    pg.appendChild(d);
-                });
-            }
-
-            var sg = document.getElementById('servGrid'); 
-            if (sg) {
-                sg.innerHTML = '';
-                D.services.sort(function(a, b) { return (a.order || 0) - (b.order || 0); }).forEach(function(svc) {
-                    var feat = svc.features ? svc.features.map(function(f) { return '<li>' + esc(f) + '</li>'; }).join('') : '';
-                    var d = document.createElement('div'); d.className = 'service-card';
-                    d.innerHTML = '<span class="service-icon">' + esc(svc.icon) + '</span><h3>' + esc(svc.title) + '</h3><p>' + esc(svc.desc) + '</p>' + (feat ? '<ul class="service-features">' + feat + '</ul>' : '') + '<span class="service-price">' + esc(svc.price) + '</span>';
-                    sg.appendChild(d);
-                });
-            }
-
-            var tg = document.getElementById('testGrid'); 
-            if (tg) {
-                tg.innerHTML = '';
-                D.testimonials.forEach(function(t) { var d = document.createElement('div'); d.className = 'testimonial-card'; d.innerHTML = '<div class="stars">★★★★★</div><p class="testimonial-text">' + esc(t.text) + '</p><p class="testimonial-author">' + esc(t.author) + '</p>'; tg.appendChild(d); });
-            }
-
+            document.getElementById('heroDesc').textContent = s.heroDesc; document.getElementById('ftAddr').textContent = s.address;
+            var pg = document.getElementById('portGrid'); pg.innerHTML = '';
+            D.portfolio.forEach(function(img) {
+                var d = document.createElement('div'); d.className = 'portfolio-item';
+                d.innerHTML = '<img src="' + img.src + '" alt="' + esc(img.label) + '" loading="lazy"><span class="il">' + esc(img.label) + '</span>';
+                d.addEventListener('click', function() { openLBSingle(img.src.replace('w=500', 'w=1600'), img.label); });
+                pg.appendChild(d);
+            });
+            var sg = document.getElementById('servGrid'); sg.innerHTML = '';
+            D.services.sort(function(a, b) { return (a.order || 0) - (b.order || 0); }).forEach(function(svc) {
+                var feat = svc.features ? svc.features.map(function(f) { return '<li>' + esc(f) + '</li>'; }).join('') : '';
+                var d = document.createElement('div'); d.className = 'service-card';
+                d.innerHTML = '<span class="service-icon">' + esc(svc.icon) + '</span><h3>' + esc(svc.title) + '</h3><p>' + esc(svc.desc) + '</p>' + (feat ? '<ul class="service-features">' + feat + '</ul>' : '') + '<span class="service-price">' + esc(svc.price) + '</span>';
+                sg.appendChild(d);
+            });
+            var tg = document.getElementById('testGrid'); tg.innerHTML = '';
+            D.testimonials.forEach(function(t) { var d = document.createElement('div'); d.className = 'testimonial-card'; d.innerHTML = '<div class="stars">★★★★★</div><p class="testimonial-text">' + esc(t.text) + '</p><p class="testimonial-author">' + esc(t.author) + '</p>'; tg.appendChild(d); });
             var ci = document.getElementById('contactInfo');
-            if (ci) {
-                ci.innerHTML = '<p class="section-desc" style="margin-bottom:1.2rem">Estamos en Capulhuac de Mirafuentes. Llámanos o ven directamente a la tienda.</p>' +
-                    '<div class="contact-detail"><span class="icon">📞</span> <a href="tel:' + s.phoneRaw + '" style="color:var(--text-muted);text-decoration:none">' + esc(s.phone) + '</a></div>' +
-                    '<div class="contact-detail"><span class="icon">📍</span> ' + esc(s.address) + '</div>' +
-                    '<div class="contact-detail"><span class="icon">🕒</span> ' + esc(s.hours) + '</div>' +
-                    '<div class="contact-detail"><span class="icon">🔗</span> <a href="' + esc(s.facebook) + '" target="_blank" rel="noopener" style="color:var(--accent)">facebook.com</a></div>' +
-                    '<div class="map-container"><iframe src="' + esc(s.mapEmbed) + '" title="Ubicación" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>';
-            }
-
-            var sel = document.getElementById('servSelect'); 
-            if (sel) {
-                sel.innerHTML = '<option value="" disabled selected>Tipo de servicio</option>';
-                D.services.forEach(function(svc) { sel.innerHTML += '<option>' + esc(svc.title) + '</option>'; }); sel.innerHTML += '<option>Otro</option>';
-            }
-
-            var pp = document.getElementById('printPrices'); 
-            if (pp) {
-                pp.innerHTML = '';
-                D.printPrices.forEach(function(p) { pp.innerHTML += '<tr><td>' + esc(p.label) + '</td><td>' + esc(p.measure) + '</td><td>$' + p.price + '</td></tr>'; });
-            }
-
-            var waLnk = document.getElementById('cpWaLink');
-            if (waLnk) { waLnk.href = 'https://wa.me/' + s.waNumber; waLnk.textContent = s.phone; }
+            ci.innerHTML = '<p class="section-desc" style="margin-bottom:1.2rem">Estamos en Capulhuac de Mirafuentes. Llámanos o ven directamente a la tienda.</p>' +
+                '<div class="contact-detail"><span class="icon">📞</span> <a href="tel:' + s.phoneRaw + '" style="color:var(--text-muted);text-decoration:none">' + esc(s.phone) + '</a></div>' +
+                '<div class="contact-detail"><span class="icon">📍</span> ' + esc(s.address) + '</div>' +
+                '<div class="contact-detail"><span class="icon">🕒</span> ' + esc(s.hours) + '</div>' +
+                '<div class="contact-detail"><span class="icon">🔗</span> <a href="' + esc(s.facebook) + '" target="_blank" rel="noopener" style="color:var(--accent)">facebook.com</a></div>' +
+                '<div class="map-container"><iframe src="' + esc(s.mapEmbed) + '" title="Ubicación" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>';
+            var sel = document.getElementById('servSelect'); sel.innerHTML = '<option value="" disabled selected>Tipo de servicio</option>';
+            D.services.forEach(function(svc) { sel.innerHTML += '<option>' + esc(svc.title) + '</option>'; }); sel.innerHTML += '<option>Otro</option>';
+            var pp = document.getElementById('printPrices'); pp.innerHTML = '';
+            D.printPrices.forEach(function(p) { pp.innerHTML += '<tr><td>' + esc(p.label) + '</td><td>' + esc(p.measure) + '</td><td>$' + p.price + '</td></tr>'; });
+            document.getElementById('cpWaLink').href = 'https://wa.me/' + s.waNumber; document.getElementById('cpWaLink').textContent = s.phone;
         }
 
         /* ══════ NAVEGACIÓN ══════ */
@@ -856,28 +826,19 @@ html = r"""<!DOCTYPE html>
             if (logoClicks >= 3) { logoClicks = 0; openAdmLogin(); }
         });
         function openAdmLogin() {
-            var isFirst = (!D.adminPassHash || D.adminPassHash === '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9');
+            var isFirst = !D.adminPass || D.adminPass === 'admin123';
             document.getElementById('admLoginTitle').textContent = isFirst ? 'Crear contraseña' : 'Administración';
             document.getElementById('admLoginDesc').textContent = isFirst ? 'Primera vez. Crea una contraseña segura.' : 'Ingresa tu contraseña de administrador.';
             document.getElementById('admPassIn').value = ''; document.getElementById('admLoginErr').classList.remove('show');
             document.getElementById('admLoginModal').classList.add('active'); document.body.style.overflow = 'hidden'; setTimeout(function() { document.getElementById('admPassIn').focus(); }, 100);
         }
         function closeAdmLogin() { document.getElementById('admLoginModal').classList.remove('active'); document.body.style.overflow = ''; }
-        
-        async function doAdmLogin() {
-            var pw = document.getElementById('admPassIn').value; 
-            var currentHash = D.adminPassHash || '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
-            var inputHash = await hashPass(pw);
-            var isFirst = (!D.adminPassHash || currentHash === '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9');
-            
-            if (isFirst) { 
-                if (!pw || pw.length < 4) { document.getElementById('admLoginErr').textContent = 'Mínimo 4 caracteres.'; document.getElementById('admLoginErr').classList.add('show'); return; }
-                D.adminPassHash = inputHash; saveData(); closeAdmLogin(); openAdm(); toast('Contraseña creada'); 
-            } 
-            else { 
-                if (inputHash !== currentHash) { document.getElementById('admLoginErr').textContent = 'Contraseña incorrecta.'; document.getElementById('admLoginErr').classList.add('show'); return; }
-                closeAdmLogin(); openAdm(); 
-            }
+        function doAdmLogin() {
+            var pw = document.getElementById('admPassIn').value; var isFirst = !D.adminPass || D.adminPass === 'admin123';
+            if (isFirst) { if (!pw || pw.length < 4) { document.getElementById('admLoginErr').textContent = 'Mínimo 4 caracteres.'; document.getElementById('admLoginErr').classList.add('show'); return; }
+                D.adminPass = pw; saveData(); closeAdmLogin(); openAdm(); toast('Contraseña creada'); } 
+            else { if (pw !== D.adminPass) { document.getElementById('admLoginErr').textContent = 'Contraseña incorrecta.'; document.getElementById('admLoginErr').classList.add('show'); return; }
+                closeAdmLogin(); openAdm(); }
         }
         document.getElementById('admPassIn').addEventListener('keydown', function(e) { if (e.key === 'Enter') doAdmLogin(); });
 
@@ -892,15 +853,28 @@ html = r"""<!DOCTYPE html>
         document.getElementById('codeIn').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
 
         /* ══════ PORTAL CLIENTE ══════ */
-        function enterPortal() {
+        function enterPortal(targetView) {
             var c = D.clients[curClient];
             document.getElementById('mainSite').style.display = 'none'; document.getElementById('cpPortal').classList.add('active');
             document.getElementById('cpName').textContent = c.name; document.getElementById('cpEvent').textContent = c.event;
-            document.body.style.overflow = 'auto'; window.scrollTo(0, 0); showMainView();
+            document.body.style.overflow = 'auto'; window.scrollTo(0, 0); 
+            
+            // Si hay un target view solicitado por la URL, abrirlo directamente
+            if (targetView === 'galeria' && c.hasPhotos) {
+                openGalleryView();
+            } else if (targetView === 'video' && c.hasVideo) {
+                openVideoView();
+            } else if (targetView === 'fotolibro' && c.hasPhotobook) {
+                openPhotobookView();
+            } else {
+                showMainView();
+            }
         }
         function exitPortal() {
             document.getElementById('cpPortal').classList.remove('active'); document.getElementById('mainSite').style.display = '';
             curClient = null; selected = {}; isPrintMode = false; document.getElementById('vidWrap').innerHTML = ''; exitFullscreenMode(); showMainView(); window.scrollTo(0, 0);
+            
+            pushUrlState(null); // Limpiar URL
         }
         function requestExtension() {
             var c = D.clients[curClient];
@@ -917,6 +891,8 @@ html = r"""<!DOCTYPE html>
             document.getElementById('cpPhotobookView').style.display = 'none';
             document.getElementById('cpGalleryView').classList.remove('gallery-print-mode');
             renderAccessCards(); updateOrderBar();
+            
+            pushUrlState(curClient, null); // Establecer URL base del cliente
         }
         function renderAccessCards() {
             var c = D.clients[curClient];
@@ -964,9 +940,10 @@ html = r"""<!DOCTYPE html>
             document.getElementById('cpHdrMain').style.display = 'none'; 
             var vid = c.video || {};
             document.getElementById('vidTitle').textContent = vid.title || 'Tu video';
-            // Inyectar el Iframe Raw que puso el admin
             document.getElementById('vidWrap').innerHTML = vid.youtubeId || '<p style="color:#fff; text-align:center; padding: 2rem;">No hay video disponible.</p>';
             window.scrollTo(0, 0);
+            
+            pushUrlState(curClient, 'video'); // Update URL
         }
         function closeVideoView() { document.getElementById('vidWrap').innerHTML = ''; document.getElementById('cpVideoView').style.display = 'none'; showMainView(); }
 
@@ -990,6 +967,8 @@ html = r"""<!DOCTYPE html>
 
             renderPixiesetGallery();
             updateOrderBar(); window.scrollTo(0, 0);
+            
+            pushUrlState(curClient, 'galeria'); // Update URL
         }
         function closeGalleryView() { document.getElementById('cpGalleryView').style.display = 'none'; isPrintMode = false; clearSel(); showMainView(); }
 
@@ -1065,11 +1044,7 @@ html = r"""<!DOCTYPE html>
                         </a>`;
                     
                     d.addEventListener('click', function(e) {
-                        if (isPrintMode) {
-                            toggleSel(i);
-                        } else {
-                            openLB(i);
-                        }
+                        if (isPrintMode) { toggleSel(i); } else { openLB(i); }
                     });
                     grid.appendChild(d);
                 });
@@ -1168,11 +1143,19 @@ html = r"""<!DOCTYPE html>
             document.getElementById('cpGalleryView').style.display = 'none'; 
             
             let pbView = document.getElementById('cpPhotobookView');
-            pbView.style.display = 'block'; 
+            pbView.style.display = 'flex'; // Cambio vital: debe ser flex para que la estructura no cubra los botones superiores
             renderBook();
             window.scrollTo(0,0);
+            
+            pushUrlState(curClient, 'fotolibro'); // Update URL
         }
-        function closePhotobookView() { exitFullscreenMode(); document.getElementById('cpPhotobookView').style.display = 'none'; showMainView(); }
+        
+        // Cambio vital: Añadido try/catch para evitar bloqueos del navegador y asegurar el regreso.
+        function closePhotobookView() { 
+            try { exitFullscreenMode(); } catch(e) {}
+            document.getElementById('cpPhotobookView').style.display = 'none'; 
+            showMainView(); 
+        }
 
         let currentBookState = 0; 
         const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0); let rotateHintTimer = null;
@@ -1278,7 +1261,6 @@ html = r"""<!DOCTYPE html>
         function hideRotateHint() { const hint = document.getElementById('pb-rotate-hint'); hint.classList.remove('visible'); clearTimeout(rotateHintTimer); }
         if (screen.orientation) screen.orientation.addEventListener('change', () => { if (screen.orientation.type.includes('landscape')) hideRotateHint(); }); window.addEventListener('orientationchange', () => { if (window.innerWidth > window.innerHeight) hideRotateHint(); });
 
-
         /* ═══════════════════════════════
            ══════ ADMIN PANEL Y EXPORT ═══
            ═══════════════════════════════ */
@@ -1314,10 +1296,7 @@ html = r"""<!DOCTYPE html>
                 if (c.hasPhotos) badges += '<span class="toggle-badge on">Fotos</span> ';
                 if (c.hasPhotobook) badges += '<span class="toggle-badge on">Fotolibro</span> ';
                 if (!badges) badges = '<span class="toggle-badge off">Sin contenido</span>';
-                
-                var eventUrl = window.location.origin + window.location.pathname + '?evento=' + encodeURIComponent(code);
-
-                body.innerHTML += ('<div class="al-item" style="flex-wrap:wrap"><div class="al-item-info"><div class="al-item-t">' + esc(c.name) + '</div><div class="al-item-s">' + esc(c.event) + ' · Código: <strong>' + esc(code) + '</strong></div><div style="margin-top:.3rem">' + badges + '</div></div><div class="al-acts" style="flex-wrap:wrap"><button class="al-btn" style="background:#e8f5e9;color:#2e7d32;border-color:#c8e6c9;" onclick="copyToClipboard(\'' + eventUrl + '\')">Copiar Link</button><button class="al-btn" onclick="editClient(\'' + code + '\')">Editar</button>' + (c.hasPhotobook ? '<button class="al-btn" onclick="editPhotobook(\'' + code + '\')">Fotolibro</button>' : '') + '<button class="al-btn del" onclick="delClient(\'' + code + '\')">Eliminar</button></div></div>');
+                body.innerHTML += ('<div class="al-item" style="flex-wrap:wrap"><div class="al-item-info"><div class="al-item-t">' + esc(c.name) + '</div><div class="al-item-s">' + esc(c.event) + ' · Código: <strong>' + esc(code) + '</strong></div><div style="margin-top:.3rem">' + badges + '</div></div><div class="al-acts" style="flex-wrap:wrap"><button class="al-btn" onclick="editClient(\'' + code + '\')">Editar</button>' + (c.hasPhotobook ? '<button class="al-btn" onclick="editPhotobook(\'' + code + '\')">Fotolibro</button>' : '') + '<button class="al-btn del" onclick="delClient(\'' + code + '\')">Eliminar</button></div></div>');
             });
         }
         function newClient() { admState.view = 'edit'; admState.editId = null; renderAdmBody(); }
@@ -1390,10 +1369,9 @@ html = r"""<!DOCTYPE html>
                 let folders = data.files.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
                 let looseImages = data.files.filter(f => f.mimeType.includes('image/'));
 
-                // --- NUEVO CÓDIGO: ORDENAR ALFABÉTICAMENTE ---
+                // ORDENAR ALFABÉTICAMENTE / NUMÉRICAMENTE AL EXTRAER
                 folders.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
                 looseImages.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
-                // ---------------------------------------------
 
                 let allPhotos = [];
 
@@ -1406,6 +1384,8 @@ html = r"""<!DOCTYPE html>
                     let subRes = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folder.id}'+in+parents+and+mimeType+contains+'image/'+and+trashed=false&fields=files(id,name)&key=${apiKey}&pageSize=1000`);
                     let subData = await subRes.json();
                     if (subData.files) {
+                        // ORDENAR ALFABÉTICAMENTE LAS FOTOS DENTRO DE LA SUBCARPETA
+                        subData.files.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
                         subData.files.forEach(img => {
                             allPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s1600`, name: img.name, set: folder.name });
                         });
@@ -1415,7 +1395,7 @@ html = r"""<!DOCTYPE html>
                 tempClientPhotos = allPhotos;
                 renderClientPhotosList(tempClientPhotos);
                 status.textContent = `¡Éxito! Se importaron ${allPhotos.length} fotos organizadas en ${folders.length + (looseImages.length?1:0)} sets.`;
-                toast('Galería extraída correctamente.');
+                toast('Galería extraída y ordenada correctamente.');
 
             } catch(e) {
                 status.textContent = 'Error al extraer: ' + e.message;
@@ -1437,56 +1417,6 @@ html = r"""<!DOCTYPE html>
         function updateClientPhotoSet(idx, val) { while (tempClientPhotos.length <= idx) tempClientPhotos.push({ src: '', name: '', set: 'General' }); tempClientPhotos[idx].set = val.trim() || 'General'; }
         function removeClientPhoto(idx) { tempClientPhotos.splice(idx, 1); renderClientPhotosList(tempClientPhotos); }
         
-        async function downloadHtmlBackup() {
-            try {
-                toast('Generando respaldo HTML...');
-                let response = await fetch(window.location.href.split('#')[0]);
-                let htmlText = await response.text();
-                
-                var rawJson = JSON.stringify(D);
-                var encoded = btoa(unescape(encodeURIComponent(rawJson)));
-                
-                var regex = /\/\* ═══════ DATOS POR DEFECTO ═══════ \*\/[\s\S]*?\/\* ══════ GESTIÓN DE DATOS Y MIGRACIÓN ══════ \*\//;
-                var newBlock = `/* ═══════ DATOS POR DEFECTO ═══════ */\n        function getDefaults() {\n            return JSON.parse(decodeURIComponent(escape(atob('${encoded}'))));\n        }\n\n        /* ══════ GESTIÓN DE DATOS Y MIGRACIÓN ══════ */`;
-                
-                if (!regex.test(htmlText)) {
-                    toast('Error al generar HTML de respaldo.');
-                    return;
-                }
-                
-                let newHtml = htmlText.replace(regex, newBlock);
-                let blob = new Blob([newHtml], {type: "text/html;charset=utf-8"});
-                let a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                
-                let d = new Date();
-                let dateStr = `${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}-${('0'+d.getDate()).slice(-2)}_${('0'+d.getHours()).slice(-2)}-${('0'+d.getMinutes()).slice(-2)}`;
-                
-                a.download = `index_respaldo_${dateStr}.html`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                toast('Respaldo HTML descargado.');
-            } catch(e) {
-                toast('Error al descargar HTML.');
-                console.error(e);
-            }
-        }
-
-        function downloadJsonBackup() {
-            let rawJson = JSON.stringify(D, null, 4);
-            let blob = new Blob([rawJson], {type: "application/json;charset=utf-8"});
-            let a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            let d = new Date();
-            let dateStr = `${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}-${('0'+d.getDate()).slice(-2)}`;
-            a.download = `montenegro_datos_${dateStr}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            toast('Respaldo JSON descargado.');
-        }
-
         function saveClient(oldCode) {
             var code = document.getElementById('ce_code').value.trim().toLowerCase().replace(/\s+/g, ''), name = document.getElementById('ce_name').value.trim(), event = document.getElementById('ce_event').value.trim();
             if (!code || !name) { toast('Código y nombre son obligatorios'); return; } if (!oldCode && D.clients[code]) { toast('Ese código ya existe'); return; }
@@ -1497,11 +1427,6 @@ html = r"""<!DOCTYPE html>
             if (oldCode && oldCode !== code) { delete D.clients[oldCode]; }
             D.clients[code] = { name: name, event: event, hasVideo: hasVideo, hasPhotos: hasPhotos, hasPhotobook: hasPhotobook, video: hasVideo ? { youtubeId: ytId, title: vidTitle } : { youtubeId: '', title: '' }, photos: hasPhotos ? photos : [], driveFolderUrl: driveUrl, photobook: D.clients[code] && D.clients[code].photobook ? D.clients[code].photobook : { cover: null, spreads: [null], hasBackCover: false, back: null }, expireAt: expireTime };
             saveData(); admState.view = 'list'; renderAdmBody(); toast('Evento guardado');
-            setTimeout(function() {
-                if(confirm("Evento guardado exitosamente.\n\n¿Deseas descargar tu archivo HTML actualizado para respaldarlo o subirlo a GitHub Pages?")) {
-                    downloadHtmlBackup();
-                }
-            }, 600);
         }
         function delClient(code) { if (!confirm('¿Eliminar el evento "' + D.clients[code].name + '"?')) return; delete D.clients[code]; saveData(); renderAdmBody(); toast('Evento eliminado'); }
 
@@ -1669,51 +1594,60 @@ html = r"""<!DOCTYPE html>
                 '<div class="af-btns"><button class="af-btn af-btn-p" onclick="saveSettings()">Guardar cambios</button></div>' +
                 
                 '<hr style="border:none; border-top:1px solid var(--border-light); margin: 2rem 0;">' +
-                '<h3 style="margin-bottom:1rem; color:#c0392b;">Respaldos y GitHub Pages</h3>' +
-                '<p class="adm-hint">Dado que tu sitio es estático, los datos se guardan en tu navegador. Al terminar de editar, descarga tu página actualizada y súbela a GitHub, o guárdala en tu PC/Drive como respaldo.</p>' +
-                '<div style="display:flex; gap:1rem; flex-wrap:wrap;">' +
-                '<button class="af-btn" style="background:#2ea44f; color:#fff; flex:1;" onclick="downloadHtmlBackup()">⬇ Descargar Página HTML (Lista para GitHub)</button>' +
-                '<button class="af-btn" style="background:#111; color:#fff; flex:1;" onclick="downloadJsonBackup()">⬇ Descargar Respaldo JSON (Datos)</button>' +
-                '</div>';
+                '<h3 style="margin-bottom:1rem; color:#c0392b;">Exportar Datos (Para GitHub Pages)</h3>' +
+                '<p class="adm-hint">Como usas GitHub Pages, los datos se guardan solo en tu navegador. Cuando termines de crear clientes y configuraciones, presiona este botón, copia el código que aparecerá y pégalo en el archivo HTML reemplazando la función <code>getDefaults()</code>.</p>' +
+                '<button class="af-btn" style="background:#111; color:#fff;" onclick="exportDataForGithub()">Generar Código de Respaldo</button>' +
+                '<textarea class="af-i af-ta" id="exportArea" style="display:none; margin-top:1rem; font-family:monospace; font-size:0.75rem; height:200px;" readonly></textarea>';
         }
-        
-        async function saveSettings() {
+        function saveSettings() {
             var s = D.settings; s.phone = document.getElementById('se_phone').value.trim(); s.phoneRaw = document.getElementById('se_phoneRaw').value.trim(); s.address = document.getElementById('se_addr').value.trim(); s.hours = document.getElementById('se_hours').value.trim(); s.facebook = document.getElementById('se_fb').value.trim(); s.waNumber = document.getElementById('se_wa').value.trim(); s.heroDesc = document.getElementById('se_hero').value.trim(); s.mapEmbed = document.getElementById('se_map').value.trim(); s.driveApiKey = document.getElementById('se_driveApi').value.trim();
-            var newPass = document.getElementById('se_pass').value; 
-            if (newPass && newPass.length >= 4) { 
-                D.adminPassHash = await hashPass(newPass); 
-                toast('Contraseña actualizada'); 
-            }
+            var newPass = document.getElementById('se_pass').value; if (newPass && newPass.length >= 4) { D.adminPass = newPass; toast('Contraseña actualizada'); }
             saveData(); renderPublic(); toast('Configuración guardada');
+        }
+        function exportDataForGithub() {
+            var exportArea = document.getElementById('exportArea');
+            var rawJson = JSON.stringify(D, null, 4);
+            var exportCode = `function getDefaults() {\n    return ${rawJson};\n}`;
+            exportArea.value = exportCode;
+            exportArea.style.display = 'block';
+            exportArea.select();
+            document.execCommand('copy');
+            toast('Código generado y copiado al portapapeles');
         }
 
         /* ══════ INICIALIZACIÓN ══════ */
         loadData(); renderPublic();
         
-        /* ══════ URLs ÚNICAS PARA CLIENTES ══════ */
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(function() {
-                toast('Enlace copiado al portapapeles');
-            }).catch(function(err) {
-                toast('Error al copiar el enlace');
-            });
-        }
-
-        var params = new URLSearchParams(window.location.search);
-        var clientCode = params.get('evento') || params.get('c');
-        if (clientCode) {
-            var code = clientCode.trim().toLowerCase();
-            if (D.clients && D.clients[code]) {
-                document.getElementById('codeIn').value = code;
-                doLogin();
-            } else {
-                setTimeout(function() { toast('El enlace de este evento no es válido o ha expirado.', 4000); }, 1000);
+        // Carga Automática usando Parámetros URL (Ej: ?cliente=boda2024-galeria)
+        window.addEventListener('DOMContentLoaded', function() {
+            var params = new URLSearchParams(window.location.search);
+            var clientCodeParam = params.get('cliente') || params.get('c');
+            
+            if (clientCodeParam) {
+                clientCodeParam = clientCodeParam.toLowerCase();
+                var targetView = null;
+                
+                // Revisar si la URL pide una sección específica y limpiar el código del cliente
+                if (clientCodeParam.endsWith('-galeria')) { 
+                    targetView = 'galeria'; 
+                    clientCodeParam = clientCodeParam.replace('-galeria', ''); 
+                } else if (clientCodeParam.endsWith('-video')) { 
+                    targetView = 'video'; 
+                    clientCodeParam = clientCodeParam.replace('-video', ''); 
+                } else if (clientCodeParam.endsWith('-fotolibro')) { 
+                    targetView = 'fotolibro'; 
+                    clientCodeParam = clientCodeParam.replace('-fotolibro', ''); 
+                }
+                
+                // Si el código de cliente existe, acceder directo
+                if (D.clients[clientCodeParam]) {
+                    document.getElementById('codeIn').value = clientCodeParam;
+                    curClient = clientCodeParam;
+                    selected = {}; allSel = false; isPrintMode = false;
+                    enterPortal(targetView);
+                }
             }
-        }
+        });
     </script>
 </body>
-</html>"""
-
-with open('/mnt/data/index_actualizado.html', 'w', encoding='utf-8') as f:
-    f.write(html)
-print("File generated successfully.")
+</html>
