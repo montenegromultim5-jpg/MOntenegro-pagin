@@ -205,7 +205,7 @@
         .fab-print:hover { transform: scale(1.05); background: var(--c-accent-hover); }
         .fab-print svg { width: 20px; height: 20px; fill: #fff; }
 
-        /* Video YouTube View */
+        /* Video View */
         #cpVideoView { background: var(--c-bg); min-height: 100vh; padding-top: 5rem; position: relative; }
         .vid-sec { max-width: var(--max-w); margin: 0 auto; padding: 0 1rem 2rem; }
         .vid-wrap { position: relative; width: 100%; padding-bottom: 56.25%; border-radius: var(--radius-lg); overflow: hidden; background: #000; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
@@ -695,11 +695,18 @@
     <div class="toast" id="toast"></div>
 
     <script>
+        /* ═══════ HASHING DE CONTRASEÑA ═══════ */
+        async function hashPass(p) {
+            const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(p));
+            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
         /* ═══════ DATOS POR DEFECTO ═══════ */
+        // JSON predeterminado en Base64 para ocultar detalles sensibles en el código fuente
         function getDefaults() {
-            var defaultExpire = Date.now() + 31536000000; // +1 year
+            var defaultExpire = Date.now() + 31536000000;
             return {
-                adminPass: 'admin123',
+                adminPassHash: '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', // Hash para "admin123"
                 settings: {
                     phone: '729 699 0786', phoneRaw: '7296990786',
                     address: 'Porfirio Díaz 280, San Miguelito, 52700 Capulhuac de Mirafuentes, Méx.', hours: 'Lunes a Domingo · 10 a.m. – 7 p.m.',
@@ -814,19 +821,28 @@
             if (logoClicks >= 3) { logoClicks = 0; openAdmLogin(); }
         });
         function openAdmLogin() {
-            var isFirst = !D.adminPass || D.adminPass === 'admin123';
+            var isFirst = (!D.adminPassHash || D.adminPassHash === '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9');
             document.getElementById('admLoginTitle').textContent = isFirst ? 'Crear contraseña' : 'Administración';
             document.getElementById('admLoginDesc').textContent = isFirst ? 'Primera vez. Crea una contraseña segura.' : 'Ingresa tu contraseña de administrador.';
             document.getElementById('admPassIn').value = ''; document.getElementById('admLoginErr').classList.remove('show');
             document.getElementById('admLoginModal').classList.add('active'); document.body.style.overflow = 'hidden'; setTimeout(function() { document.getElementById('admPassIn').focus(); }, 100);
         }
         function closeAdmLogin() { document.getElementById('admLoginModal').classList.remove('active'); document.body.style.overflow = ''; }
-        function doAdmLogin() {
-            var pw = document.getElementById('admPassIn').value; var isFirst = !D.adminPass || D.adminPass === 'admin123';
-            if (isFirst) { if (!pw || pw.length < 4) { document.getElementById('admLoginErr').textContent = 'Mínimo 4 caracteres.'; document.getElementById('admLoginErr').classList.add('show'); return; }
-                D.adminPass = pw; saveData(); closeAdmLogin(); openAdm(); toast('Contraseña creada'); } 
-            else { if (pw !== D.adminPass) { document.getElementById('admLoginErr').textContent = 'Contraseña incorrecta.'; document.getElementById('admLoginErr').classList.add('show'); return; }
-                closeAdmLogin(); openAdm(); }
+        
+        async function doAdmLogin() {
+            var pw = document.getElementById('admPassIn').value; 
+            var currentHash = D.adminPassHash || '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+            var inputHash = await hashPass(pw);
+            var isFirst = (!D.adminPassHash || currentHash === '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9');
+            
+            if (isFirst) { 
+                if (!pw || pw.length < 4) { document.getElementById('admLoginErr').textContent = 'Mínimo 4 caracteres.'; document.getElementById('admLoginErr').classList.add('show'); return; }
+                D.adminPassHash = inputHash; saveData(); closeAdmLogin(); openAdm(); toast('Contraseña creada'); 
+            } 
+            else { 
+                if (inputHash !== currentHash) { document.getElementById('admLoginErr').textContent = 'Contraseña incorrecta.'; document.getElementById('admLoginErr').classList.add('show'); return; }
+                closeAdmLogin(); openAdm(); 
+            }
         }
         document.getElementById('admPassIn').addEventListener('keydown', function(e) { if (e.key === 'Enter') doAdmLogin(); });
 
@@ -913,6 +929,7 @@
             document.getElementById('cpHdrMain').style.display = 'none'; 
             var vid = c.video || {};
             document.getElementById('vidTitle').textContent = vid.title || 'Tu video';
+            // Inyectar el Iframe Raw que puso el admin
             document.getElementById('vidWrap').innerHTML = vid.youtubeId || '<p style="color:#fff; text-align:center; padding: 2rem;">No hay video disponible.</p>';
             window.scrollTo(0, 0);
         }
@@ -1013,7 +1030,11 @@
                         </a>`;
                     
                     d.addEventListener('click', function(e) {
-                        if (isPrintMode) { toggleSel(i); } else { openLB(i); }
+                        if (isPrintMode) {
+                            toggleSel(i);
+                        } else {
+                            openLB(i);
+                        }
                     });
                     grid.appendChild(d);
                 });
@@ -1221,6 +1242,7 @@
         function showRotateHint() { if (!isTouchDevice || window.innerWidth > window.innerHeight) return; const hint = document.getElementById('pb-rotate-hint'); hint.classList.add('visible'); clearTimeout(rotateHintTimer); rotateHintTimer = setTimeout(hideRotateHint, 4000); }
         function hideRotateHint() { const hint = document.getElementById('pb-rotate-hint'); hint.classList.remove('visible'); clearTimeout(rotateHintTimer); }
         if (screen.orientation) screen.orientation.addEventListener('change', () => { if (screen.orientation.type.includes('landscape')) hideRotateHint(); }); window.addEventListener('orientationchange', () => { if (window.innerWidth > window.innerHeight) hideRotateHint(); });
+
 
         /* ═══════════════════════════════
            ══════ ADMIN PANEL Y EXPORT ═══
@@ -1554,20 +1576,27 @@
                 '<button class="af-btn" style="background:#111; color:#fff;" onclick="exportDataForGithub()">Generar Código de Respaldo</button>' +
                 '<textarea class="af-i af-ta" id="exportArea" style="display:none; margin-top:1rem; font-family:monospace; font-size:0.75rem; height:200px;" readonly></textarea>';
         }
-        function saveSettings() {
+        
+        async function saveSettings() {
             var s = D.settings; s.phone = document.getElementById('se_phone').value.trim(); s.phoneRaw = document.getElementById('se_phoneRaw').value.trim(); s.address = document.getElementById('se_addr').value.trim(); s.hours = document.getElementById('se_hours').value.trim(); s.facebook = document.getElementById('se_fb').value.trim(); s.waNumber = document.getElementById('se_wa').value.trim(); s.heroDesc = document.getElementById('se_hero').value.trim(); s.mapEmbed = document.getElementById('se_map').value.trim(); s.driveApiKey = document.getElementById('se_driveApi').value.trim();
-            var newPass = document.getElementById('se_pass').value; if (newPass && newPass.length >= 4) { D.adminPass = newPass; toast('Contraseña actualizada'); }
+            var newPass = document.getElementById('se_pass').value; 
+            if (newPass && newPass.length >= 4) { 
+                D.adminPassHash = await hashPass(newPass); 
+                toast('Contraseña actualizada'); 
+            }
             saveData(); renderPublic(); toast('Configuración guardada');
         }
+        
         function exportDataForGithub() {
             var exportArea = document.getElementById('exportArea');
-            var rawJson = JSON.stringify(D, null, 4);
-            var exportCode = `function getDefaults() {\n    return ${rawJson};\n}`;
+            var rawJson = JSON.stringify(D);
+            var encoded = btoa(unescape(encodeURIComponent(rawJson)));
+            var exportCode = `function getDefaults() {\n    return JSON.parse(decodeURIComponent(escape(atob('${encoded}'))));\n}`;
             exportArea.value = exportCode;
             exportArea.style.display = 'block';
             exportArea.select();
             document.execCommand('copy');
-            toast('Código generado y copiado al portapapeles');
+            toast('Código copiado. Pégalo en tu archivo HTML.');
         }
 
         /* ══════ INICIALIZACIÓN ══════ */
