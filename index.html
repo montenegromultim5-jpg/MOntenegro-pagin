@@ -770,14 +770,15 @@
         function toDisplayDate(ms) { if (!ms) return ''; let d = new Date(ms); let m = ('0' + (d.getMonth() + 1)).slice(-2); let day = ('0' + d.getDate()).slice(-2); return `${day}/${m}/${d.getFullYear()}`; }
         function addOneYear() { let el = document.getElementById('ce_expire'); if(!el.value) return; let d = new Date(el.value + 'T12:00:00'); d.setFullYear(d.getFullYear() + 1); el.value = toDateInput(d.getTime()); }
 
-        /* ══════ GESTIÓN DE URL ══════ */
+        /* ══════ GESTIÓN DE URL (HASH ROUTING) ══════ */
         function pushUrlState(client, view) {
             var cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
             if (!client) {
                 window.history.pushState({ path: cleanUrl }, '', cleanUrl);
                 return;
             }
-            var newUrl = cleanUrl + "?cliente=" + encodeURIComponent(client) + (view ? "-" + view : "");
+            // Usa "#" en vez de "?cliente=" para URLs estéticas sin error 404
+            var newUrl = cleanUrl + "#" + encodeURIComponent(client) + (view ? "-" + view : "");
             window.history.pushState({ path: newUrl }, '', newUrl);
         }
         
@@ -785,7 +786,7 @@
         function copyClientUrl(code) {
             var base = window.location.protocol + "//" + window.location.host + window.location.pathname;
             base = base.replace(/\/index\.html$/i, '/');
-            var url = base + "?cliente=" + encodeURIComponent(code);
+            var url = base + "#" + encodeURIComponent(code);
             
             if(navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(url).then(function() {
@@ -1318,7 +1319,6 @@
                 if (c.hasPhotobook) badges += '<span class="toggle-badge on">Fotolibro</span> ';
                 if (!badges) badges = '<span class="toggle-badge off">Sin contenido</span>';
                 
-                // AQUÍ SE AGREGA EL NUEVO BOTÓN PARA COPIAR ENLACE
                 body.innerHTML += ('<div class="al-item" style="flex-wrap:wrap"><div class="al-item-info"><div class="al-item-t">' + esc(c.name) + '</div><div class="al-item-s">' + esc(c.event) + ' · Código: <strong>' + esc(code) + '</strong></div><div style="margin-top:.3rem">' + badges + '</div></div><div class="al-acts" style="flex-wrap:wrap"><button class="al-btn" onclick="copyClientUrl(\'' + code + '\')">🔗 Copiar Link</button><button class="al-btn" onclick="editClient(\'' + code + '\')">Editar</button>' + (c.hasPhotobook ? '<button class="al-btn" onclick="editPhotobook(\'' + code + '\')">Fotolibro</button>' : '') + '<button class="al-btn del" onclick="delClient(\'' + code + '\')">Eliminar</button></div></div>');
             });
         }
@@ -1641,16 +1641,25 @@
         /* ══════ INICIALIZACIÓN ══════ */
         loadData(); renderPublic();
         
-        // Carga Automática usando Parámetros URL (Ej: ?cliente=boda2024-galeria)
+        // ════ Carga Automática Directa para Etiquetas NFC (Hash Routing) ════
         window.addEventListener('DOMContentLoaded', function() {
-            var params = new URLSearchParams(window.location.search);
-            var clientCodeParam = params.get('cliente') || params.get('c');
+            var clientCodeParam = null;
+            var targetView = null;
+
+            // 1. Priorizar el enlace limpio (Hash), ej. #camilaxv-galeria
+            if (window.location.hash && window.location.hash.length > 1) {
+                clientCodeParam = window.location.hash.substring(1);
+            } 
+            // 2. Soporte por si alguna vez usaron el link anterior (?cliente=)
+            else {
+                var params = new URLSearchParams(window.location.search);
+                clientCodeParam = params.get('cliente') || params.get('c');
+            }
             
             if (clientCodeParam) {
-                clientCodeParam = clientCodeParam.toLowerCase();
-                var targetView = null;
+                clientCodeParam = decodeURIComponent(clientCodeParam).toLowerCase();
                 
-                // Revisar si la URL pide una sección específica y limpiar el código del cliente
+                // Detectar si pide una vista directa y extraer el código real
                 if (clientCodeParam.endsWith('-galeria')) { 
                     targetView = 'galeria'; 
                     clientCodeParam = clientCodeParam.replace('-galeria', ''); 
@@ -1662,7 +1671,7 @@
                     clientCodeParam = clientCodeParam.replace('-fotolibro', ''); 
                 }
                 
-                // Si el código de cliente existe, acceder directo
+                // Autologin invisible
                 if (D.clients[clientCodeParam]) {
                     document.getElementById('codeIn').value = clientCodeParam;
                     curClient = clientCodeParam;
