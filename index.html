@@ -770,23 +770,22 @@
         function toDisplayDate(ms) { if (!ms) return ''; let d = new Date(ms); let m = ('0' + (d.getMonth() + 1)).slice(-2); let day = ('0' + d.getDate()).slice(-2); return `${day}/${m}/${d.getFullYear()}`; }
         function addOneYear() { let el = document.getElementById('ce_expire'); if(!el.value) return; let d = new Date(el.value + 'T12:00:00'); d.setFullYear(d.getFullYear() + 1); el.value = toDateInput(d.getTime()); }
 
-        /* ══════ GESTIÓN DE URL (HASH ROUTING) ══════ */
+        /* ══════ GESTIÓN DE URL (PARAMETROS QUERY) ══════ */
         function pushUrlState(client, view) {
             var cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
             if (!client) {
                 window.history.pushState({ path: cleanUrl }, '', cleanUrl);
                 return;
             }
-            // Usa "#" en vez de "?cliente=" para URLs estéticas sin error 404
-            var newUrl = cleanUrl + "#" + encodeURIComponent(client) + (view ? "-" + view : "");
+            var newUrl = cleanUrl + "?c=" + encodeURIComponent(client) + (view ? "-" + view : "");
             window.history.pushState({ path: newUrl }, '', newUrl);
         }
         
-        // Herramienta para copiar la URL final como administrador
         function copyClientUrl(code) {
             var base = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            // Remover index.html si existe para que quede más limpio
             base = base.replace(/\/index\.html$/i, '/');
-            var url = base + "#" + encodeURIComponent(code);
+            var url = base + "?c=" + encodeURIComponent(code);
             
             if(navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(url).then(function() {
@@ -1641,25 +1640,24 @@
         /* ══════ INICIALIZACIÓN ══════ */
         loadData(); renderPublic();
         
-        // ════ Carga Automática Directa para Etiquetas NFC (Hash Routing) ════
-        window.addEventListener('DOMContentLoaded', function() {
-            var clientCodeParam = null;
-            var targetView = null;
-
-            // 1. Priorizar el enlace limpio (Hash), ej. #camilaxv-galeria
-            if (window.location.hash && window.location.hash.length > 1) {
-                clientCodeParam = window.location.hash.substring(1);
-            } 
-            // 2. Soporte por si alguna vez usaron el link anterior (?cliente=)
-            else {
-                var params = new URLSearchParams(window.location.search);
-                clientCodeParam = params.get('cliente') || params.get('c');
+        // ════ Carga Automática Directa para Etiquetas NFC (Query o Hash) ════
+        function checkUrlForClient() {
+            var params = new URLSearchParams(window.location.search);
+            var clientCodeParam = params.get('c') || params.get('cliente');
+            
+            // Retrocompatibilidad con Hash por si pegan enlaces de la versión anterior
+            if (!clientCodeParam && window.location.hash && window.location.hash.length > 1) {
+                var possibleCode = window.location.hash.substring(1);
+                if(!['portafolio', 'servicios', 'testimonios', 'contacto'].includes(possibleCode)) {
+                    clientCodeParam = possibleCode;
+                }
             }
             
             if (clientCodeParam) {
                 clientCodeParam = decodeURIComponent(clientCodeParam).toLowerCase();
+                var targetView = null;
                 
-                // Detectar si pide una vista directa y extraer el código real
+                // Extraer a qué vista va (video, galeria, fotolibro)
                 if (clientCodeParam.endsWith('-galeria')) { 
                     targetView = 'galeria'; 
                     clientCodeParam = clientCodeParam.replace('-galeria', ''); 
@@ -1671,15 +1669,22 @@
                     clientCodeParam = clientCodeParam.replace('-fotolibro', ''); 
                 }
                 
-                // Autologin invisible
+                // Si el cliente existe, abrir inmediatamente
                 if (D.clients[clientCodeParam]) {
                     document.getElementById('codeIn').value = clientCodeParam;
                     curClient = clientCodeParam;
                     selected = {}; allSel = false; isPrintMode = false;
                     enterPortal(targetView);
+                } else {
+                    // Limpiar la URL si el código era erróneo
+                    pushUrlState(null);
                 }
             }
-        });
+        }
+        
+        // Ejecutar Inmediatamente (repara el problema de tener que refrescar la página)
+        checkUrlForClient();
+        
     </script>
 </body>
 </html>
