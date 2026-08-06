@@ -353,7 +353,7 @@
         .pb-pano { height: 100%; width: 200%; max-width: none; position: absolute; top: 0; display: block; }
         .pb-pano-left { left: 0; object-fit: cover; object-position: left center; }
         .pb-pano-right { right: 0; object-fit: cover; object-position: right center; }
-        .pb-acrylic-led { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(115deg, transparent 0%, transparent 38%, rgba(255,255,255,0.03) 41%, rgba(255,255,255,0.35) 44%, rgba(255,255,255,0.7) 46%, rgba(255,255,255,0.35) 48%, rgba(255,255,255,0.03) 51%, transparent 54%, transparent 100%); background-size: 300% 300%; animation: ledReflection 10s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate; pointer-events: none; z-index: 10; border-radius: 2px 5px 5px 2px; mix-blend-mode: screen; }
+        .pb-acrylic-led { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(115deg, transparent 0%, transparent 38%, rgba(255,255,255,0.03) 41%, rgba(255,255,255,0.7) 46%, rgba(255,255,255,0.35) 48%, rgba(255,255,255,0.03) 51%, transparent 54%, transparent 100%); background-size: 300% 300%; animation: ledReflection 10s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate; pointer-events: none; z-index: 10; border-radius: 2px 5px 5px 2px; mix-blend-mode: screen; }
         .pb-beveled { position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box; pointer-events: none; z-index: 11; border-top: 8px solid rgba(255,255,255,0.18); border-right: 8px solid rgba(255,255,255,0.04); border-bottom: 8px solid rgba(0,0,0,0.3); border-left: 8px solid rgba(0,0,0,0.12); box-shadow: inset 0 0 1px 1px rgba(255,255,255,0.15), inset 0 0 12px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.06); border-radius: 2px 5px 5px 2px; }
         @keyframes ledReflection { 0% { background-position: 120% 120%; } 100% { background-position: -20% -20%; } }
         .pb-flipped { transform: rotateY(-180deg); }
@@ -780,6 +780,29 @@
             var newUrl = cleanUrl + "?cliente=" + encodeURIComponent(client) + (view ? "-" + view : "");
             window.history.pushState({ path: newUrl }, '', newUrl);
         }
+        
+        // Herramienta para copiar la URL final como administrador
+        function copyClientUrl(code) {
+            var base = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            base = base.replace(/\/index\.html$/i, '/');
+            var url = base + "?cliente=" + encodeURIComponent(code);
+            
+            if(navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(url).then(function() {
+                    toast('Enlace copiado al portapapeles');
+                });
+            } else {
+                var textArea = document.createElement("textarea");
+                textArea.value = url;
+                textArea.style.position = "fixed";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try { document.execCommand('copy'); toast('Enlace copiado al portapapeles'); } 
+                catch (err) { toast('No se pudo copiar el enlace'); }
+                document.body.removeChild(textArea);
+            }
+        }
 
         /* ══════ RENDERIZADO PÚBLICO ══════ */
         function renderPublic() {
@@ -859,7 +882,6 @@
             document.getElementById('cpName').textContent = c.name; document.getElementById('cpEvent').textContent = c.event;
             document.body.style.overflow = 'auto'; window.scrollTo(0, 0); 
             
-            // Si hay un target view solicitado por la URL, abrirlo directamente
             if (targetView === 'galeria' && c.hasPhotos) {
                 openGalleryView();
             } else if (targetView === 'video' && c.hasVideo) {
@@ -874,7 +896,7 @@
             document.getElementById('cpPortal').classList.remove('active'); document.getElementById('mainSite').style.display = '';
             curClient = null; selected = {}; isPrintMode = false; document.getElementById('vidWrap').innerHTML = ''; exitFullscreenMode(); showMainView(); window.scrollTo(0, 0);
             
-            pushUrlState(null); // Limpiar URL
+            pushUrlState(null);
         }
         function requestExtension() {
             var c = D.clients[curClient];
@@ -892,7 +914,7 @@
             document.getElementById('cpGalleryView').classList.remove('gallery-print-mode');
             renderAccessCards(); updateOrderBar();
             
-            pushUrlState(curClient, null); // Establecer URL base del cliente
+            pushUrlState(curClient, null);
         }
         function renderAccessCards() {
             var c = D.clients[curClient];
@@ -943,7 +965,7 @@
             document.getElementById('vidWrap').innerHTML = vid.youtubeId || '<p style="color:#fff; text-align:center; padding: 2rem;">No hay video disponible.</p>';
             window.scrollTo(0, 0);
             
-            pushUrlState(curClient, 'video'); // Update URL
+            pushUrlState(curClient, 'video');
         }
         function closeVideoView() { document.getElementById('vidWrap').innerHTML = ''; document.getElementById('cpVideoView').style.display = 'none'; showMainView(); }
 
@@ -968,7 +990,7 @@
             renderPixiesetGallery();
             updateOrderBar(); window.scrollTo(0, 0);
             
-            pushUrlState(curClient, 'galeria'); // Update URL
+            pushUrlState(curClient, 'galeria');
         }
         function closeGalleryView() { document.getElementById('cpGalleryView').style.display = 'none'; isPrintMode = false; clearSel(); showMainView(); }
 
@@ -1143,14 +1165,13 @@
             document.getElementById('cpGalleryView').style.display = 'none'; 
             
             let pbView = document.getElementById('cpPhotobookView');
-            pbView.style.display = 'flex'; // Cambio vital: debe ser flex para que la estructura no cubra los botones superiores
+            pbView.style.display = 'flex'; 
             renderBook();
             window.scrollTo(0,0);
             
-            pushUrlState(curClient, 'fotolibro'); // Update URL
+            pushUrlState(curClient, 'fotolibro');
         }
         
-        // Cambio vital: Añadido try/catch para evitar bloqueos del navegador y asegurar el regreso.
         function closePhotobookView() { 
             try { exitFullscreenMode(); } catch(e) {}
             document.getElementById('cpPhotobookView').style.display = 'none'; 
@@ -1296,7 +1317,9 @@
                 if (c.hasPhotos) badges += '<span class="toggle-badge on">Fotos</span> ';
                 if (c.hasPhotobook) badges += '<span class="toggle-badge on">Fotolibro</span> ';
                 if (!badges) badges = '<span class="toggle-badge off">Sin contenido</span>';
-                body.innerHTML += ('<div class="al-item" style="flex-wrap:wrap"><div class="al-item-info"><div class="al-item-t">' + esc(c.name) + '</div><div class="al-item-s">' + esc(c.event) + ' · Código: <strong>' + esc(code) + '</strong></div><div style="margin-top:.3rem">' + badges + '</div></div><div class="al-acts" style="flex-wrap:wrap"><button class="al-btn" onclick="editClient(\'' + code + '\')">Editar</button>' + (c.hasPhotobook ? '<button class="al-btn" onclick="editPhotobook(\'' + code + '\')">Fotolibro</button>' : '') + '<button class="al-btn del" onclick="delClient(\'' + code + '\')">Eliminar</button></div></div>');
+                
+                // AQUÍ SE AGREGA EL NUEVO BOTÓN PARA COPIAR ENLACE
+                body.innerHTML += ('<div class="al-item" style="flex-wrap:wrap"><div class="al-item-info"><div class="al-item-t">' + esc(c.name) + '</div><div class="al-item-s">' + esc(c.event) + ' · Código: <strong>' + esc(code) + '</strong></div><div style="margin-top:.3rem">' + badges + '</div></div><div class="al-acts" style="flex-wrap:wrap"><button class="al-btn" onclick="copyClientUrl(\'' + code + '\')">🔗 Copiar Link</button><button class="al-btn" onclick="editClient(\'' + code + '\')">Editar</button>' + (c.hasPhotobook ? '<button class="al-btn" onclick="editPhotobook(\'' + code + '\')">Fotolibro</button>' : '') + '<button class="al-btn del" onclick="delClient(\'' + code + '\')">Eliminar</button></div></div>');
             });
         }
         function newClient() { admState.view = 'edit'; admState.editId = null; renderAdmBody(); }
