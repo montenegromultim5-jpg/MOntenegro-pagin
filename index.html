@@ -147,7 +147,7 @@
             background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.2);
             padding: 0.6rem 1.2rem; border-radius: 50px; cursor: pointer; backdrop-filter: blur(8px);
             font-family: var(--fb); font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; transition: 0.3s;
-            pointer-events: auto;
+            pointer-events: auto; /* Asegurar que reciba clics */
         }
         .btn-regresar-fijo:hover { background: rgba(0,0,0,0.9); border-color: var(--c-accent); color: var(--c-accent); }
 
@@ -729,9 +729,24 @@
                 testimonials: [
                     { text: '"Excelente trabajo. Excelente servicio. Muy recomendado para cualquier evento."', author: 'Yessica Santana' }
                 ],
-                clients: {}
+                clients: {
+                    'boda2024': {
+                        name: 'María & Carlos', event: 'Boda — 15 de marzo, 2024', hasVideo: true, hasPhotos: true, hasPhotobook: false, expireAt: defaultExpire,
+                        photos: [
+                            { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=600&fit=crop', name: 'Entrada de la novia', set: 'Ceremonia' },
+                            { src: 'https://images.unsplash.com/photo-1549417225-05b61b62aecf?w=800&h=600&fit=crop', name: 'Ceremonia civil', set: 'Ceremonia' },
+                            { src: 'https://images.unsplash.com/photo-1529634597503-139d3726fed5?w=800&h=600&fit=crop', name: 'Fiesta', set: 'Recepción' }
+                        ],
+                        driveFolderUrl: '', video: { youtubeId: '<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>', title: 'Video Resumen' }, photobook: { cover: null, spreads: [null], hasBackCover: false, back: null }
+                    }
+                }
             };
         }
+
+        /* ══════ GESTIÓN DE DATOS Y EXPORTACIÓN ══════ */
+        var D;
+        function loadData() { try { var s = localStorage.getItem('fvm_data'); D = s ? JSON.parse(s) : null; } catch (e) { D = null; } if (!D) D = getDefaults(); saveData(); }
+        function saveData() { try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch (e) { toast('Error al guardar datos', 4000); } }
 
         /* ══════ ESTADO GLOBAL ══════ */
         var curClient = null, selected = {}, allSel = false, lbIdx = 0, portalPhotos = [];
@@ -768,6 +783,7 @@
         
         function copyClientUrl(code) {
             var base = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            // Remover index.html si existe para que quede más limpio
             base = base.replace(/\/index\.html$/i, '/');
             var url = base + "?c=" + encodeURIComponent(code);
             
@@ -785,70 +801,6 @@
                 try { document.execCommand('copy'); toast('Enlace copiado al portapapeles'); } 
                 catch (err) { toast('No se pudo copiar el enlace'); }
                 document.body.removeChild(textArea);
-            }
-        }
-
-        /* ══════ GESTIÓN DE DATOS Y EXPORTACIÓN ESTÁTICA ══════ */
-        function loadData() { 
-            try { 
-                var s = localStorage.getItem('fvm_data'); 
-                D = s ? JSON.parse(s) : null; 
-            } catch (e) { 
-                D = null; 
-            } 
-            if (!D) D = getDefaults(); 
-            saveData(); 
-        }
-        
-        function saveData() { 
-            try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch (e) { toast('Error al guardar datos', 4000); } 
-        }
-
-        function downloadUpdatedHTML() {
-            var urlToFetch = window.location.href.split('#')[0].split('?')[0];
-            fetch(urlToFetch)
-            .then(function(res) { 
-                if(!res.ok) throw new Error("Fetch failed");
-                return res.text(); 
-            })
-            .then(function(text) {
-                var rawJson = JSON.stringify(D, null, 4);
-                var startStr = "function getDefaults() {";
-                var endStr = "/* ══════ ESTADO GLOBAL";
-                var startIndex = text.indexOf(startStr);
-                var endIndex = text.indexOf(endStr);
-                
-                if(startIndex !== -1 && endIndex !== -1) {
-                    var newHtml = text.substring(0, startIndex) + 
-                                  "function getDefaults() {\n            return " + rawJson + ";\n        }\n\n        " + 
-                                  text.substring(endIndex);
-                    
-                    var blob = new Blob([newHtml], {type: "text/html;charset=utf-8"});
-                    var link = document.createElement("a");
-                    link.href = URL.createObjectURL(blob);
-                    link.download = "index.html";
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    toast('¡Archivo index.html descargado! Súbelo a GitHub.');
-                } else {
-                    fallbackExport();
-                }
-            }).catch(function(e) { 
-                fallbackExport();
-            });
-        }
-        
-        function fallbackExport() {
-            var rawJson = JSON.stringify(D, null, 4);
-            var exportCode = "function getDefaults() {\n    return " + rawJson + ";\n}";
-            var exportArea = document.getElementById('exportArea');
-            if(exportArea) {
-                exportArea.value = exportCode;
-                exportArea.style.display = 'block';
-                exportArea.select();
-                document.execCommand('copy');
-                toast('Error de descarga. Código copiado en la caja de abajo.');
             }
         }
 
@@ -1556,6 +1508,7 @@
             reader.onload = function(e) { var img = new Image(); img.onload = function() { var canvas = document.createElement('canvas'); var w = img.width, h = img.height; if (w > 1800) { h = Math.floor(h * (1800 / w)); w = 1800; } canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h); var b64 = canvas.toDataURL('image/jpeg', .82); if (type === 'cover') updatePB('cover', b64); else if (type === 'back') updatePB('back', b64); else updatePBSpread(idx, b64); renderPhotobookAdmin(document.getElementById('admBody')); toast('Imagen cargada'); }; img.src = e.target.result; };
             reader.readAsDataURL(file); input.value = '';
         }
+        function savePBData() { saveData(); toast('Fotolibro guardado correctamente'); }
 
         /* API Drive y Autollenado */
         function fetchDriveFolderForPB() {
@@ -1647,7 +1600,7 @@
         function editTestimonial(i) { var t = D.testimonials[i]; var newText = prompt('Testimonio:', t.text.replace(/"/g, '')); if (newText === null) return; var newAuthor = prompt('Autor:', t.author); if (newAuthor === null) return; D.testimonials[i].text = newText; D.testimonials[i].author = newAuthor; saveData(); renderAdmBody(); renderPublic(); }
         function delTestimonial(i) { D.testimonials.splice(i, 1); saveData(); renderAdmBody(); renderPublic(); }
 
-        /* ════ ADMIN: GENERAL ════ */
+        /* ════ ADMIN: GENERAL Y EXPORT PARA GITHUB PAGES ════ */
         function renderAdmSettings(body) {
             var s = D.settings;
             body.innerHTML = '<h3 style="margin-bottom:1rem">Datos generales del sitio</h3>' +
@@ -1663,9 +1616,9 @@
                 '<div class="af-btns"><button class="af-btn af-btn-p" onclick="saveSettings()">Guardar cambios</button></div>' +
                 
                 '<hr style="border:none; border-top:1px solid var(--border-light); margin: 2rem 0;">' +
-                '<h3 style="margin-bottom:1rem; color:#c0392b;">Publicar en Internet (GitHub)</h3>' +
-                '<p class="adm-hint">Para que tus clientes puedan entrar con su URL única (NFC), debes guardar los cambios en el archivo. Dale clic al botón, descarga el archivo y arrástralo a tu repositorio de GitHub.</p>' +
-                '<button class="af-btn" style="background:#111; color:#fff;" onclick="downloadUpdatedHTML()">📥 Descargar HTML Actualizado</button>' +
+                '<h3 style="margin-bottom:1rem; color:#c0392b;">Exportar Datos (Para GitHub Pages)</h3>' +
+                '<p class="adm-hint">Como usas GitHub Pages, los datos se guardan solo en tu navegador. Cuando termines de crear clientes y configuraciones, presiona este botón, copia el código que aparecerá y pégalo en el archivo HTML reemplazando la función <code>getDefaults()</code>.</p>' +
+                '<button class="af-btn" style="background:#111; color:#fff;" onclick="exportDataForGithub()">Generar Código de Respaldo</button>' +
                 '<textarea class="af-i af-ta" id="exportArea" style="display:none; margin-top:1rem; font-family:monospace; font-size:0.75rem; height:200px;" readonly></textarea>';
         }
         function saveSettings() {
@@ -1673,14 +1626,26 @@
             var newPass = document.getElementById('se_pass').value; if (newPass && newPass.length >= 4) { D.adminPass = newPass; toast('Contraseña actualizada'); }
             saveData(); renderPublic(); toast('Configuración guardada');
         }
+        function exportDataForGithub() {
+            var exportArea = document.getElementById('exportArea');
+            var rawJson = JSON.stringify(D, null, 4);
+            var exportCode = `function getDefaults() {\n    return ${rawJson};\n}`;
+            exportArea.value = exportCode;
+            exportArea.style.display = 'block';
+            exportArea.select();
+            document.execCommand('copy');
+            toast('Código generado y copiado al portapapeles');
+        }
 
-        /* ══════ INICIALIZACIÓN Y ENLACES DIRECTOS ══════ */
-        loadData();
+        /* ══════ INICIALIZACIÓN ══════ */
+        loadData(); renderPublic();
         
+        // ════ Carga Automática Directa para Etiquetas NFC (Query o Hash) ════
         function checkUrlForClient() {
             var params = new URLSearchParams(window.location.search);
             var clientCodeParam = params.get('c') || params.get('cliente');
             
+            // Retrocompatibilidad con Hash por si pegan enlaces de la versión anterior
             if (!clientCodeParam && window.location.hash && window.location.hash.length > 1) {
                 var possibleCode = window.location.hash.substring(1);
                 if(!['portafolio', 'servicios', 'testimonios', 'contacto'].includes(possibleCode)) {
@@ -1692,6 +1657,7 @@
                 clientCodeParam = decodeURIComponent(clientCodeParam).toLowerCase();
                 var targetView = null;
                 
+                // Extraer a qué vista va (video, galeria, fotolibro)
                 if (clientCodeParam.endsWith('-galeria')) { 
                     targetView = 'galeria'; 
                     clientCodeParam = clientCodeParam.replace('-galeria', ''); 
@@ -1703,17 +1669,22 @@
                     clientCodeParam = clientCodeParam.replace('-fotolibro', ''); 
                 }
                 
-                if (D && D.clients && D.clients[clientCodeParam]) {
+                // Si el cliente existe, abrir inmediatamente
+                if (D.clients[clientCodeParam]) {
                     document.getElementById('codeIn').value = clientCodeParam;
                     curClient = clientCodeParam;
                     selected = {}; allSel = false; isPrintMode = false;
                     enterPortal(targetView);
                 } else {
+                    // Limpiar la URL si el código era erróneo
                     pushUrlState(null);
                 }
             }
         }
+        
+        // Ejecutar Inmediatamente (repara el problema de tener que refrescar la página)
         checkUrlForClient();
+        
     </script>
 </body>
 </html>
