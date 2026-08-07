@@ -7,6 +7,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- LIBRERÍAS DE FIREBASE (Añadidas para conexión a la Nube) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
         :root {
             --bg: #fafaf8; --surface: #fff; --text: #1a1a1a; --text-muted: #5c5c5c; --text-light: #8a8a8a;
@@ -147,7 +152,7 @@
             background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.2);
             padding: 0.6rem 1.2rem; border-radius: 50px; cursor: pointer; backdrop-filter: blur(8px);
             font-family: var(--fb); font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; transition: 0.3s;
-            pointer-events: auto; /* Asegurar que reciba clics */
+            pointer-events: auto;
         }
         .btn-regresar-fijo:hover { background: rgba(0,0,0,0.9); border-color: var(--c-accent); color: var(--c-accent); }
 
@@ -729,24 +734,9 @@
                 testimonials: [
                     { text: '"Excelente trabajo. Excelente servicio. Muy recomendado para cualquier evento."', author: 'Yessica Santana' }
                 ],
-                clients: {
-                    'boda2024': {
-                        name: 'María & Carlos', event: 'Boda — 15 de marzo, 2024', hasVideo: true, hasPhotos: true, hasPhotobook: false, expireAt: defaultExpire,
-                        photos: [
-                            { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=600&fit=crop', name: 'Entrada de la novia', set: 'Ceremonia' },
-                            { src: 'https://images.unsplash.com/photo-1549417225-05b61b62aecf?w=800&h=600&fit=crop', name: 'Ceremonia civil', set: 'Ceremonia' },
-                            { src: 'https://images.unsplash.com/photo-1529634597503-139d3726fed5?w=800&h=600&fit=crop', name: 'Fiesta', set: 'Recepción' }
-                        ],
-                        driveFolderUrl: '', video: { youtubeId: '<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>', title: 'Video Resumen' }, photobook: { cover: null, spreads: [null], hasBackCover: false, back: null }
-                    }
-                }
+                clients: {}
             };
         }
-
-        /* ══════ GESTIÓN DE DATOS Y EXPORTACIÓN ══════ */
-        var D;
-        function loadData() { try { var s = localStorage.getItem('fvm_data'); D = s ? JSON.parse(s) : null; } catch (e) { D = null; } if (!D) D = getDefaults(); saveData(); }
-        function saveData() { try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch (e) { toast('Error al guardar datos', 4000); } }
 
         /* ══════ ESTADO GLOBAL ══════ */
         var curClient = null, selected = {}, allSel = false, lbIdx = 0, portalPhotos = [];
@@ -783,7 +773,6 @@
         
         function copyClientUrl(code) {
             var base = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            // Remover index.html si existe para que quede más limpio
             base = base.replace(/\/index\.html$/i, '/');
             var url = base + "?c=" + encodeURIComponent(code);
             
@@ -802,6 +791,57 @@
                 catch (err) { toast('No se pudo copiar el enlace'); }
                 document.body.removeChild(textArea);
             }
+        }
+
+        /* ══════ GESTIÓN DE DATOS (FIREBASE NUBE) ══════ */
+        
+        // ¡IMPORTANTE JAFET! REEMPLAZA ESTO POR TUS LLAVES DE FIREBASE:
+        var firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROYECTO.firebaseapp.com",
+            databaseURL: "https://TU_PROYECTO.firebaseio.com",
+            projectId: "TU_PROYECTO",
+            storageBucket: "TU_PROYECTO.appspot.com",
+            messagingSenderId: "TU_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+        
+        // Inicializar Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        var database = firebase.database();
+        var D = null;
+
+        function loadData() {
+            database.ref('fvm_data').once('value').then(function(snapshot) {
+                if (snapshot.exists()) {
+                    D = snapshot.val();
+                } else {
+                    D = getDefaults();
+                    saveData();
+                }
+                iniciarSitio();
+            }).catch(function(error) {
+                console.error("Error cargando base de datos:", error);
+                // Si Firebase falla (ej. llaves incorrectas), entra aquí usando memoria local
+                try { var s = localStorage.getItem('fvm_data'); D = s ? JSON.parse(s) : null; } catch (e) { D = null; } 
+                if (!D) D = getDefaults(); 
+                iniciarSitio();
+            });
+        }
+
+        function saveData() {
+            database.ref('fvm_data').set(D).then(function() {
+                try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch (e) {} // Respaldo local
+            }).catch(function(error) {
+                toast('Error al guardar en la nube. Verifica Firebase.', 4000);
+            });
+        }
+        
+        function iniciarSitio() {
+            renderPublic();
+            checkUrlForClient();
         }
 
         /* ══════ RENDERIZADO PÚBLICO ══════ */
@@ -1637,15 +1677,12 @@
             toast('Código generado y copiado al portapapeles');
         }
 
-        /* ══════ INICIALIZACIÓN ══════ */
-        loadData(); renderPublic();
-        
-        // ════ Carga Automática Directa para Etiquetas NFC (Query o Hash) ════
+        /* ══════ COMPROBAR URL PARA ENLACES DIRECTOS ══════ */
         function checkUrlForClient() {
             var params = new URLSearchParams(window.location.search);
             var clientCodeParam = params.get('c') || params.get('cliente');
             
-            // Retrocompatibilidad con Hash por si pegan enlaces de la versión anterior
+            // Soporte para enlaces con Hash (#)
             if (!clientCodeParam && window.location.hash && window.location.hash.length > 1) {
                 var possibleCode = window.location.hash.substring(1);
                 if(!['portafolio', 'servicios', 'testimonios', 'contacto'].includes(possibleCode)) {
@@ -1657,7 +1694,7 @@
                 clientCodeParam = decodeURIComponent(clientCodeParam).toLowerCase();
                 var targetView = null;
                 
-                // Extraer a qué vista va (video, galeria, fotolibro)
+                // Extraer la vista (video, galeria, fotolibro)
                 if (clientCodeParam.endsWith('-galeria')) { 
                     targetView = 'galeria'; 
                     clientCodeParam = clientCodeParam.replace('-galeria', ''); 
@@ -1670,21 +1707,17 @@
                 }
                 
                 // Si el cliente existe, abrir inmediatamente
-                if (D.clients[clientCodeParam]) {
+                if (D && D.clients && D.clients[clientCodeParam]) {
                     document.getElementById('codeIn').value = clientCodeParam;
                     curClient = clientCodeParam;
                     selected = {}; allSel = false; isPrintMode = false;
                     enterPortal(targetView);
                 } else {
-                    // Limpiar la URL si el código era erróneo
                     pushUrlState(null);
                 }
             }
         }
-        
-        // Ejecutar Inmediatamente (repara el problema de tener que refrescar la página)
-        checkUrlForClient();
-        
+
     </script>
 </body>
 </html>
