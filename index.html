@@ -7,11 +7,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- LIBRERÍAS DE FIREBASE -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
     <style>
         :root {
             --bg: #fafaf8; --surface: #fff; --text: #1a1a1a; --text-muted: #5c5c5c; --text-light: #8a8a8a;
@@ -152,7 +147,7 @@
             background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.2);
             padding: 0.6rem 1.2rem; border-radius: 50px; cursor: pointer; backdrop-filter: blur(8px);
             font-family: var(--fb); font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; transition: 0.3s;
-            pointer-events: auto; 
+            pointer-events: auto; /* Asegurar que reciba clics */
         }
         .btn-regresar-fijo:hover { background: rgba(0,0,0,0.9); border-color: var(--c-accent); color: var(--c-accent); }
 
@@ -700,61 +695,11 @@
 
     <div class="toast" id="toast"></div>
 
+    <!-- Librerías de Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
     <script>
-        /* ══════ GESTIÓN DE DATOS (FIREBASE NUBE) ══════ */
-        
-        // ¡IMPORTANTE! REEMPLAZA ESTE BLOQUE POR TUS LLAVES DE FIREBASE:
-      const firebaseConfig = {
-  apiKey: "AIzaSyAJSdiQtL0m7xFjlEyosh3Rfbt2JpMrTzs",
-  authDomain: "monte-eb262.firebaseapp.com",
-  databaseURL: "https://monte-eb262-default-rtdb.firebaseio.com",
-  projectId: "monte-eb262",
-  storageBucket: "monte-eb262.firebasestorage.app",
-  messagingSenderId: "812663532268",
-  appId: "1:812663532268:web:96392bf5f0475517c593c9",
-  measurementId: "G-5FTK1HF5L3"
-};
-        
-        // Inicializar Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        var database = firebase.database();
-        var D = null;
-
-        function loadData() {
-            database.ref('fvm_data').once('value').then(function(snapshot) {
-                if (snapshot.exists()) {
-                    D = snapshot.val();
-                } else {
-                    D = getDefaults();
-                    saveData(); // Guardar datos por defecto por primera vez en la nube
-                }
-                iniciarSitio();
-            }).catch(function(error) {
-                console.error("Error conectando a Firebase:", error);
-                // Si Firebase falla, usamos respaldo de memoria local temporalmente
-                try { var s = localStorage.getItem('fvm_data'); D = s ? JSON.parse(s) : null; } catch (e) { D = null; } 
-                if (!D) D = getDefaults(); 
-                iniciarSitio();
-            });
-        }
-
-        function saveData() {
-            if(database) {
-                database.ref('fvm_data').set(D).then(function() {
-                    try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch (e) {} // Respaldo local
-                }).catch(function(error) {
-                    toast('Error al guardar en la nube. Verifica tus llaves y reglas en Firebase.', 4000);
-                });
-            }
-        }
-        
-        function iniciarSitio() {
-            renderPublic();
-            checkUrlForClient();
-        }
-
         /* ═══════ DATOS POR DEFECTO ═══════ */
         function getDefaults() {
             var defaultExpire = Date.now() + 31536000000; // +1 year
@@ -802,6 +747,58 @@
             };
         }
 
+        /* ══════ GESTIÓN DE DATOS Y FIREBASE ══════ */
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROYECTO.firebaseapp.com",
+            projectId: "TU_PROYECTO",
+            storageBucket: "TU_PROYECTO.appspot.com",
+            messagingSenderId: "TU_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        var D;
+
+        async function loadData() {
+            try {
+                const docRef = db.collection("web_data").doc("fvm_data");
+                const docSnap = await docRef.get();
+                
+                if (docSnap.exists) {
+                    D = docSnap.data();
+                } else {
+                    D = getDefaults();
+                    saveData();
+                }
+            } catch (error) {
+                console.error("Error al conectar con Firebase. Cargando datos locales:", error);
+                var s = localStorage.getItem('fvm_data'); 
+                D = s ? JSON.parse(s) : getDefaults();
+            }
+            
+            renderPublic();
+            checkUrlForClient();
+        }
+
+        function saveData() {
+            try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch(e){} 
+            
+            db.collection("web_data").doc("fvm_data").set(D)
+                .then(() => {
+                    console.log("Guardado en Firebase");
+                    toast('Actualización guardada con éxito', 2500);
+                })
+                .catch((error) => {
+                    console.error("Error guardando en Firebase:", error);
+                    toast('Error de conexión al guardar', 4000);
+                });
+        }
+
         /* ══════ ESTADO GLOBAL ══════ */
         var curClient = null, selected = {}, allSel = false, lbIdx = 0, portalPhotos = [];
         var admState = { tab: 'services', view: 'list', editId: null };
@@ -837,6 +834,7 @@
         
         function copyClientUrl(code) {
             var base = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            // Remover index.html si existe para que quede más limpio
             base = base.replace(/\/index\.html$/i, '/');
             var url = base + "?c=" + encodeURIComponent(code);
             
@@ -1561,6 +1559,7 @@
             reader.onload = function(e) { var img = new Image(); img.onload = function() { var canvas = document.createElement('canvas'); var w = img.width, h = img.height; if (w > 1800) { h = Math.floor(h * (1800 / w)); w = 1800; } canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h); var b64 = canvas.toDataURL('image/jpeg', .82); if (type === 'cover') updatePB('cover', b64); else if (type === 'back') updatePB('back', b64); else updatePBSpread(idx, b64); renderPhotobookAdmin(document.getElementById('admBody')); toast('Imagen cargada'); }; img.src = e.target.result; };
             reader.readAsDataURL(file); input.value = '';
         }
+        function savePBData() { saveData(); toast('Fotolibro guardado correctamente'); }
 
         /* API Drive y Autollenado */
         function fetchDriveFolderForPB() {
@@ -1666,9 +1665,11 @@
                 '<label class="af-l" style="margin-top:1rem; color:var(--accent)">Clave API de Google Drive</label><input class="af-i" id="se_driveApi" placeholder="AIzaSy..." value="' + esc(s.driveApiKey || '') + '">' +
                 '<label class="af-l" style="margin-top:1rem">Cambiar contraseña admin</label><input class="af-i" type="password" id="se_pass" placeholder="Dejar vacío para no cambiar">' +
                 '<div class="af-btns"><button class="af-btn af-btn-p" onclick="saveSettings()">Guardar cambios</button></div>' +
+                
                 '<hr style="border:none; border-top:1px solid var(--border-light); margin: 2rem 0;">' +
-                '<h3 style="margin-bottom:1rem; color:#2e7d32;">Conexión a Firebase Activa ✓</h3>' +
-                '<p class="adm-hint">Tus datos se están guardando automáticamente en la nube. Los enlaces copiados funcionarán instantáneamente en las etiquetas NFC y cualquier celular.</p>';
+                '<h3 style="margin-bottom:1rem; color:var(--accent);">Sincronización de la Página</h3>' +
+                '<p class="adm-hint">Tus datos se guardan en Firebase de forma automática cada vez que agregas un paquete o cliente. También puedes forzar el guardado y la actualización de la página completa con este botón.</p>' +
+                '<button class="af-btn" style="background:#111; color:#fff;" onclick="saveData()">Guardar actualización de la página</button>';
         }
         function saveSettings() {
             var s = D.settings; s.phone = document.getElementById('se_phone').value.trim(); s.phoneRaw = document.getElementById('se_phoneRaw').value.trim(); s.address = document.getElementById('se_addr').value.trim(); s.hours = document.getElementById('se_hours').value.trim(); s.facebook = document.getElementById('se_fb').value.trim(); s.waNumber = document.getElementById('se_wa').value.trim(); s.heroDesc = document.getElementById('se_hero').value.trim(); s.mapEmbed = document.getElementById('se_map').value.trim(); s.driveApiKey = document.getElementById('se_driveApi').value.trim();
@@ -1677,14 +1678,10 @@
         }
 
         /* ══════ INICIALIZACIÓN ══════ */
-        // Carga los datos de Firebase al inicio y arranca la página
-        loadData();
-        
         function checkUrlForClient() {
             var params = new URLSearchParams(window.location.search);
             var clientCodeParam = params.get('c') || params.get('cliente');
             
-            // Retrocompatibilidad con Hash
             if (!clientCodeParam && window.location.hash && window.location.hash.length > 1) {
                 var possibleCode = window.location.hash.substring(1);
                 if(!['portafolio', 'servicios', 'testimonios', 'contacto'].includes(possibleCode)) {
@@ -1696,7 +1693,6 @@
                 clientCodeParam = decodeURIComponent(clientCodeParam).toLowerCase();
                 var targetView = null;
                 
-                // Extraer la vista
                 if (clientCodeParam.endsWith('-galeria')) { 
                     targetView = 'galeria'; 
                     clientCodeParam = clientCodeParam.replace('-galeria', ''); 
@@ -1708,8 +1704,7 @@
                     clientCodeParam = clientCodeParam.replace('-fotolibro', ''); 
                 }
                 
-                // Si el cliente existe, abrir inmediatamente
-                if (D && D.clients && D.clients[clientCodeParam]) {
+                if (D.clients[clientCodeParam]) {
                     document.getElementById('codeIn').value = clientCodeParam;
                     curClient = clientCodeParam;
                     selected = {}; allSel = false; isPrintMode = false;
@@ -1719,6 +1714,10 @@
                 }
             }
         }
+        
+        // Arrancar la app (Se encargará de llamar a renderPublic() y checkUrlForClient() de forma segura tras descargar de Firebase)
+        loadData(); 
+        
     </script>
 </body>
 </html>
