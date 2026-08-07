@@ -7,11 +7,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- LIBRERÍAS DE FIREBASE (Añadidas para conexión a la Nube) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
     <style>
         :root {
             --bg: #fafaf8; --surface: #fff; --text: #1a1a1a; --text-muted: #5c5c5c; --text-light: #8a8a8a;
@@ -793,57 +788,68 @@
             }
         }
 
-        /* ══════ GESTIÓN DE DATOS (FIREBASE NUBE) ══════ */
-        
-        // ¡IMPORTANTE! REEMPLAZA ESTO POR TUS LLAVES DE FIREBASE:
-       const firebaseConfig = {
-  apiKey: "AIzaSyAJSdiQtL0m7xFjlEyosh3Rfbt2JpMrTzs",
-  authDomain: "monte-eb262.firebaseapp.com",
-  databaseURL: "https://monte-eb262-default-rtdb.firebaseio.com",
-  projectId: "monte-eb262",
-  storageBucket: "monte-eb262.firebasestorage.app",
-  messagingSenderId: "812663532268",
-  appId: "1:812663532268:web:96392bf5f0475517c593c9",
-  measurementId: "G-5FTK1HF5L3"
-};
-        };
-        
-        // Inicializar Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
+        /* ══════ GESTIÓN DE DATOS Y EXPORTACIÓN ESTÁTICA ══════ */
+        function loadData() { 
+            try { 
+                var s = localStorage.getItem('fvm_data'); 
+                D = s ? JSON.parse(s) : null; 
+            } catch (e) { 
+                D = null; 
+            } 
+            if (!D) D = getDefaults(); 
+            saveData(); 
         }
-        var database = firebase.database();
-        var D = null;
+        
+        function saveData() { 
+            try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch (e) { toast('Error al guardar datos', 4000); } 
+        }
 
-        function loadData() {
-            database.ref('fvm_data').once('value').then(function(snapshot) {
-                if (snapshot.exists()) {
-                    D = snapshot.val();
+        function downloadUpdatedHTML() {
+            var urlToFetch = window.location.href.split('#')[0].split('?')[0];
+            fetch(urlToFetch)
+            .then(function(res) { 
+                if(!res.ok) throw new Error("Fetch failed");
+                return res.text(); 
+            })
+            .then(function(text) {
+                var rawJson = JSON.stringify(D, null, 4);
+                var startStr = "function getDefaults() {";
+                var endStr = "/* ══════ ESTADO GLOBAL";
+                var startIndex = text.indexOf(startStr);
+                var endIndex = text.indexOf(endStr);
+                
+                if(startIndex !== -1 && endIndex !== -1) {
+                    var newHtml = text.substring(0, startIndex) + 
+                                  "function getDefaults() {\n            return " + rawJson + ";\n        }\n\n        " + 
+                                  text.substring(endIndex);
+                    
+                    var blob = new Blob([newHtml], {type: "text/html;charset=utf-8"});
+                    var link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.download = "index.html";
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    toast('¡Archivo index.html descargado! Súbelo a GitHub.');
                 } else {
-                    D = getDefaults();
-                    saveData();
+                    fallbackExport();
                 }
-                iniciarSitio();
-            }).catch(function(error) {
-                console.error("Error cargando base de datos:", error);
-                // Si Firebase falla (ej. llaves incorrectas), entra aquí usando memoria local
-                try { var s = localStorage.getItem('fvm_data'); D = s ? JSON.parse(s) : null; } catch (e) { D = null; } 
-                if (!D) D = getDefaults(); 
-                iniciarSitio();
-            });
-        }
-
-        function saveData() {
-            database.ref('fvm_data').set(D).then(function() {
-                try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch (e) {} // Respaldo local
-            }).catch(function(error) {
-                toast('Error al guardar en la nube. Verifica Firebase.', 4000);
+            }).catch(function(e) { 
+                fallbackExport();
             });
         }
         
-        function iniciarSitio() {
-            renderPublic();
-            checkUrlForClient();
+        function fallbackExport() {
+            var rawJson = JSON.stringify(D, null, 4);
+            var exportCode = "function getDefaults() {\n    return " + rawJson + ";\n}";
+            var exportArea = document.getElementById('exportArea');
+            if(exportArea) {
+                exportArea.value = exportCode;
+                exportArea.style.display = 'block';
+                exportArea.select();
+                document.execCommand('copy');
+                toast('Error de descarga. Código copiado en la caja de abajo.');
+            }
         }
 
         /* ══════ RENDERIZADO PÚBLICO ══════ */
@@ -1433,6 +1439,7 @@
                 let folders = data.files.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
                 let looseImages = data.files.filter(f => f.mimeType.includes('image/'));
 
+                // ORDENAR ALFABÉTICAMENTE / NUMÉRICAMENTE AL EXTRAER
                 folders.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
                 looseImages.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
 
@@ -1447,6 +1454,7 @@
                     let subRes = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folder.id}'+in+parents+and+mimeType+contains+'image/'+and+trashed=false&fields=files(id,name)&key=${apiKey}&pageSize=1000`);
                     let subData = await subRes.json();
                     if (subData.files) {
+                        // ORDENAR ALFABÉTICAMENTE LAS FOTOS DENTRO DE LA SUBCARPETA
                         subData.files.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
                         subData.files.forEach(img => {
                             allPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s1600`, name: img.name, set: folder.name });
@@ -1652,7 +1660,13 @@
                 '<label class="af-l">Google Maps Embed URL</label><input class="af-i" id="se_map" value="' + esc(s.mapEmbed) + '">' +
                 '<label class="af-l" style="margin-top:1rem; color:var(--accent)">Clave API de Google Drive</label><input class="af-i" id="se_driveApi" placeholder="AIzaSy..." value="' + esc(s.driveApiKey || '') + '">' +
                 '<label class="af-l" style="margin-top:1rem">Cambiar contraseña admin</label><input class="af-i" type="password" id="se_pass" placeholder="Dejar vacío para no cambiar">' +
-                '<div class="af-btns"><button class="af-btn af-btn-p" onclick="saveSettings()">Guardar cambios</button></div>';
+                '<div class="af-btns"><button class="af-btn af-btn-p" onclick="saveSettings()">Guardar cambios</button></div>' +
+                
+                '<hr style="border:none; border-top:1px solid var(--border-light); margin: 2rem 0;">' +
+                '<h3 style="margin-bottom:1rem; color:#c0392b;">Publicar en Internet (GitHub)</h3>' +
+                '<p class="adm-hint">Para que tus clientes puedan entrar con su URL única (NFC), debes guardar los cambios en el archivo. Dale clic al botón, descarga el archivo y arrástralo a tu repositorio de GitHub.</p>' +
+                '<button class="af-btn" style="background:#111; color:#fff;" onclick="downloadUpdatedHTML()">📥 Descargar HTML Actualizado</button>' +
+                '<textarea class="af-i af-ta" id="exportArea" style="display:none; margin-top:1rem; font-family:monospace; font-size:0.75rem; height:200px;" readonly></textarea>';
         }
         function saveSettings() {
             var s = D.settings; s.phone = document.getElementById('se_phone').value.trim(); s.phoneRaw = document.getElementById('se_phoneRaw').value.trim(); s.address = document.getElementById('se_addr').value.trim(); s.hours = document.getElementById('se_hours').value.trim(); s.facebook = document.getElementById('se_fb').value.trim(); s.waNumber = document.getElementById('se_wa').value.trim(); s.heroDesc = document.getElementById('se_hero').value.trim(); s.mapEmbed = document.getElementById('se_map').value.trim(); s.driveApiKey = document.getElementById('se_driveApi').value.trim();
@@ -1661,7 +1675,6 @@
         }
 
         /* ══════ INICIALIZACIÓN Y ENLACES DIRECTOS ══════ */
-        // Carga los datos de Firebase al inicio
         loadData();
         
         function checkUrlForClient() {
@@ -1700,6 +1713,7 @@
                 }
             }
         }
+        checkUrlForClient();
     </script>
 </body>
 </html>
