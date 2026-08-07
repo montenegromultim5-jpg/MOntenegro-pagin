@@ -7,6 +7,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- LIBRERÍAS DE FIREBASE -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
         :root {
             --bg: #fafaf8; --surface: #fff; --text: #1a1a1a; --text-muted: #5c5c5c; --text-light: #8a8a8a;
@@ -147,7 +152,7 @@
             background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.2);
             padding: 0.6rem 1.2rem; border-radius: 50px; cursor: pointer; backdrop-filter: blur(8px);
             font-family: var(--fb); font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; transition: 0.3s;
-            pointer-events: auto; /* Asegurar que reciba clics */
+            pointer-events: auto; 
         }
         .btn-regresar-fijo:hover { background: rgba(0,0,0,0.9); border-color: var(--c-accent); color: var(--c-accent); }
 
@@ -696,6 +701,60 @@
     <div class="toast" id="toast"></div>
 
     <script>
+        /* ══════ GESTIÓN DE DATOS (FIREBASE NUBE) ══════ */
+        
+        // ¡IMPORTANTE! REEMPLAZA ESTE BLOQUE POR TUS LLAVES DE FIREBASE:
+      const firebaseConfig = {
+  apiKey: "AIzaSyAJSdiQtL0m7xFjlEyosh3Rfbt2JpMrTzs",
+  authDomain: "monte-eb262.firebaseapp.com",
+  databaseURL: "https://monte-eb262-default-rtdb.firebaseio.com",
+  projectId: "monte-eb262",
+  storageBucket: "monte-eb262.firebasestorage.app",
+  messagingSenderId: "812663532268",
+  appId: "1:812663532268:web:96392bf5f0475517c593c9",
+  measurementId: "G-5FTK1HF5L3"
+};
+        
+        // Inicializar Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        var database = firebase.database();
+        var D = null;
+
+        function loadData() {
+            database.ref('fvm_data').once('value').then(function(snapshot) {
+                if (snapshot.exists()) {
+                    D = snapshot.val();
+                } else {
+                    D = getDefaults();
+                    saveData(); // Guardar datos por defecto por primera vez en la nube
+                }
+                iniciarSitio();
+            }).catch(function(error) {
+                console.error("Error conectando a Firebase:", error);
+                // Si Firebase falla, usamos respaldo de memoria local temporalmente
+                try { var s = localStorage.getItem('fvm_data'); D = s ? JSON.parse(s) : null; } catch (e) { D = null; } 
+                if (!D) D = getDefaults(); 
+                iniciarSitio();
+            });
+        }
+
+        function saveData() {
+            if(database) {
+                database.ref('fvm_data').set(D).then(function() {
+                    try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch (e) {} // Respaldo local
+                }).catch(function(error) {
+                    toast('Error al guardar en la nube. Verifica tus llaves y reglas en Firebase.', 4000);
+                });
+            }
+        }
+        
+        function iniciarSitio() {
+            renderPublic();
+            checkUrlForClient();
+        }
+
         /* ═══════ DATOS POR DEFECTO ═══════ */
         function getDefaults() {
             var defaultExpire = Date.now() + 31536000000; // +1 year
@@ -743,11 +802,6 @@
             };
         }
 
-        /* ══════ GESTIÓN DE DATOS Y EXPORTACIÓN ══════ */
-        var D;
-        function loadData() { try { var s = localStorage.getItem('fvm_data'); D = s ? JSON.parse(s) : null; } catch (e) { D = null; } if (!D) D = getDefaults(); saveData(); }
-        function saveData() { try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch (e) { toast('Error al guardar datos', 4000); } }
-
         /* ══════ ESTADO GLOBAL ══════ */
         var curClient = null, selected = {}, allSel = false, lbIdx = 0, portalPhotos = [];
         var admState = { tab: 'services', view: 'list', editId: null };
@@ -783,7 +837,6 @@
         
         function copyClientUrl(code) {
             var base = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            // Remover index.html si existe para que quede más limpio
             base = base.replace(/\/index\.html$/i, '/');
             var url = base + "?c=" + encodeURIComponent(code);
             
@@ -1508,7 +1561,6 @@
             reader.onload = function(e) { var img = new Image(); img.onload = function() { var canvas = document.createElement('canvas'); var w = img.width, h = img.height; if (w > 1800) { h = Math.floor(h * (1800 / w)); w = 1800; } canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h); var b64 = canvas.toDataURL('image/jpeg', .82); if (type === 'cover') updatePB('cover', b64); else if (type === 'back') updatePB('back', b64); else updatePBSpread(idx, b64); renderPhotobookAdmin(document.getElementById('admBody')); toast('Imagen cargada'); }; img.src = e.target.result; };
             reader.readAsDataURL(file); input.value = '';
         }
-        function savePBData() { saveData(); toast('Fotolibro guardado correctamente'); }
 
         /* API Drive y Autollenado */
         function fetchDriveFolderForPB() {
@@ -1600,7 +1652,7 @@
         function editTestimonial(i) { var t = D.testimonials[i]; var newText = prompt('Testimonio:', t.text.replace(/"/g, '')); if (newText === null) return; var newAuthor = prompt('Autor:', t.author); if (newAuthor === null) return; D.testimonials[i].text = newText; D.testimonials[i].author = newAuthor; saveData(); renderAdmBody(); renderPublic(); }
         function delTestimonial(i) { D.testimonials.splice(i, 1); saveData(); renderAdmBody(); renderPublic(); }
 
-        /* ════ ADMIN: GENERAL Y EXPORT PARA GITHUB PAGES ════ */
+        /* ════ ADMIN: GENERAL ════ */
         function renderAdmSettings(body) {
             var s = D.settings;
             body.innerHTML = '<h3 style="margin-bottom:1rem">Datos generales del sitio</h3>' +
@@ -1614,38 +1666,25 @@
                 '<label class="af-l" style="margin-top:1rem; color:var(--accent)">Clave API de Google Drive</label><input class="af-i" id="se_driveApi" placeholder="AIzaSy..." value="' + esc(s.driveApiKey || '') + '">' +
                 '<label class="af-l" style="margin-top:1rem">Cambiar contraseña admin</label><input class="af-i" type="password" id="se_pass" placeholder="Dejar vacío para no cambiar">' +
                 '<div class="af-btns"><button class="af-btn af-btn-p" onclick="saveSettings()">Guardar cambios</button></div>' +
-                
                 '<hr style="border:none; border-top:1px solid var(--border-light); margin: 2rem 0;">' +
-                '<h3 style="margin-bottom:1rem; color:#c0392b;">Exportar Datos (Para GitHub Pages)</h3>' +
-                '<p class="adm-hint">Como usas GitHub Pages, los datos se guardan solo en tu navegador. Cuando termines de crear clientes y configuraciones, presiona este botón, copia el código que aparecerá y pégalo en el archivo HTML reemplazando la función <code>getDefaults()</code>.</p>' +
-                '<button class="af-btn" style="background:#111; color:#fff;" onclick="exportDataForGithub()">Generar Código de Respaldo</button>' +
-                '<textarea class="af-i af-ta" id="exportArea" style="display:none; margin-top:1rem; font-family:monospace; font-size:0.75rem; height:200px;" readonly></textarea>';
+                '<h3 style="margin-bottom:1rem; color:#2e7d32;">Conexión a Firebase Activa ✓</h3>' +
+                '<p class="adm-hint">Tus datos se están guardando automáticamente en la nube. Los enlaces copiados funcionarán instantáneamente en las etiquetas NFC y cualquier celular.</p>';
         }
         function saveSettings() {
             var s = D.settings; s.phone = document.getElementById('se_phone').value.trim(); s.phoneRaw = document.getElementById('se_phoneRaw').value.trim(); s.address = document.getElementById('se_addr').value.trim(); s.hours = document.getElementById('se_hours').value.trim(); s.facebook = document.getElementById('se_fb').value.trim(); s.waNumber = document.getElementById('se_wa').value.trim(); s.heroDesc = document.getElementById('se_hero').value.trim(); s.mapEmbed = document.getElementById('se_map').value.trim(); s.driveApiKey = document.getElementById('se_driveApi').value.trim();
             var newPass = document.getElementById('se_pass').value; if (newPass && newPass.length >= 4) { D.adminPass = newPass; toast('Contraseña actualizada'); }
             saveData(); renderPublic(); toast('Configuración guardada');
         }
-        function exportDataForGithub() {
-            var exportArea = document.getElementById('exportArea');
-            var rawJson = JSON.stringify(D, null, 4);
-            var exportCode = `function getDefaults() {\n    return ${rawJson};\n}`;
-            exportArea.value = exportCode;
-            exportArea.style.display = 'block';
-            exportArea.select();
-            document.execCommand('copy');
-            toast('Código generado y copiado al portapapeles');
-        }
 
         /* ══════ INICIALIZACIÓN ══════ */
-        loadData(); renderPublic();
+        // Carga los datos de Firebase al inicio y arranca la página
+        loadData();
         
-        // ════ Carga Automática Directa para Etiquetas NFC (Query o Hash) ════
         function checkUrlForClient() {
             var params = new URLSearchParams(window.location.search);
             var clientCodeParam = params.get('c') || params.get('cliente');
             
-            // Retrocompatibilidad con Hash por si pegan enlaces de la versión anterior
+            // Retrocompatibilidad con Hash
             if (!clientCodeParam && window.location.hash && window.location.hash.length > 1) {
                 var possibleCode = window.location.hash.substring(1);
                 if(!['portafolio', 'servicios', 'testimonios', 'contacto'].includes(possibleCode)) {
@@ -1657,7 +1696,7 @@
                 clientCodeParam = decodeURIComponent(clientCodeParam).toLowerCase();
                 var targetView = null;
                 
-                // Extraer a qué vista va (video, galeria, fotolibro)
+                // Extraer la vista
                 if (clientCodeParam.endsWith('-galeria')) { 
                     targetView = 'galeria'; 
                     clientCodeParam = clientCodeParam.replace('-galeria', ''); 
@@ -1670,21 +1709,16 @@
                 }
                 
                 // Si el cliente existe, abrir inmediatamente
-                if (D.clients[clientCodeParam]) {
+                if (D && D.clients && D.clients[clientCodeParam]) {
                     document.getElementById('codeIn').value = clientCodeParam;
                     curClient = clientCodeParam;
                     selected = {}; allSel = false; isPrintMode = false;
                     enterPortal(targetView);
                 } else {
-                    // Limpiar la URL si el código era erróneo
                     pushUrlState(null);
                 }
             }
         }
-        
-        // Ejecutar Inmediatamente (repara el problema de tener que refrescar la página)
-        checkUrlForClient();
-        
     </script>
 </body>
 </html>
