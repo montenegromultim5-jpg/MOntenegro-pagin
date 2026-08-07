@@ -795,15 +795,17 @@
 
         /* ══════ GESTIÓN DE DATOS (FIREBASE NUBE) ══════ */
         
-        // ¡IMPORTANTE JAFET! REEMPLAZA ESTO POR TUS LLAVES DE FIREBASE:
-        var firebaseConfig = {
-            apiKey: "TU_API_KEY",
-            authDomain: "TU_PROYECTO.firebaseapp.com",
-            databaseURL: "https://TU_PROYECTO.firebaseio.com",
-            projectId: "TU_PROYECTO",
-            storageBucket: "TU_PROYECTO.appspot.com",
-            messagingSenderId: "TU_SENDER_ID",
-            appId: "TU_APP_ID"
+        // ¡IMPORTANTE! REEMPLAZA ESTO POR TUS LLAVES DE FIREBASE:
+       const firebaseConfig = {
+  apiKey: "AIzaSyAJSdiQtL0m7xFjlEyosh3Rfbt2JpMrTzs",
+  authDomain: "monte-eb262.firebaseapp.com",
+  databaseURL: "https://monte-eb262-default-rtdb.firebaseio.com",
+  projectId: "monte-eb262",
+  storageBucket: "monte-eb262.firebasestorage.app",
+  messagingSenderId: "812663532268",
+  appId: "1:812663532268:web:96392bf5f0475517c593c9",
+  measurementId: "G-5FTK1HF5L3"
+};
         };
         
         // Inicializar Firebase
@@ -1431,7 +1433,6 @@
                 let folders = data.files.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
                 let looseImages = data.files.filter(f => f.mimeType.includes('image/'));
 
-                // ORDENAR ALFABÉTICAMENTE / NUMÉRICAMENTE AL EXTRAER
                 folders.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
                 looseImages.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
 
@@ -1446,7 +1447,6 @@
                     let subRes = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folder.id}'+in+parents+and+mimeType+contains+'image/'+and+trashed=false&fields=files(id,name)&key=${apiKey}&pageSize=1000`);
                     let subData = await subRes.json();
                     if (subData.files) {
-                        // ORDENAR ALFABÉTICAMENTE LAS FOTOS DENTRO DE LA SUBCARPETA
                         subData.files.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
                         subData.files.forEach(img => {
                             allPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s1600`, name: img.name, set: folder.name });
@@ -1548,7 +1548,6 @@
             reader.onload = function(e) { var img = new Image(); img.onload = function() { var canvas = document.createElement('canvas'); var w = img.width, h = img.height; if (w > 1800) { h = Math.floor(h * (1800 / w)); w = 1800; } canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h); var b64 = canvas.toDataURL('image/jpeg', .82); if (type === 'cover') updatePB('cover', b64); else if (type === 'back') updatePB('back', b64); else updatePBSpread(idx, b64); renderPhotobookAdmin(document.getElementById('admBody')); toast('Imagen cargada'); }; img.src = e.target.result; };
             reader.readAsDataURL(file); input.value = '';
         }
-        function savePBData() { saveData(); toast('Fotolibro guardado correctamente'); }
 
         /* API Drive y Autollenado */
         function fetchDriveFolderForPB() {
@@ -1640,7 +1639,7 @@
         function editTestimonial(i) { var t = D.testimonials[i]; var newText = prompt('Testimonio:', t.text.replace(/"/g, '')); if (newText === null) return; var newAuthor = prompt('Autor:', t.author); if (newAuthor === null) return; D.testimonials[i].text = newText; D.testimonials[i].author = newAuthor; saveData(); renderAdmBody(); renderPublic(); }
         function delTestimonial(i) { D.testimonials.splice(i, 1); saveData(); renderAdmBody(); renderPublic(); }
 
-        /* ════ ADMIN: GENERAL Y EXPORT PARA GITHUB PAGES ════ */
+        /* ════ ADMIN: GENERAL ════ */
         function renderAdmSettings(body) {
             var s = D.settings;
             body.innerHTML = '<h3 style="margin-bottom:1rem">Datos generales del sitio</h3>' +
@@ -1653,36 +1652,22 @@
                 '<label class="af-l">Google Maps Embed URL</label><input class="af-i" id="se_map" value="' + esc(s.mapEmbed) + '">' +
                 '<label class="af-l" style="margin-top:1rem; color:var(--accent)">Clave API de Google Drive</label><input class="af-i" id="se_driveApi" placeholder="AIzaSy..." value="' + esc(s.driveApiKey || '') + '">' +
                 '<label class="af-l" style="margin-top:1rem">Cambiar contraseña admin</label><input class="af-i" type="password" id="se_pass" placeholder="Dejar vacío para no cambiar">' +
-                '<div class="af-btns"><button class="af-btn af-btn-p" onclick="saveSettings()">Guardar cambios</button></div>' +
-                
-                '<hr style="border:none; border-top:1px solid var(--border-light); margin: 2rem 0;">' +
-                '<h3 style="margin-bottom:1rem; color:#c0392b;">Exportar Datos (Para GitHub Pages)</h3>' +
-                '<p class="adm-hint">Como usas GitHub Pages, los datos se guardan solo en tu navegador. Cuando termines de crear clientes y configuraciones, presiona este botón, copia el código que aparecerá y pégalo en el archivo HTML reemplazando la función <code>getDefaults()</code>.</p>' +
-                '<button class="af-btn" style="background:#111; color:#fff;" onclick="exportDataForGithub()">Generar Código de Respaldo</button>' +
-                '<textarea class="af-i af-ta" id="exportArea" style="display:none; margin-top:1rem; font-family:monospace; font-size:0.75rem; height:200px;" readonly></textarea>';
+                '<div class="af-btns"><button class="af-btn af-btn-p" onclick="saveSettings()">Guardar cambios</button></div>';
         }
         function saveSettings() {
             var s = D.settings; s.phone = document.getElementById('se_phone').value.trim(); s.phoneRaw = document.getElementById('se_phoneRaw').value.trim(); s.address = document.getElementById('se_addr').value.trim(); s.hours = document.getElementById('se_hours').value.trim(); s.facebook = document.getElementById('se_fb').value.trim(); s.waNumber = document.getElementById('se_wa').value.trim(); s.heroDesc = document.getElementById('se_hero').value.trim(); s.mapEmbed = document.getElementById('se_map').value.trim(); s.driveApiKey = document.getElementById('se_driveApi').value.trim();
             var newPass = document.getElementById('se_pass').value; if (newPass && newPass.length >= 4) { D.adminPass = newPass; toast('Contraseña actualizada'); }
             saveData(); renderPublic(); toast('Configuración guardada');
         }
-        function exportDataForGithub() {
-            var exportArea = document.getElementById('exportArea');
-            var rawJson = JSON.stringify(D, null, 4);
-            var exportCode = `function getDefaults() {\n    return ${rawJson};\n}`;
-            exportArea.value = exportCode;
-            exportArea.style.display = 'block';
-            exportArea.select();
-            document.execCommand('copy');
-            toast('Código generado y copiado al portapapeles');
-        }
 
-        /* ══════ COMPROBAR URL PARA ENLACES DIRECTOS ══════ */
+        /* ══════ INICIALIZACIÓN Y ENLACES DIRECTOS ══════ */
+        // Carga los datos de Firebase al inicio
+        loadData();
+        
         function checkUrlForClient() {
             var params = new URLSearchParams(window.location.search);
             var clientCodeParam = params.get('c') || params.get('cliente');
             
-            // Soporte para enlaces con Hash (#)
             if (!clientCodeParam && window.location.hash && window.location.hash.length > 1) {
                 var possibleCode = window.location.hash.substring(1);
                 if(!['portafolio', 'servicios', 'testimonios', 'contacto'].includes(possibleCode)) {
@@ -1694,7 +1679,6 @@
                 clientCodeParam = decodeURIComponent(clientCodeParam).toLowerCase();
                 var targetView = null;
                 
-                // Extraer la vista (video, galeria, fotolibro)
                 if (clientCodeParam.endsWith('-galeria')) { 
                     targetView = 'galeria'; 
                     clientCodeParam = clientCodeParam.replace('-galeria', ''); 
@@ -1706,7 +1690,6 @@
                     clientCodeParam = clientCodeParam.replace('-fotolibro', ''); 
                 }
                 
-                // Si el cliente existe, abrir inmediatamente
                 if (D && D.clients && D.clients[clientCodeParam]) {
                     document.getElementById('codeIn').value = clientCodeParam;
                     curClient = clientCodeParam;
@@ -1717,7 +1700,6 @@
                 }
             }
         }
-
     </script>
 </body>
 </html>
