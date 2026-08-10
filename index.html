@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
+        /* ===== ESTILOS (sin cambios) ===== */
         :root {
             --bg: #fafaf8; --surface: #fff; --text: #1a1a1a; --text-muted: #5c5c5c; --text-light: #8a8a8a;
             --accent: #b8935a; --accent-hover: #9c7a42; --accent-subtle: #f4ede4;
@@ -147,7 +148,7 @@
             background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.2);
             padding: 0.6rem 1.2rem; border-radius: 50px; cursor: pointer; backdrop-filter: blur(8px);
             font-family: var(--fb); font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; transition: 0.3s;
-            pointer-events: auto; /* Asegurar que reciba clics */
+            pointer-events: auto;
         }
         .btn-regresar-fijo:hover { background: rgba(0,0,0,0.9); border-color: var(--c-accent); color: var(--c-accent); }
 
@@ -293,11 +294,11 @@
         .af-i:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(184, 147, 90, .1); }
         .af-ta { min-height: 90px; resize: vertical; line-height: 1.5; }
         .af-row { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
-        .al-item { display: flex; align-items: center; gap: .7rem; padding: .7rem; border: 1px solid var(--border-light); border-radius: var(--radius); margin-bottom: .5rem; }
+        .al-item { display: flex; align-items: center; gap: .7rem; padding: .7rem; border: 1px solid var(--border-light); border-radius: var(--radius); margin-bottom: .5rem; flex-wrap: wrap; }
         .al-item-info { flex: 1; min-width: 0; }
         .al-item-t { font-weight: 600; font-size: .88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .al-item-s { font-size: .78rem; color: var(--text-light); }
-        .al-acts { display: flex; gap: .3rem; flex-shrink: 0; }
+        .al-acts { display: flex; gap: .3rem; flex-shrink: 0; flex-wrap: wrap; }
         .al-btn { background: var(--accent-subtle); border: 1px solid var(--border); color: var(--text-muted); border-radius: 6px; padding: .35rem .6rem; font-size: .78rem; cursor: pointer; font-family: var(--fb); min-height: 34px; transition: .2s; }
         .al-btn:hover { background: var(--border-light); }
         .al-btn.del { color: #c0392b; background: #fef2f2; border-color: #fdd; }
@@ -326,7 +327,7 @@
         .toggle-badge.on { background: #e8f5e9; color: #2e7d32; }
         .toggle-badge.off { background: #f5f5f5; color: #999; }
         
-        .adm-photo-item { display: flex; align-items: center; gap: .5rem; padding: .5rem; background: #fafafa; border: 1px solid var(--border-light); border-radius: 6px; margin-bottom: .4rem; }
+        .adm-photo-item { display: flex; align-items: center; gap: .5rem; padding: .5rem; background: #fafafa; border: 1px solid var(--border-light); border-radius: 6px; margin-bottom: .4rem; flex-wrap: wrap; }
         .adm-photo-item img { width: 48px; height: 36px; object-fit: cover; border-radius: 4px; flex-shrink: 0; background: #eee; }
         .adm-photo-item input { flex: 1; min-width: 0; padding: .35rem .5rem; border: 1px solid var(--border); border-radius: 4px; font-size: .8rem; font-family: var(--fb); }
         .adm-photo-item button { background: none; border: none; color: #c0392b; cursor: pointer; font-size: 1.1rem; padding: .2rem .4rem; flex-shrink: 0; transition: .2s; border-radius: 4px; }
@@ -462,6 +463,9 @@
             .om-pn { border-radius: var(--radius-lg); margin-bottom: 2rem; max-height: 80vh; }
             .om-ov { align-items: center; }
         }
+        /* ===== FIN ESTILOS ===== */
+        /* Cargando... */
+        #loadingData { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
     </style>
 </head>
 <body>
@@ -484,7 +488,9 @@
 
     <!-- ═══ SITIO PÚBLICO ═══ -->
     <div id="mainSite">
-        <section class="hero">
+        <!-- Contenedor de carga -->
+        <div id="loadingData">Cargando datos...</div>
+        <section class="hero" id="heroSection" style="display:none;">
             <div class="hero-inner">
                 <div class="hero-content">
                     <p class="section-label">Fotografía & Video Profesional</p>
@@ -495,23 +501,23 @@
                 <div class="hero-visual"><img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&h=800&fit=crop&auto=format" alt="Fotógrafo profesional" class="hero-img-main" loading="eager" width="600" height="800"></div>
             </div>
         </section>
-        <section class="section" id="portafolio">
+        <section class="section" id="portafolio" style="display:none;">
             <p class="section-label">Portafolio</p>
             <h2>Trabajos recientes</h2>
             <p class="section-desc">Una muestra de nuestro trabajo en eventos, retratos y producciones.</p>
             <div class="portfolio-grid" id="portGrid"></div>
         </section>
-        <section class="section" id="servicios">
+        <section class="section" id="servicios" style="display:none;">
             <p class="section-label">Servicios</p>
             <h2>Paquetes y precios</h2>
             <div class="services-grid" id="servGrid"></div>
         </section>
-        <section class="section" id="testimonios">
+        <section class="section" id="testimonios" style="display:none;">
             <p class="section-label">Testimonios</p>
             <h2>Clientes satisfechos</h2>
             <div class="testimonials-grid" id="testGrid"></div>
         </section>
-        <section class="section" id="contacto">
+        <section class="section" id="contacto" style="display:none;">
             <p class="section-label">Contacto</p>
             <h2>Visítanos o escríbenos</h2>
             <div class="contact-wrapper">
@@ -766,38 +772,67 @@
 
         var D;
 
+        // Mostrar carga
+        function showLoading(show) {
+            var loader = document.getElementById('loadingData');
+            var sections = ['heroSection','portafolio','servicios','testimonios','contacto'];
+            if (show) {
+                loader.style.display = 'block';
+                sections.forEach(id => { document.getElementById(id).style.display = 'none'; });
+            } else {
+                loader.style.display = 'none';
+                sections.forEach(id => { document.getElementById(id).style.display = ''; });
+            }
+        }
+
         async function loadData() {
+            showLoading(true);
             try {
                 const docRef = db.collection("web_data").doc("fvm_data");
                 const docSnap = await docRef.get();
                 
                 if (docSnap.exists) {
                     D = docSnap.data();
+                    // Guardar en localStorage como respaldo
+                    localStorage.setItem('fvm_data', JSON.stringify(D));
+                    console.log('✅ Datos cargados desde Firebase');
                 } else {
+                    // Si no existe en Firebase, crear documento con defaults
                     D = getDefaults();
-                    saveData();
+                    await docRef.set(D);
+                    localStorage.setItem('fvm_data', JSON.stringify(D));
+                    console.log('📁 Documento creado en Firebase con datos por defecto');
                 }
             } catch (error) {
-                console.error("Error al conectar con Firebase. Cargando datos locales:", error);
-                var s = localStorage.getItem('fvm_data'); 
-                D = s ? JSON.parse(s) : getDefaults();
+                console.error('❌ Error al conectar con Firebase:', error);
+                // Intentar cargar desde localStorage
+                var s = localStorage.getItem('fvm_data');
+                if (s) {
+                    D = JSON.parse(s);
+                    console.log('💾 Datos cargados desde localStorage (respaldo)');
+                } else {
+                    D = getDefaults();
+                    console.log('⚠️ Usando datos por defecto (sin respaldo)');
+                }
             }
-            
+            showLoading(false);
             renderPublic();
             checkUrlForClient();
         }
 
         function saveData() {
-            try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch(e){} 
+            try {
+                localStorage.setItem('fvm_data', JSON.stringify(D));
+            } catch(e){}
             
             db.collection("web_data").doc("fvm_data").set(D)
                 .then(() => {
-                    console.log("Guardado en Firebase");
+                    console.log('✅ Guardado en Firebase');
                     toast('Actualización guardada con éxito', 2500);
                 })
                 .catch((error) => {
-                    console.error("Error guardando en Firebase:", error);
-                    toast('Error de conexión al guardar', 4000);
+                    console.error('❌ Error guardando en Firebase:', error);
+                    toast('Error de conexión al guardar (datos guardados localmente)', 4000);
                 });
         }
 
@@ -836,7 +871,6 @@
         
         function copyClientUrl(code) {
             var base = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            // Remover index.html si existe para que quede más limpio
             base = base.replace(/\/index\.html$/i, '/');
             var url = base + "?c=" + encodeURIComponent(code);
             
@@ -886,8 +920,6 @@
                 '<div class="map-container"><iframe src="' + esc(s.mapEmbed) + '" title="Ubicación" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>';
             var sel = document.getElementById('servSelect'); sel.innerHTML = '<option value="" disabled selected>Tipo de servicio</option>';
             D.services.forEach(function(svc) { sel.innerHTML += '<option>' + esc(svc.title) + '</option>'; }); sel.innerHTML += '<option>Otro</option>';
-            var pp = document.getElementById('printPrices'); pp.innerHTML = '';
-            D.printPrices.forEach(function(p) { pp.innerHTML += '<tr><td>' + esc(p.label) + '</td><td>' + esc(p.measure) + '</td><td>$' + p.price + '</td></tr>'; });
             document.getElementById('cpWaLink').href = 'https://wa.me/' + s.waNumber; document.getElementById('cpWaLink').textContent = s.phone;
         }
 
@@ -1398,7 +1430,6 @@
                 
                 '<div id="ce_videoSec" style="display:' + (c.hasVideo ? 'block' : 'none') + ';margin-bottom:1rem;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)"><label class="af-l">Código Iframe del video</label><textarea class="af-i af-ta" id="ce_ytId" placeholder=\'<iframe src="https://www.youtube.com/embed/..." ...></iframe>\'>' + esc((c.video || {}).youtubeId || '') + '</textarea><p class="adm-hint" style="margin-top:-.5rem">Pega el código de inserción (iframe) de YouTube, Vimeo, etc.</p><label class="af-l">Título del video</label><input class="af-i" id="ce_vidTitle" value="' + esc((c.video || {}).title || '') + '" placeholder="Video Resumen"></div>' +
                 
-                /* VISTA FOTOS CON PIXIESET API */
                 '<div id="ce_photosSec" style="display:' + (c.hasPhotos ? 'block' : 'none') + ';margin-bottom:1rem;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)">' +
                 '<label class="af-l" style="color:var(--accent)">Extraer Galería (Soporta Subcarpetas / Sets)</label>' +
                 '<p class="adm-hint">Pega la URL de la carpeta principal de Google Drive. El sistema buscará las subcarpetas dentro y creará automáticamente los <b>Sets</b> (ej. "Sesión", "Evento") para la galería estilo Pixieset.</p>' +
@@ -1444,7 +1475,6 @@
                 let folders = data.files.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
                 let looseImages = data.files.filter(f => f.mimeType.includes('image/'));
 
-                // ORDENAR ALFABÉTICAMENTE / NUMÉRICAMENTE AL EXTRAER
                 folders.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
                 looseImages.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
 
@@ -1459,7 +1489,6 @@
                     let subRes = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folder.id}'+in+parents+and+mimeType+contains+'image/'+and+trashed=false&fields=files(id,name)&key=${apiKey}&pageSize=1000`);
                     let subData = await subRes.json();
                     if (subData.files) {
-                        // ORDENAR ALFABÉTICAMENTE LAS FOTOS DENTRO DE LA SUBCARPETA
                         subData.files.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
                         subData.files.forEach(img => {
                             allPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s1600`, name: img.name, set: folder.name });
@@ -1578,7 +1607,7 @@
             }).catch(function(err) { toast('Error: ' + err.message); document.getElementById('pbDriveGallery').innerHTML = '<p class="adm-hint" style="color:#c0392b">Error al cargar. Verifica tu API Key y asegúrate de que la carpeta de Drive sea "Pública".</p>'; });
         }
         function renderDriveGalleryForPB(files) {
-            currentDriveFiles = files; // Guardamos globalmente
+            currentDriveFiles = files; 
             var gal = document.getElementById('pbDriveGallery'); gal.innerHTML = '';
             files.forEach(function(f) {
                 var srcThumb = 'https://lh3.googleusercontent.com/d/' + f.id + '=s300', fullSrc = 'https://lh3.googleusercontent.com/d/' + f.id + '=s1600', img = document.createElement('img');
@@ -1671,7 +1700,8 @@
                 '<hr style="border:none; border-top:1px solid var(--border-light); margin: 2rem 0;">' +
                 '<h3 style="margin-bottom:1rem; color:var(--accent);">Sincronización de la Página</h3>' +
                 '<p class="adm-hint">Tus datos se guardan en Firebase de forma automática cada vez que agregas un paquete o cliente. También puedes forzar el guardado y la actualización de la página completa con este botón.</p>' +
-                '<button class="af-btn" style="background:#111; color:#fff;" onclick="saveData()">Guardar actualización de la página</button>';
+                '<button class="af-btn" style="background:#111; color:#fff;" onclick="saveData()">Guardar actualización de la página</button>' +
+                '<button class="af-btn" style="background:#111; color:#fff; margin-left:0.5rem;" onclick="location.reload()">Recargar página (refrescar datos)</button>';
         }
         function saveSettings() {
             var s = D.settings; s.phone = document.getElementById('se_phone').value.trim(); s.phoneRaw = document.getElementById('se_phoneRaw').value.trim(); s.address = document.getElementById('se_addr').value.trim(); s.hours = document.getElementById('se_hours').value.trim(); s.facebook = document.getElementById('se_fb').value.trim(); s.waNumber = document.getElementById('se_wa').value.trim(); s.heroDesc = document.getElementById('se_hero').value.trim(); s.mapEmbed = document.getElementById('se_map').value.trim(); s.driveApiKey = document.getElementById('se_driveApi').value.trim();
@@ -1717,9 +1747,8 @@
             }
         }
         
-        // Arrancar la app (Se encargará de llamar a renderPublic() y checkUrlForClient() de forma segura tras descargar de Firebase)
+        // Arrancar la app
         loadData(); 
-        
     </script>
 </body>
 </html>
