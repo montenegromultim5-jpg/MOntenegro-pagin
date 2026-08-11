@@ -826,19 +826,52 @@
             }
         }
 
+        // Función de guardado con Indicador Visual mejorado
         function saveData() {
+            const loader = document.getElementById('loader');
+            const loaderText = document.querySelector('.loader-text');
+            
+            // Activar la pantalla de carga para dar el indicador visual
+            if (loader && loaderText) {
+                loaderText.innerText = "Guardando en la nube...";
+                loader.style.display = 'flex';
+                loader.style.opacity = '1';
+            }
+
             // Guardamos local para respaldo por si el internet falla
             try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch(e){} 
             
             db.collection("web_data").doc("fvm_data").set(D)
                 .then(() => {
                     console.log("Guardado exitoso en Firebase");
-                    toast('Datos subidos al servidor de Firebase', 2500);
+                    toast('✅ Datos guardados correctamente', 2500);
                 })
                 .catch((error) => {
                     console.error("Error guardando en Firebase:", error);
-                    toast('Error al subir datos. Se guardó localmente.', 4000);
+                    toast('❌ Error al subir datos. Se guardó localmente.', 4000);
+                })
+                .finally(() => {
+                    // Ocultar la pantalla de carga cuando termine (ya sea éxito o error)
+                    if (loader && loaderText) {
+                        loader.style.opacity = '0';
+                        setTimeout(() => { 
+                            loader.style.display = 'none'; 
+                            loaderText.innerText = "Cargando contenido..."; // Restaurar texto original
+                        }, 500);
+                    }
                 });
+        }
+        
+        // Función para descargar el archivo JSON manualmente
+        function downloadJSON() {
+            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(D, null, 4));
+            var downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "montenegro_respaldo.json");
+            document.body.appendChild(downloadAnchorNode); 
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            toast('✅ Archivo JSON descargado', 3000);
         }
 
         /* ══════ ESTADO GLOBAL ══════ */
@@ -1394,7 +1427,7 @@
             D.services.sort(function(a, b) { return (a.order || 0) - (b.order || 0); }).forEach(function(svc) { body.innerHTML += ('<div class="al-item"><div class="al-item-info"><div class="al-item-t">' + esc(svc.icon) + ' ' + esc(svc.title) + '</div><div class="al-item-s">' + esc(svc.price) + '</div></div><div class="al-acts"><button class="al-btn" onclick="editService(\'' + svc.id + '\')">Editar</button><button class="al-btn del" onclick="delService(\'' + svc.id + '\')">Eliminar</button></div></div>'); });
         }
         function editService(id) { admState.view = 'edit'; admState.editId = id; renderAdmBody(); }
-        function saveService(oldId) { var icon = document.getElementById('ae_icon').value.trim(), title = document.getElementById('ae_title').value.trim(), desc = document.getElementById('ae_desc').value.trim(), price = document.getElementById('ae_price').value.trim(), feats = document.getElementById('ae_feats').value.trim().split('\n').filter(function(f) { return f.trim(); }); if (!title) { toast('El título es obligatorio'); return; } if (oldId) { var svc = D.services.find(function(s) { return s.id === oldId; }); if (svc) { svc.icon = icon; svc.title = title; svc.desc = desc; svc.price = price; svc.features = feats; } } else { D.services.push({ id: uid(), icon: icon, title: title, desc: desc, price: price, features: feats, order: D.services.length }); } saveData(); admState.view = 'list'; renderAdmBody(); renderPublic(); toast('Paquete guardado'); }
+        function saveService(oldId) { var icon = document.getElementById('ae_icon').value.trim(), title = document.getElementById('ae_title').value.trim(), desc = document.getElementById('ae_desc').value.trim(), price = document.getElementById('ae_price').value.trim(), feats = document.getElementById('ae_feats').value.trim().split('\n').filter(function(f) { return f.trim(); }); if (!title) { toast('El título es obligatorio'); return; } if (oldId) { var svc = D.services.find(function(s) { return s.id === oldId; }); if (svc) { svc.icon = icon; svc.title = title; svc.desc = desc; svc.price = price; svc.features = feats; } } else { D.services.push({ id: uid(), icon: icon, title: title, desc: desc, price: price, features: feats, order: D.services.length }); } saveData(); admState.view = 'list'; renderAdmBody(); renderPublic(); }
         function delService(id) { if (!confirm('¿Eliminar este paquete?')) return; D.services = D.services.filter(function(s) { return s.id !== id; }); saveData(); renderAdmBody(); renderPublic(); toast('Paquete eliminado'); }
 
         /* ════ ADMIN: CLIENTES Y GALERÍA PIXIESET ════ */
@@ -1705,7 +1738,7 @@
                 '<label class="af-l">Google Maps Embed URL</label><input class="af-i" id="se_map" value="' + esc(s.mapEmbed) + '">' +
                 '<label class="af-l" style="margin-top:1rem; color:var(--accent)">Clave API de Google Drive</label><input class="af-i" id="se_driveApi" placeholder="AIzaSy..." value="' + esc(s.driveApiKey || '') + '">' +
                 '<label class="af-l" style="margin-top:1rem">Cambiar contraseña admin</label><input class="af-i" type="password" id="se_pass" placeholder="Dejar vacío para no cambiar">' +
-                '<div class="af-btns"><button class="af-btn af-btn-p" onclick="saveSettings()">Guardar cambios</button></div>' +
+                '<div class="af-btns"><button class="af-btn af-btn-p" onclick="saveSettings()">Guardar cambios locales</button></div>' +
                 
                 '<hr style="border:none; border-top:1px solid var(--border-light); margin: 2rem 0;">' +
                 '<h3 style="margin-bottom:1rem; color:var(--accent);">Sincronización de la Página</h3>' +
@@ -1713,7 +1746,8 @@
                 '<div style="display:flex; gap:10px; flex-wrap:wrap;">' +
                 '<button class="af-btn" style="background:#111; color:#fff;" onclick="saveData()">Subir (Guardar) a Firebase</button>' +
                 '<button class="af-btn af-btn-s" onclick="loadData(true)">Forzar Carga desde Firebase</button>' +
-                '</div>';
+                '</div>' +
+                '<button class="af-btn" style="background:#2b5797; color:#fff; width:100%; margin-top:10px;" onclick="downloadJSON()">📥 Descargar Respaldo JSON (Manual)</button>';
         }
         function saveSettings() {
             var s = D.settings; s.phone = document.getElementById('se_phone').value.trim(); s.phoneRaw = document.getElementById('se_phoneRaw').value.trim(); s.address = document.getElementById('se_addr').value.trim(); s.hours = document.getElementById('se_hours').value.trim(); s.facebook = document.getElementById('se_fb').value.trim(); s.waNumber = document.getElementById('se_wa').value.trim(); s.heroDesc = document.getElementById('se_hero').value.trim(); s.mapEmbed = document.getElementById('se_map').value.trim(); s.driveApiKey = document.getElementById('se_driveApi').value.trim();
