@@ -29,7 +29,7 @@
         img { display: block; max-width: 100%; }
         a { color: inherit; }
         
-        /* PANTALLA DE CARGA (LOADER) */
+        /* PANTALLA DE CARGA */
         #loader { position: fixed; inset: 0; background: var(--bg); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
         .spinner { width: 50px; height: 50px; border: 4px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -82,7 +82,13 @@
         .btn-accent:active { background: var(--accent-hover); transform: scale(.97); }
         .btn-sm { padding: .45rem 1rem; font-size: .78rem; min-height: 38px; }
         
-        .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; margin-top: 2rem; }
+        /* FILTROS PORTAFOLIO */
+        .port-filters { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.8rem; margin-top: 1.5rem; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .port-filters::-webkit-scrollbar { display: none; }
+        .port-filter-btn { padding: 0.4rem 1.2rem; border-radius: 50px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-family: var(--fb); font-size: 0.85rem; font-weight: 500; cursor: pointer; white-space: nowrap; transition: var(--tr); min-height: 38px;}
+        .port-filter-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
+
+        .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; margin-top: 1rem; }
         .portfolio-item { position: relative; overflow: hidden; border-radius: var(--radius); cursor: pointer; aspect-ratio: 4/5; background: #eae7e2; }
         .portfolio-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; pointer-events: none; }
         .portfolio-item:hover img { transform: scale(1.03); }
@@ -503,6 +509,10 @@
             <p class="section-label">Portafolio</p>
             <h2>Trabajos recientes</h2>
             <p class="section-desc">Una muestra de nuestro trabajo en eventos, retratos y producciones.</p>
+            
+            <!-- NUEVOS FILTROS -->
+            <div id="portFilters" class="port-filters"></div>
+            
             <div class="portfolio-grid" id="portGrid"></div>
         </section>
         <section class="section" id="servicios">
@@ -569,7 +579,7 @@
 
         <!-- Vista video -->
         <div id="cpVideoView" style="display:none">
-            <button class="btn-regresar-fijo" onclick="closeVideoView()">&larr; Regresar al menú</button>
+            <button class="btn-regresar-fijo" id="btnBackVideo" onclick="closeVideoView()">&larr; Regresar al menú</button>
             <section class="vid-sec">
                 <p class="vid-title" id="vidTitle"></p>
                 <div class="vid-wrap" id="vidWrap"></div>
@@ -578,7 +588,7 @@
 
         <!-- VISTA GALERÍA (ESTILO PIXIESET) -->
         <div id="cpGalleryView" style="display:none">
-            <button class="btn-regresar-fijo" onclick="closeGalleryView()">&larr; Regresar al menú</button>
+            <button class="btn-regresar-fijo" id="btnBackGallery" onclick="closeGalleryView()">&larr; Regresar al menú</button>
             <div class="px-header" id="pxHeader">
                 <div class="px-title-container">
                     <h1 id="pxTitle">Boda</h1>
@@ -610,7 +620,7 @@
 
         <!-- Vista fotolibro AISLADO -->
         <div id="cpPhotobookView">
-            <button class="btn-regresar-fijo" onclick="closePhotobookView()">&larr; Regresar al menú</button>
+            <button class="btn-regresar-fijo" id="btnBackPB" onclick="closePhotobookView()">&larr; Regresar al menú</button>
             <button class="pb-fullscreen-btn" id="pb-fullscreen-btn" onclick="toggleFullscreen()" title="Pantalla completa">⛶</button>
             
             <button class="pb-landscape-arrow pb-arrow-left" id="pb-arrow-left" onclick="prevPage()">&#8249;</button>
@@ -706,7 +716,7 @@
     <script>
         /* ═══════ DATOS POR DEFECTO ═══════ */
         function getDefaults() {
-            var defaultExpire = Date.now() + 31536000000; // +1 year
+            var defaultExpire = Date.now() + 31536000000; 
             return {
                 adminPass: 'admin123',
                 settings: {
@@ -730,24 +740,14 @@
                     { id: 's3', icon: '🎬', title: 'Video Profesional', desc: 'Producción de video para cualquier proyecto.', price: 'Desde $2,000', features: ['Grabación con equipo profesional', 'Edición completa', 'Subtítulos si se requiere', 'Entrega en formato digital'], order: 2 }
                 ],
                 portfolio: [
-                    { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=500&h=650&fit=crop&auto=format', label: 'Boda' },
+                    { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=500&h=650&fit=crop&auto=format', label: 'Bodas' },
                     { src: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=500&h=650&fit=crop&auto=format', label: 'Corporativo' },
-                    { src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=650&fit=crop&auto=format', label: 'Retrato' }
+                    { src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=650&fit=crop&auto=format', label: 'Retratos' }
                 ],
                 testimonials: [
                     { text: '"Excelente trabajo. Excelente servicio. Muy recomendado para cualquier evento."', author: 'Yessica Santana' }
                 ],
-                clients: {
-                    'boda2024': {
-                        name: 'María & Carlos', event: 'Boda — 15 de marzo, 2024', hasVideo: true, hasPhotos: true, hasPhotobook: false, expireAt: defaultExpire,
-                        photos: [
-                            { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=600&fit=crop', name: 'Entrada de la novia', set: 'Ceremonia' },
-                            { src: 'https://images.unsplash.com/photo-1549417225-05b61b62aecf?w=800&h=600&fit=crop', name: 'Ceremonia civil', set: 'Ceremonia' },
-                            { src: 'https://images.unsplash.com/photo-1529634597503-139d3726fed5?w=800&h=600&fit=crop', name: 'Fiesta', set: 'Recepción' }
-                        ],
-                        driveFolderUrl: '', video: { youtubeId: '<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>', title: 'Video Resumen' }, photobook: { cover: null, spreads: [null], hasBackCover: false, back: null }
-                    }
-                }
+                clients: {}
             };
         }
 
@@ -769,56 +769,36 @@
         const db = firebase.firestore();
 
         var D;
+        var isPublicPortfolioView = false; // Variable global para proteger descargas
 
-        // Función que descarga datos de Firebase y oculta el loader SIEMPRE.
         async function loadData(forceServer = false) {
             const loader = document.getElementById('loader');
-            if (loader) {
-                loader.style.display = 'flex';
-                loader.style.opacity = '1';
-            }
+            if (loader) { loader.style.display = 'flex'; loader.style.opacity = '1'; }
             
             try {
                 const docRef = db.collection("web_data").doc("fvm_data");
-                
-                // Si "forceServer" es true, le decimos a Firebase que IGNORE la caché local
                 const options = forceServer ? { source: 'server' } : {};
                 const docSnap = await docRef.get(options);
                 
                 if (docSnap.exists) {
                     D = docSnap.data();
                     localStorage.setItem('fvm_data', JSON.stringify(D));
-                    console.log("✅ Datos oficiales cargados correctamente desde Firebase.");
                     if(forceServer) toast('Datos actualizados desde el servidor', 2500);
                 } else {
-                    console.log("⚠️ Base de datos vacía. Creando plantilla...");
                     D = getDefaults();
-                    saveData(); // Intenta crear el documento en Firebase
+                    saveData();
                 }
             } catch (error) {
-                console.error("🚨 Error conectando a Firebase:", error);
-                if (forceServer) alert("No se pudo conectar al servidor de Firebase. Verifica tu conexión a internet o tus reglas de Firestore.");
-                
-                // Respaldo de emergencia si falla la nube
+                console.error("Error conectando a Firebase:", error);
                 var s = localStorage.getItem('fvm_data'); 
                 D = s ? JSON.parse(s) : getDefaults();
             } finally {
-                // VERIFICACIÓN DE SEGURIDAD: 
-                // Si la memoria temporal guardó datos corruptos, evitamos que la página se rompa
-                if (!D || !D.settings || !D.services || !D.portfolio) {
-                    console.warn("Datos locales incompletos. Restaurando plantilla segura.");
-                    D = getDefaults();
-                }
-
+                if (!D || !D.settings || !D.services || !D.portfolio) { D = getDefaults(); }
                 try {
-                    // Dibujamos la página y comprobamos el enlace
                     renderPublic();
                     checkUrlForClient();
-                } catch (renderError) {
-                    console.error("Error dibujando la página:", renderError);
-                }
+                } catch (renderError) { console.error("Error dibujando la página:", renderError); }
                 
-                // APAGAR EL LOADER: Al estar en "finally", esta parte se ejecuta SIEMPRE
                 if (loader) {
                     loader.style.opacity = '0';
                     setTimeout(() => { loader.style.display = 'none'; }, 500);
@@ -826,43 +806,24 @@
             }
         }
 
-        // Función de guardado con Indicador Visual mejorado
         function saveData() {
             const loader = document.getElementById('loader');
             const loaderText = document.querySelector('.loader-text');
-            
-            // Activar la pantalla de carga para dar el indicador visual
-            if (loader && loaderText) {
-                loaderText.innerText = "Guardando en la nube...";
-                loader.style.display = 'flex';
-                loader.style.opacity = '1';
-            }
+            if (loader && loaderText) { loaderText.innerText = "Guardando en la nube..."; loader.style.display = 'flex'; loader.style.opacity = '1'; }
 
-            // Guardamos local para respaldo por si el internet falla
             try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch(e){} 
             
             db.collection("web_data").doc("fvm_data").set(D)
-                .then(() => {
-                    console.log("Guardado exitoso en Firebase");
-                    toast('✅ Datos guardados correctamente', 2500);
-                })
-                .catch((error) => {
-                    console.error("Error guardando en Firebase:", error);
-                    toast('❌ Error al subir datos. Se guardó localmente.', 4000);
-                })
+                .then(() => { toast('✅ Datos guardados correctamente', 2500); })
+                .catch((error) => { toast('❌ Error al subir datos. Se guardó localmente.', 4000); })
                 .finally(() => {
-                    // Ocultar la pantalla de carga cuando termine (ya sea éxito o error)
                     if (loader && loaderText) {
                         loader.style.opacity = '0';
-                        setTimeout(() => { 
-                            loader.style.display = 'none'; 
-                            loaderText.innerText = "Cargando contenido..."; // Restaurar texto original
-                        }, 500);
+                        setTimeout(() => { loader.style.display = 'none'; loaderText.innerText = "Cargando contenido..."; }, 500);
                     }
                 });
         }
         
-        // Función para descargar el archivo JSON manualmente
         function downloadJSON() {
             var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(D, null, 4));
             var downloadAnchorNode = document.createElement('a');
@@ -883,7 +844,6 @@
         var tempClientPhotos = []; 
         var isPrintMode = false;
 
-        /* ══════ UTILIDADES ══════ */
         function pSrc(p, s) { s = s || 800; if (p.driveId) return 'https://lh3.googleusercontent.com/d/' + p.driveId + '=s' + s; return (p.src || '').replace(/w=\d+/, 'w=' + s); }
         function pDl(p) { if (p.driveId) return 'https://drive.google.com/uc?export=download&id=' + p.driveId; return (p.src || '').replace('w=800', 'w=1600'); }
         function pFull(p) { return pSrc(p, 1600); }
@@ -891,21 +851,24 @@
         function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
         function uid() { return 'id_' + Math.random().toString(36).substr(2, 8); }
         
-        // Conversión Fecha para Expiración
         function toDateInput(ms) { if (!ms) return ''; let d = new Date(ms); let m = ('0' + (d.getMonth() + 1)).slice(-2); let day = ('0' + d.getDate()).slice(-2); return `${d.getFullYear()}-${m}-${day}`; }
         function toDisplayDate(ms) { if (!ms) return ''; let d = new Date(ms); let m = ('0' + (d.getMonth() + 1)).slice(-2); let day = ('0' + d.getDate()).slice(-2); return `${day}/${m}/${d.getFullYear()}`; }
         function addOneYear() { let el = document.getElementById('ce_expire'); if(!el.value) return; let d = new Date(el.value + 'T12:00:00'); d.setFullYear(d.getFullYear() + 1); el.value = toDateInput(d.getTime()); }
 
-        /* ══════ GESTIÓN DE URL (PARAMETROS QUERY) ══════ */
+        /* ══════ GESTIÓN DE URL Y BOTON ATRÁS (POPSTATE) ══════ */
         function pushUrlState(client, view) {
             var cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
             if (!client) {
-                window.history.pushState({ path: cleanUrl }, '', cleanUrl);
+                if(window.location.search.includes('c=')) window.history.pushState({ path: cleanUrl }, '', cleanUrl);
                 return;
             }
             var newUrl = cleanUrl + "?c=" + encodeURIComponent(client) + (view ? "-" + view : "");
-            window.history.pushState({ path: newUrl }, '', newUrl);
+            if(window.location.search !== ("?c=" + encodeURIComponent(client) + (view ? "-" + view : ""))) {
+                window.history.pushState({ path: newUrl }, '', newUrl);
+            }
         }
+        
+        window.addEventListener('popstate', function(e) { checkUrlForClient(); });
         
         function copyClientUrl(code) {
             var base = window.location.protocol + "//" + window.location.host + window.location.pathname;
@@ -913,33 +876,43 @@
             var url = base + "?c=" + encodeURIComponent(code);
             
             if(navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(url).then(function() {
-                    toast('Enlace copiado al portapapeles');
-                });
+                navigator.clipboard.writeText(url).then(function() { toast('Enlace copiado al portapapeles'); });
             } else {
-                var textArea = document.createElement("textarea");
-                textArea.value = url;
-                textArea.style.position = "fixed";
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                try { document.execCommand('copy'); toast('Enlace copiado al portapapeles'); } 
-                catch (err) { toast('No se pudo copiar el enlace'); }
-                document.body.removeChild(textArea);
+                var textArea = document.createElement("textarea"); textArea.value = url; textArea.style.position = "fixed"; document.body.appendChild(textArea); textArea.focus(); textArea.select();
+                try { document.execCommand('copy'); toast('Enlace copiado al portapapeles'); } catch (err) { toast('No se pudo copiar el enlace'); } document.body.removeChild(textArea);
             }
         }
 
-        /* ══════ RENDERIZADO PÚBLICO ══════ */
+        /* ══════ RENDERIZADO PÚBLICO Y FILTROS MÓVILES ══════ */
         function renderPublic() {
             var s = D.settings;
             document.getElementById('heroDesc').textContent = s.heroDesc; document.getElementById('ftAddr').textContent = s.address;
+            
+            // Renderizado de Portafolio con Filtros
             var pg = document.getElementById('portGrid'); pg.innerHTML = '';
-            D.portfolio.forEach(function(img) {
-                var d = document.createElement('div'); d.className = 'portfolio-item';
-                d.innerHTML = '<img src="' + img.src + '" alt="' + esc(img.label) + '" loading="lazy"><span class="il">' + esc(img.label) + '</span>';
-                d.addEventListener('click', function() { openLBSingle(img.src.replace('w=500', 'w=1600'), img.label); });
-                pg.appendChild(d);
-            });
+            var pf = document.getElementById('portFilters'); pf.innerHTML = '';
+            
+            var labels = ['Todos'];
+            D.portfolio.forEach(function(img) { var l = img.label || 'General'; if (!labels.includes(l)) labels.push(l); });
+            
+            window.currentPortFilter = window.currentPortFilter || 'Todos';
+            if (!labels.includes(window.currentPortFilter)) window.currentPortFilter = 'Todos';
+            
+            if (labels.length > 1) {
+                labels.forEach(function(l) {
+                    var b = document.createElement('button');
+                    b.className = 'port-filter-btn' + (l === window.currentPortFilter ? ' active' : '');
+                    b.textContent = l;
+                    b.onclick = function() {
+                        document.querySelectorAll('.port-filter-btn').forEach(btn => btn.classList.remove('active'));
+                        this.classList.add('active');
+                        filterPortfolio(l);
+                    };
+                    pf.appendChild(b);
+                });
+            }
+            filterPortfolio(window.currentPortFilter);
+
             var sg = document.getElementById('servGrid'); sg.innerHTML = '';
             D.services.sort(function(a, b) { return (a.order || 0) - (b.order || 0); }).forEach(function(svc) {
                 var feat = svc.features ? svc.features.map(function(f) { return '<li>' + esc(f) + '</li>'; }).join('') : '';
@@ -961,6 +934,25 @@
             var pp = document.getElementById('printPrices'); pp.innerHTML = '';
             D.printPrices.forEach(function(p) { pp.innerHTML += '<tr><td>' + esc(p.label) + '</td><td>' + esc(p.measure) + '</td><td>$' + p.price + '</td></tr>'; });
             document.getElementById('cpWaLink').href = 'https://wa.me/' + s.waNumber; document.getElementById('cpWaLink').textContent = s.phone;
+        }
+
+        function filterPortfolio(filter) {
+            window.currentPortFilter = filter;
+            var grid = document.getElementById('portGrid'); grid.innerHTML = '';
+            D.portfolio.forEach(function(img) {
+                var l = img.label || 'General';
+                if (filter !== 'Todos' && l !== filter) return;
+                var d = document.createElement('div'); d.className = 'portfolio-item';
+                d.innerHTML = '<img src="' + img.src + '" alt="' + esc(l) + '" loading="lazy"><span class="il">' + esc(l) + '</span>';
+                d.addEventListener('click', function() { 
+                    isPublicPortfolioView = true;
+                    // Abrimos solo para visualización, sin descarga
+                    portalPhotos = [{ src: img.src.replace(/s\d+/, 's1600').replace(/w=\d+/, 'w=1600'), name: l }];
+                    lbIdx = 0;
+                    showLB();
+                });
+                grid.appendChild(d);
+            });
         }
 
         /* ══════ NAVEGACIÓN ══════ */
@@ -1000,29 +992,60 @@
         }
         document.getElementById('codeIn').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
 
-        /* ══════ PORTAL CLIENTE ══════ */
+        /* ══════ PORTAL CLIENTE Y AUTO-ROUTING ══════ */
+        function getActiveItemsCount(c) {
+            var count = 0;
+            if (c.hasVideo && c.video && c.video.youtubeId) count++;
+            if (c.hasPhotos && c.photos && c.photos.length) count++;
+            if (c.hasPhotobook) {
+                var pb = c.photobook;
+                var filledCount = pb ? ((pb.cover ? 1 : 0) + (pb.spreads ? pb.spreads.filter(s=>!!s).length : 0)) : 0;
+                if (filledCount > 0) count++;
+            }
+            return count;
+        }
+
         function enterPortal(targetView) {
             var c = D.clients[curClient];
             document.getElementById('mainSite').style.display = 'none'; document.getElementById('cpPortal').classList.add('active');
             document.getElementById('cpName').textContent = c.name; document.getElementById('cpEvent').textContent = c.event;
             document.body.style.overflow = 'auto'; window.scrollTo(0, 0); 
             
-            if (targetView === 'galeria' && c.hasPhotos) {
-                openGalleryView();
-            } else if (targetView === 'video' && c.hasVideo) {
-                openVideoView();
-            } else if (targetView === 'fotolibro' && c.hasPhotobook) {
-                openPhotobookView();
+            var count = getActiveItemsCount(c);
+
+            // Auto-Routing: Si solo tiene un servicio, lo abre directamente.
+            if (targetView === 'galeria' && c.hasPhotos) { openGalleryView(); } 
+            else if (targetView === 'video' && c.hasVideo) { openVideoView(); } 
+            else if (targetView === 'fotolibro' && c.hasPhotobook) { openPhotobookView(); } 
+            else if (count === 1 && !targetView) {
+                if (c.hasPhotos && c.photos && c.photos.length) openGalleryView();
+                else if (c.hasVideo && c.video && c.video.youtubeId) openVideoView();
+                else if (c.hasPhotobook) openPhotobookView();
+                else showMainView();
             } else {
                 showMainView();
             }
         }
-        function exitPortal() {
-            document.getElementById('cpPortal').classList.remove('active'); document.getElementById('mainSite').style.display = '';
-            curClient = null; selected = {}; isPrintMode = false; document.getElementById('vidWrap').innerHTML = ''; exitFullscreenMode(); showMainView(); window.scrollTo(0, 0);
-            
-            pushUrlState(null);
+        
+        function forceExitPortal() {
+            document.getElementById('cpPortal').classList.remove('active');
+            document.getElementById('mainSite').style.display = '';
+            curClient = null; selected = {}; isPrintMode = false;
+            document.getElementById('vidWrap').innerHTML = '';
+            try { exitFullscreenMode(); } catch(e) {}
+            document.getElementById('cpMainView').style.display = '';
+            document.getElementById('cpVideoView').style.display = 'none';
+            document.getElementById('cpGalleryView').style.display = 'none';
+            document.getElementById('cpPhotobookView').style.display = 'none';
+            closeLB(); 
         }
+
+        function exitPortal() {
+            forceExitPortal();
+            pushUrlState(null);
+            window.scrollTo(0, 0);
+        }
+
         function requestExtension() {
             var c = D.clients[curClient];
             var msg = "Hola, me gustaría solicitar una extensión de almacenamiento para mi galería web.\n\n*Evento:* " + c.name + " (" + c.event + ")\n*Código:* " + curClient;
@@ -1038,9 +1061,9 @@
             document.getElementById('cpPhotobookView').style.display = 'none';
             document.getElementById('cpGalleryView').classList.remove('gallery-print-mode');
             renderAccessCards(); updateOrderBar();
-            
             pushUrlState(curClient, null);
         }
+
         function renderAccessCards() {
             var c = D.clients[curClient];
             var banner = document.getElementById('cpExpireBanner');
@@ -1090,6 +1113,12 @@
             document.getElementById('vidWrap').innerHTML = vid.youtubeId || '<p style="color:#fff; text-align:center; padding: 2rem;">No hay video disponible.</p>';
             window.scrollTo(0, 0);
             
+            // Configurar botón salir
+            var count = getActiveItemsCount(c);
+            var btn2 = document.getElementById('btnBackVideo');
+            if (count === 1) { btn2.innerHTML = '&larr; Salir del Portal'; btn2.onclick = exitPortal; }
+            else { btn2.innerHTML = '&larr; Regresar al menú'; btn2.onclick = closeVideoView; }
+            
             pushUrlState(curClient, 'video');
         }
         function closeVideoView() { document.getElementById('vidWrap').innerHTML = ''; document.getElementById('cpVideoView').style.display = 'none'; showMainView(); }
@@ -1109,11 +1138,18 @@
             document.getElementById('pxSubtitle').textContent = c.event;
 
             isPrintMode = false;
+            isPublicPortfolioView = false; // Permite descargar
             document.getElementById('cpGalleryView').classList.remove('gallery-print-mode');
             updateFabIcon();
 
             renderPixiesetGallery();
             updateOrderBar(); window.scrollTo(0, 0);
+            
+            // Configurar botón salir
+            var count = getActiveItemsCount(c);
+            var btn = document.getElementById('btnBackGallery');
+            if (count === 1) { btn.innerHTML = '&larr; Salir del Portal'; btn.onclick = exitPortal; }
+            else { btn.innerHTML = '&larr; Regresar al menú'; btn.onclick = closeGalleryView; }
             
             pushUrlState(curClient, 'galeria');
         }
@@ -1264,12 +1300,31 @@
             togglePrintMode(); 
         }
 
-        /* ══════ LIGHTBOX ══════ */
-        function openLB(idx) { lbIdx = idx; showLB(); }
-        function openLBSingle(src, label) { portalPhotos = [{ src: src, name: label || '' }]; lbIdx = 0; showLB(); document.querySelector('.lb-p').style.display = 'none'; document.querySelector('.lb-nx').style.display = 'none'; }
+        /* ══════ LIGHTBOX (VISUALIZACIÓN) ══════ */
+        function openLB(idx) { 
+            isPublicPortfolioView = false; // Portal Cliente (Sí permite descargar)
+            lbIdx = idx; showLB(); 
+        }
+        function openLBSingle(src, label) { 
+            isPublicPortfolioView = true;  // Portafolio (Bloquea descarga)
+            portalPhotos = [{ src: src, name: label || '' }]; 
+            lbIdx = 0; showLB(); 
+        }
         function showLB() {
-            var p = portalPhotos[lbIdx]; if (!p) return; document.getElementById('lbImg').src = pFull(p); document.getElementById('lbC').textContent = p.name || ''; document.getElementById('lbDl').href = pDl(p); document.getElementById('lbDl').style.display = ''; document.querySelector('.lb-p').style.display = ''; document.querySelector('.lb-nx').style.display = '';
-            if (portalPhotos.length <= 1) { document.querySelector('.lb-p').style.display = 'none'; document.querySelector('.lb-nx').style.display = 'none'; }
+            var p = portalPhotos[lbIdx]; if (!p) return; 
+            document.getElementById('lbImg').src = pFull(p); 
+            document.getElementById('lbC').textContent = p.name || ''; 
+            
+            var dlBtn = document.getElementById('lbDl');
+            if (isPublicPortfolioView) {
+                dlBtn.style.display = 'none'; // Se oculta en el portafolio público
+            } else {
+                dlBtn.href = pDl(p); 
+                dlBtn.style.display = '';     // Se muestra en el portal cliente
+            }
+
+            document.querySelector('.lb-p').style.display = portalPhotos.length > 1 ? '' : 'none'; 
+            document.querySelector('.lb-nx').style.display = portalPhotos.length > 1 ? '' : 'none';
             document.getElementById('lb').classList.add('active'); document.body.style.overflow = 'hidden';
         }
         function closeLB() { document.getElementById('lb').classList.remove('active'); document.body.style.overflow = ''; }
@@ -1294,6 +1349,12 @@
             renderBook();
             window.scrollTo(0,0);
             
+            var c = D.clients[curClient];
+            var count = getActiveItemsCount(c);
+            var btn3 = document.getElementById('btnBackPB');
+            if (count === 1) { btn3.innerHTML = '&larr; Salir del Portal'; btn3.onclick = exitPortal; } 
+            else { btn3.innerHTML = '&larr; Regresar al menú'; btn3.onclick = closePhotobookView; }
+
             pushUrlState(curClient, 'fotolibro');
         }
         
@@ -1707,11 +1768,79 @@
             toast('Fotolibro autollenado por orden numérico');
         }
 
-        /* ════ ADMIN: PORTAFOLIO ════ */
+        /* ════ ADMIN: PORTAFOLIO PÚBLICO (NUEVO CON DRIVE) ════ */
         function renderAdmPortfolio(body) {
-            body.innerHTML = '<button class="adm-add-btn" onclick="addPortfolioImg()">+ Agregar imagen</button>';
-            D.portfolio.forEach(function(img, i) { body.innerHTML += ('<div class="adm-photo-item"><img src="' + esc(img.src) + '" alt=""><input type="text" value="' + esc(img.label) + '" placeholder="Etiqueta" onchange="updPortLabel(' + i + ',this.value)"><button onclick="delPortfolioImg(' + i + ')" title="Quitar">×</button></div>'); });
+            body.innerHTML = `
+                <div style="margin-bottom:1.5rem;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)">
+                    <label class="af-l" style="color:var(--accent)">Importar Portafolio desde Google Drive</label>
+                    <p class="adm-hint">Pega el link de la carpeta principal. Las subcarpetas (ej. "Bodas", "15 Años") se usarán como <b>categorías</b> para mostrar los filtros en tu sitio web.</p>
+                    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+                        <input class="af-i" id="port_driveFolderId" placeholder="URL o ID de la carpeta" style="margin-bottom:0;flex:1;min-width:200px;">
+                        <button class="af-btn af-btn-p" style="margin:0" onclick="fetchDrivePortfolio()">Extraer Portafolio</button>
+                    </div>
+                    <div id="port_driveStatus" style="font-size:0.8rem; color:var(--accent); font-weight:500;"></div>
+                </div>
+                <button class="adm-add-btn" onclick="addPortfolioImg()">+ Agregar imagen manual</button>
+                <div id="admPortList"></div>
+            `;
+            var list = document.getElementById('admPortList');
+            D.portfolio.forEach(function(img, i) { 
+                list.innerHTML += ('<div class="adm-photo-item"><img src="' + esc(img.src) + '" alt=""><input type="text" value="' + esc(img.label) + '" placeholder="Etiqueta / Categoría" onchange="updPortLabel(' + i + ',this.value)"><button onclick="delPortfolioImg(' + i + ')" title="Quitar">×</button></div>'); 
+            });
         }
+        
+        async function fetchDrivePortfolio() {
+            var apiKey = D.settings.driveApiKey;
+            if (!apiKey) { toast('Configura tu Clave API en la pestaña General.'); return; }
+            var input = document.getElementById('port_driveFolderId').value.trim();
+            var folderId = input; var match = input.match(/\/folders\/([a-zA-Z0-9_-]+)/) || input.match(/id=([a-zA-Z0-9_-]+)/); if (match) folderId = match[1];
+            if (!folderId) { toast('URL o ID de carpeta inválido.'); return; }
+
+            var status = document.getElementById('port_driveStatus');
+            status.textContent = 'Analizando carpeta principal...';
+
+            try {
+                let res = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&fields=files(id,name,mimeType)&key=${apiKey}&pageSize=1000`);
+                let data = await res.json();
+                if (data.error) throw new Error(data.error.message);
+
+                let folders = data.files.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
+                let looseImages = data.files.filter(f => f.mimeType.includes('image/'));
+
+                folders.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true}));
+                looseImages.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true}));
+
+                let newPhotos = [];
+
+                looseImages.forEach(img => {
+                    newPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s800`, label: 'General' });
+                });
+
+                for (let folder of folders) {
+                    status.textContent = `Extrayendo categoría: ${folder.name}...`;
+                    let subRes = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folder.id}'+in+parents+and+mimeType+contains+'image/'+and+trashed=false&fields=files(id,name)&key=${apiKey}&pageSize=1000`);
+                    let subData = await subRes.json();
+                    if (subData.files) {
+                        subData.files.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true}));
+                        subData.files.forEach(img => {
+                            newPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s800`, label: folder.name });
+                        });
+                    }
+                }
+
+                D.portfolio = D.portfolio.concat(newPhotos);
+                saveData();
+                renderAdmBody();
+                renderPublic();
+                status.textContent = `¡Éxito! Se añadieron ${newPhotos.length} fotos al portafolio.`;
+                toast('Portafolio actualizado correctamente.');
+
+            } catch(e) {
+                status.textContent = 'Error: ' + e.message;
+                toast('Error de extracción.');
+            }
+        }
+
         function addPortfolioImg() { D.portfolio.push({ src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=500&h=650&fit=crop&auto=format', label: 'Nuevo' }); saveData(); renderAdmBody(); }
         function updPortLabel(i, val) { D.portfolio[i].label = val; saveData(); renderPublic(); }
         function delPortfolioImg(i) { D.portfolio.splice(i, 1); saveData(); renderAdmBody(); renderPublic(); }
@@ -1755,7 +1884,7 @@
             saveData(); renderPublic(); toast('Configuración guardada');
         }
 
-        /* ══════ INICIALIZACIÓN ══════ */
+        /* ══════ INICIALIZACIÓN Y AUTO ROUTING DE LINKS ══════ */
         function checkUrlForClient() {
             var params = new URLSearchParams(window.location.search);
             var clientCodeParam = params.get('c') || params.get('cliente');
@@ -1764,6 +1893,9 @@
                 var possibleCode = window.location.hash.substring(1);
                 if(!['portafolio', 'servicios', 'testimonios', 'contacto'].includes(possibleCode)) {
                     clientCodeParam = possibleCode;
+                } else {
+                    forceExitPortal();
+                    return;
                 }
             }
             
@@ -1786,14 +1918,20 @@
                     document.getElementById('codeIn').value = clientCodeParam;
                     curClient = clientCodeParam;
                     selected = {}; allSel = false; isPrintMode = false;
+                    
+                    document.getElementById('cpVideoView').style.display = 'none';
+                    document.getElementById('cpGalleryView').style.display = 'none';
+                    document.getElementById('cpPhotobookView').style.display = 'none';
+                    
                     enterPortal(targetView);
                 } else {
-                    pushUrlState(null);
+                    forceExitPortal();
                 }
+            } else {
+                forceExitPortal();
             }
         }
         
-        // Arrancar la app (Muestra la pantalla de carga, descarga de Firebase y dibuja la página)
         loadData(); 
         
     </script>
