@@ -932,8 +932,14 @@
                 '<div class="map-container"><iframe src="' + esc(s.mapEmbed) + '" title="Ubicación" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>';
             var sel = document.getElementById('servSelect'); sel.innerHTML = '<option value="" disabled selected>Tipo de servicio</option>';
             D.services.forEach(function(svc) { sel.innerHTML += '<option>' + esc(svc.title) + '</option>'; }); sel.innerHTML += '<option>Otro</option>';
-            var pp = document.getElementById('printPrices'); pp.innerHTML = '';
-            D.printPrices.forEach(function(p) { pp.innerHTML += '<tr><td>' + esc(p.label) + '</td><td>' + esc(p.measure) + '</td><td>$' + p.price + '</td></tr>'; });
+            
+            // CÓDIGO CORREGIDO PARA EVITAR EL ERROR AL CARGAR LOS PRECIOS DE IMPRESIÓN
+            var pp = document.getElementById('printPrices'); 
+            if (pp && D.printPrices) {
+                pp.innerHTML = '';
+                D.printPrices.forEach(function(p) { pp.innerHTML += '<tr><td>' + esc(p.label) + '</td><td>' + esc(p.measure) + '</td><td>$' + p.price + '</td></tr>'; });
+            }
+            
             document.getElementById('cpWaLink').href = 'https://wa.me/' + s.waNumber; document.getElementById('cpWaLink').textContent = s.phone;
         }
 
