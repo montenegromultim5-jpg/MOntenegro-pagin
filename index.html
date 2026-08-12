@@ -483,10 +483,10 @@
         <div class="nav-inner">
             <a class="nav-logo" id="logoBtn">Foto<span>&amp;</span>Video Montenegro</a>
             <ul class="nav-links" id="navLinks">
-                <li><a href="#portafolio" onclick="closeMenu()">Portafolio</a></li>
-                <li><a href="#servicios" onclick="closeMenu()">Servicios</a></li>
-                <li><a href="#testimonios" onclick="closeMenu()">Testimonios</a></li>
-                <li><a href="#contacto" onclick="closeMenu()">Contacto</a></li>
+                <li><a href="#portafolio" onclick="navTo('portafolio', event)">Portafolio</a></li>
+                <li><a href="#servicios" onclick="navTo('servicios', event)">Servicios</a></li>
+                <li><a href="#testimonios" onclick="navTo('testimonios', event)">Testimonios</a></li>
+                <li><a href="#contacto" onclick="navTo('contacto', event)">Contacto</a></li>
                 <li><a href="#" class="nav-cta" onclick="openLogin();closeMenu()">Acceso a clientes</a></li>
             </ul>
             <button class="hamburger" id="hamburger" aria-label="Menú" onclick="toggleMenu()"><span></span><span></span><span></span></button>
@@ -653,7 +653,11 @@
             </div>
         </div>
 
-        <footer class="cp-ft" id="cp-ft-main">Foto y Video Montenegro · Capulhuac de Mirafuentes, Méx.<br><a href="#" id="cpWaLink" style="color:var(--c-accent)"></a></footer>
+        <footer class="cp-ft" id="cp-ft-main">
+            Foto y Video Montenegro · Capulhuac de Mirafuentes, Méx.<br>
+            <a href="#" id="cpWaLink" style="color:var(--c-accent)"></a><br><br>
+            <a href="#" onclick="reportProblem(event)" style="color:var(--c-muted); text-decoration:underline; font-size:0.75rem;">¿Problemas con tu galería? Reportar un problema</a>
+        </footer>
     </div>
 
     <!-- Barra pedido -->
@@ -693,7 +697,10 @@
     <!-- Admin panel -->
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
-            <div class="adm-hdr"><h2>Panel de Administración</h2><button class="adm-x" onclick="closeAdm()">&times;</button></div>
+            <div class="adm-hdr">
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.5rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v1.0</span></h2>
+                <button class="adm-x" onclick="closeAdm()">&times;</button>
+            </div>
             <div class="adm-tabs" id="admTabs">
                 <button class="active" data-t="services">Paquetes</button>
                 <button data-t="clients">Clientes</button>
@@ -962,7 +969,25 @@
             });
         }
 
-        /* ══════ NAVEGACIÓN OPTIMIZADA PARA MÓVIL ══════ */
+        /* ══════ NAVEGACIÓN OPTIMIZADA (V1.0) ══════ */
+        function navTo(id, e) {
+            if(e) e.preventDefault();
+            closeMenu();
+            // Si está dentro del portal del cliente, lo sacamos primero
+            if (document.getElementById('cpPortal').classList.contains('active')) {
+                forceExitPortal();
+                pushUrlState(null);
+            }
+            // Pequeño retraso para permitir que la vista principal vuelva a aparecer
+            setTimeout(function() {
+                var el = document.getElementById(id);
+                if(el) {
+                    var y = el.getBoundingClientRect().top + window.pageYOffset - 70; // 70px compensa la barra fija
+                    window.scrollTo({top: y, behavior: 'smooth'});
+                }
+            }, 50);
+        }
+
         function toggleMenu() { var n = document.getElementById('navLinks'), h = document.getElementById('hamburger'), o = document.getElementById('mobOv'); if (n.classList.contains('active')) closeMenu(); else { n.classList.add('active'); h.classList.add('active'); o.classList.add('active'); document.body.style.overflow = 'hidden'; } }
         function closeMenu() { document.getElementById('navLinks').classList.remove('active'); document.getElementById('hamburger').classList.remove('active'); document.getElementById('mobOv').classList.remove('active'); document.body.style.overflow = ''; }
         
@@ -1066,6 +1091,15 @@
         function requestExtension() {
             var c = D.clients[curClient];
             var msg = "Hola, me gustaría solicitar una extensión de almacenamiento para mi galería web.\n\n*Evento:* " + c.name + " (" + c.event + ")\n*Código:* " + curClient;
+            window.open('https://wa.me/' + D.settings.waNumber + '?text=' + encodeURIComponent(msg), '_blank');
+        }
+
+        /* ══════ REPORTE DE PROBLEMAS (V1.0) ══════ */
+        function reportProblem(e) {
+            if(e) e.preventDefault();
+            var c = D.clients[curClient];
+            var evtName = c ? c.name : 'Desconocido';
+            var msg = "Hola, necesito ayuda con mi galería.\n\n*Evento:* " + evtName + "\n*Código:* " + curClient + "\n\n*El problema es:* ";
             window.open('https://wa.me/' + D.settings.waNumber + '?text=' + encodeURIComponent(msg), '_blank');
         }
 
@@ -1346,8 +1380,21 @@
         function navLB(d) { lbIdx += d; if (lbIdx < 0) lbIdx = portalPhotos.length - 1; if (lbIdx >= portalPhotos.length) lbIdx = 0; showLB(); }
         document.getElementById('lb').addEventListener('click', function(e) { if (e.target === this) closeLB(); });
 
-        /* ══════ IMPRESIÓN & CONTACTO ══════ */
-        function handleContact(e) { e.preventDefault(); toast('Mensaje enviado. Te contactaremos pronto.'); e.target.reset(); }
+        /* ══════ CONTACTO A WHATSAPP (V1.0) ══════ */
+        function handleContact(e) { 
+            e.preventDefault(); 
+            var f = e.target;
+            var nom = f.querySelector('input[type="text"]').value.trim();
+            var tel = f.querySelector('input[type="tel"]').value.trim();
+            var serv = f.querySelector('select').value;
+            var txt = f.querySelector('textarea').value.trim();
+            
+            var msg = "Hola, me gustaría solicitar un presupuesto.\n\n*Nombre:* " + nom + "\n*Teléfono:* " + tel + "\n*Servicio de interés:* " + serv + "\n*Mensaje:* " + txt;
+            
+            window.open('https://wa.me/' + D.settings.waNumber + '?text=' + encodeURIComponent(msg), '_blank');
+            toast('Abriendo WhatsApp...'); 
+            f.reset(); 
+        }
 
         /* ═══════════════════════════════════════════════
            ══════ VISOR DE FOTOLIBRO (AISLADO .pb-) ══════
