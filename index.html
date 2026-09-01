@@ -481,7 +481,7 @@
 
     <nav class="nav" id="navbar">
         <div class="nav-inner">
-            <a class="nav-logo" id="logoBtn">Foto<span>&</span>Video Montenegro</a>
+            <a class="nav-logo" id="logoBtn">Foto<span>&amp;</span>Video Montenegro</a>
             <ul class="nav-links" id="navLinks">
                 <li><a href="#portafolio" onclick="navTo('portafolio', event)">Portafolio</a></li>
                 <li><a href="#servicios" onclick="navTo('servicios', event)">Servicios</a></li>
@@ -535,7 +535,7 @@
             </div>
         </section>
         <footer class="footer">
-            <div>© 2025 <strong>Foto y Video Montenegro</strong></div>
+            <div>&copy; 2025 <strong>Foto y Video Montenegro</strong></div>
             <div style="margin-top:.3rem" id="ftAddr"></div>
             <div style="margin-top:.4rem"><a href="#" onclick="openLogin()">Acceso a clientes</a></div>
         </footer>
@@ -545,7 +545,7 @@
     <div class="cp" id="cpPortal">
         <header class="cp-hdr" id="cpHdrMain">
             <div class="cp-hdr-in">
-                <button class="cp-back" onclick="exitPortal()">← Salir</button>
+                <button class="cp-back" onclick="exitPortal()">&larr; Salir</button>
                 <div class="cp-info">
                     <div class="cp-name" id="cpName"></div>
                     <div class="cp-event" id="cpEvent"></div>
@@ -580,7 +580,7 @@
 
         <!-- Vista video -->
         <div id="cpVideoView" style="display:none">
-            <button class="btn-regresar-fijo" id="btnBackVideo" onclick="closeVideoView()">← Regresar al menú</button>
+            <button class="btn-regresar-fijo" id="btnBackVideo" onclick="closeVideoView()">&larr; Regresar al menú</button>
             <section class="vid-sec">
                 <p class="vid-title" id="vidTitle"></p>
                 <div class="vid-wrap" id="vidWrap"></div>
@@ -589,12 +589,12 @@
 
         <!-- VISTA GALERÍA (ESTILO PIXIESET) -->
         <div id="cpGalleryView" style="display:none">
-            <button class="btn-regresar-fijo" id="btnBackGallery" onclick="closeGalleryView()">← Regresar al menú</button>
+            <button class="btn-regresar-fijo" id="btnBackGallery" onclick="closeGalleryView()">&larr; Regresar al menú</button>
             <div class="px-header" id="pxHeader">
                 <div class="px-title-container">
                     <h1 id="pxTitle">Boda</h1>
                     <p id="pxSubtitle">Evento</p>
-                    <button class="px-scroll-btn" onclick="document.getElementById('pxNav').scrollIntoView({behavior:'smooth'})">Ver Galería ↓</button>
+                    <button class="px-scroll-btn" onclick="document.getElementById('pxNav').scrollIntoView({behavior:'smooth'})">Ver Galería &darr;</button>
                 </div>
             </div>
             
@@ -621,11 +621,11 @@
 
         <!-- Vista fotolibro AISLADO -->
         <div id="cpPhotobookView">
-            <button class="btn-regresar-fijo" id="btnBackPB" onclick="closePhotobookView()">← Regresar al menú</button>
+            <button class="btn-regresar-fijo" id="btnBackPB" onclick="closePhotobookView()">&larr; Regresar al menú</button>
             <button class="pb-fullscreen-btn" id="pb-fullscreen-btn" onclick="toggleFullscreen()" title="Pantalla completa">⛶</button>
             
-            <button class="pb-landscape-arrow pb-arrow-left" id="pb-arrow-left" onclick="prevPage()">‹</button>
-            <button class="pb-landscape-arrow pb-arrow-right" id="pb-arrow-right" onclick="nextPage()">›</button>
+            <button class="pb-landscape-arrow pb-arrow-left" id="pb-arrow-left" onclick="prevPage()">&#8249;</button>
+            <button class="pb-landscape-arrow pb-arrow-right" id="pb-arrow-right" onclick="nextPage()">&#8250;</button>
 
             <div class="pb-wrapper" id="pb-wrapper">
                 <div class="pb-ambient" aria-hidden="true"></div>
@@ -643,9 +643,9 @@
             </div>
             
             <div class="pb-mobile-toolbar" id="pb-mobile-toolbar">
-                <button class="pb-mobile-toolbar-btn" onclick="prevPage()">‹</button>
+                <button class="pb-mobile-toolbar-btn" onclick="prevPage()">&#8249;</button>
                 <button class="pb-mobile-toolbar-btn" onclick="goToCover()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></button>
-                <button class="pb-mobile-toolbar-btn" onclick="nextPage()">›</button>
+                <button class="pb-mobile-toolbar-btn" onclick="nextPage()">&#8250;</button>
                 <div class="pb-toolbar-sep"></div>
                 <button class="pb-mobile-toolbar-btn" id="pb-fs-mobile-btn" onclick="toggleFullscreen()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
@@ -665,12 +665,12 @@
 
     <!-- Modal login cliente -->
     <div class="modal-ov" id="loginModal" onclick="if(event.target===this)closeLogin()">
-        <div class="modal"><button class="modal-x" onclick="closeLogin()">×</button><h3>Acceso a clientes</h3><p>Ingresa el código que se te proporcionó.</p><input type="text" id="codeIn" placeholder="Ejemplo: boda2024" autocomplete="off" autocapitalize="off" spellcheck="false"><p class="modal-err" id="loginErr">Código no válido.</p><button class="btn btn-primary" onclick="doLogin()">Acceder</button></div>
+        <div class="modal"><button class="modal-x" onclick="closeLogin()">&times;</button><h3>Acceso a clientes</h3><p>Ingresa el código que se te proporcionó.</p><input type="text" id="codeIn" placeholder="Ejemplo: boda2024" autocomplete="off" autocapitalize="off" spellcheck="false"><p class="modal-err" id="loginErr">Código no válido.</p><button class="btn btn-primary" onclick="doLogin()">Acceder</button></div>
     </div>
 
     <!-- Modal login admin -->
     <div class="modal-ov" id="admLoginModal" onclick="if(event.target===this)closeAdmLogin()">
-        <div class="modal"><button class="modal-x" onclick="closeAdmLogin()">×</button><h3 id="admLoginTitle">Administración</h3><p id="admLoginDesc">Ingresa tu contraseña de administrador.</p><input type="password" id="admPassIn" placeholder="Contraseña" autocomplete="off"><p class="modal-err" id="admLoginErr">Contraseña incorrecta.</p><button class="btn btn-primary" onclick="doAdmLogin()">Entrar</button></div>
+        <div class="modal"><button class="modal-x" onclick="closeAdmLogin()">&times;</button><h3 id="admLoginTitle">Administración</h3><p id="admLoginDesc">Ingresa tu contraseña de administrador.</p><input type="password" id="admPassIn" placeholder="Contraseña" autocomplete="off"><p class="modal-err" id="admLoginErr">Contraseña incorrecta.</p><button class="btn btn-primary" onclick="doAdmLogin()">Entrar</button></div>
     </div>
 
     <!-- Modal pedido -->
@@ -683,7 +683,7 @@
     <!-- Modal Advertencia Descarga Completa -->
     <div class="modal-ov" id="downloadModal" onclick="if(event.target===this)closeDownloadModal()">
         <div class="modal-c">
-            <button class="modal-x-c" onclick="closeDownloadModal()">×</button>
+            <button class="modal-x-c" onclick="closeDownloadModal()">&times;</button>
             <h3>Descarga de Galería</h3>
             <p>Las fotografías se descargarán en <b>tamaño real y máxima calidad</b> directamente desde Google Drive.</p>
             <p style="background:var(--c-surface2); color:var(--c-text); padding:1rem; border-radius:8px; font-size:.85rem; margin-bottom:1rem; border:1px solid var(--c-border)">
@@ -698,8 +698,8 @@
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
-                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.5rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v1.3</span></h2>
-                <button class="adm-x" onclick="closeAdm()">×</button>
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.5rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v1.4</span></h2>
+                <button class="adm-x" onclick="closeAdm()">&times;</button>
             </div>
             <div class="adm-tabs" id="admTabs">
                 <button class="active" data-t="services">Paquetes</button>
@@ -713,7 +713,7 @@
     </div>
 
     <!-- Lightbox -->
-    <div class="lb" id="lb"><button class="lb-x" onclick="closeLB()">×</button><button class="lb-n lb-p" onclick="navLB(-1)">‹</button><button class="lb-n lb-nx" onclick="navLB(1)">›</button><img id="lbImg" src="" alt=""><div class="lb-bot"><span class="lb-c" id="lbC"></span><a class="lb-dl" id="lbDl" style="cursor:pointer;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Descargar Foto</a></div></div>
+    <div class="lb" id="lb"><button class="lb-x" onclick="closeLB()">&times;</button><button class="lb-n lb-p" onclick="navLB(-1)">&#8249;</button><button class="lb-n lb-nx" onclick="navLB(1)">&#8250;</button><img id="lbImg" src="" alt=""><div class="lb-bot"><span class="lb-c" id="lbC"></span><a class="lb-dl" id="lbDl" style="cursor:pointer;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Descargar Foto</a></div></div>
 
     <div class="toast" id="toast"></div>
 
@@ -777,7 +777,7 @@
         const db = firebase.firestore();
 
         var D;
-        var isPublicPortfolioView = false; 
+        var isPublicPortfolioView = false; // Variable global para proteger descargas
 
         async function loadData(forceServer = false) {
             const loader = document.getElementById('loader');
@@ -851,7 +851,7 @@
         var currentDriveFiles = []; 
         var tempClientPhotos = []; 
         var isPrintMode = false;
-        var draggedPhotoIdx = -1; 
+        var draggedPhotoIdx = -1; // Para el Drag & Drop
 
         function pSrc(p, s) { s = s || 800; if (p.driveId) return 'https://lh3.googleusercontent.com/d/' + p.driveId + '=s' + s; return (p.src || '').replace(/w=\d+/, 'w=' + s); }
         function pDl(p) { if (p.driveId) return 'https://drive.google.com/uc?export=download&id=' + p.driveId; return (p.src || '').replace('w=800', 'w=1600'); }
@@ -892,14 +892,18 @@
             }
         }
 
-        /* ══════ DESCARGA DIRECTA FORZADA (V1.2) ══════ */
+        /* ══════ DESCARGA DIRECTA FORZADA (V1.4) ══════ */
         function downloadPhoto(src, name, e) {
             if(e) { e.preventDefault(); e.stopPropagation(); }
             var dId = null;
             if (src.includes('/d/')) {
                 var m = src.match(/\/d\/([^=]+)/);
                 if (m) dId = m[1];
+            } else if (src.includes('id=')) {
+                var m = src.match(/id=([a-zA-Z0-9_-]+)/);
+                if (m) dId = m[1];
             }
+            
             var dlUrl = dId ? 'https://drive.google.com/uc?export=download&id=' + dId : src.replace('w=800','w=1600');
             
             var a = document.createElement('a');
@@ -915,8 +919,8 @@
             var s = D.settings;
             document.getElementById('heroDesc').textContent = s.heroDesc; document.getElementById('ftAddr').textContent = s.address;
             
-            var pg = document.getElementById('portGrid'); pg.innerHTML = '';
-            var pf = document.getElementById('portFilters'); pf.innerHTML = '';
+            var pg = document.getElementById('portGrid'); 
+            var pf = document.getElementById('portFilters'); 
             
             var labels = ['Todos'];
             D.portfolio.forEach(function(img) { var l = img.label || 'General'; if (!labels.includes(l)) labels.push(l); });
@@ -924,30 +928,31 @@
             window.currentPortFilter = window.currentPortFilter || 'Todos';
             if (!labels.includes(window.currentPortFilter)) window.currentPortFilter = 'Todos';
             
+            var pfHtml = '';
             if (labels.length > 1) {
                 labels.forEach(function(l) {
-                    var b = document.createElement('button');
-                    b.className = 'port-filter-btn' + (l === window.currentPortFilter ? ' active' : '');
-                    b.textContent = l;
-                    b.onclick = function() {
-                        document.querySelectorAll('.port-filter-btn').forEach(btn => btn.classList.remove('active'));
-                        this.classList.add('active');
-                        filterPortfolio(l);
-                    };
-                    pf.appendChild(b);
+                    var cls = 'port-filter-btn' + (l === window.currentPortFilter ? ' active' : '');
+                    pfHtml += '<button class="' + cls + '" onclick="document.querySelectorAll(\'.port-filter-btn\').forEach(btn => btn.classList.remove(\'active\')); this.classList.add(\'active\'); filterPortfolio(\'' + esc(l) + '\');">' + esc(l) + '</button>';
                 });
             }
+            pf.innerHTML = pfHtml;
             filterPortfolio(window.currentPortFilter);
 
-            var sg = document.getElementById('servGrid'); sg.innerHTML = '';
+            var sg = document.getElementById('servGrid');
+            var sgHtml = '';
             D.services.sort(function(a, b) { return (a.order || 0) - (b.order || 0); }).forEach(function(svc) {
                 var feat = svc.features ? svc.features.map(function(f) { return '<li>' + esc(f) + '</li>'; }).join('') : '';
-                var d = document.createElement('div'); d.className = 'service-card';
-                d.innerHTML = '<span class="service-icon">' + esc(svc.icon) + '</span><h3>' + esc(svc.title) + '</h3><p>' + esc(svc.desc) + '</p>' + (feat ? '<ul class="service-features">' + feat + '</ul>' : '') + '<span class="service-price">' + esc(svc.price) + '</span>';
-                sg.appendChild(d);
+                sgHtml += '<div class="service-card"><span class="service-icon">' + esc(svc.icon) + '</span><h3>' + esc(svc.title) + '</h3><p>' + esc(svc.desc) + '</p>' + (feat ? '<ul class="service-features">' + feat + '</ul>' : '') + '<span class="service-price">' + esc(svc.price) + '</span></div>';
             });
-            var tg = document.getElementById('testGrid'); tg.innerHTML = '';
-            D.testimonials.forEach(function(t) { var d = document.createElement('div'); d.className = 'testimonial-card'; d.innerHTML = '<div class="stars">★★★★★</div><p class="testimonial-text">' + esc(t.text) + '</p><p class="testimonial-author">' + esc(t.author) + '</p>'; tg.appendChild(d); });
+            sg.innerHTML = sgHtml;
+
+            var tg = document.getElementById('testGrid');
+            var tgHtml = '';
+            D.testimonials.forEach(function(t) { 
+                tgHtml += '<div class="testimonial-card"><div class="stars">★★★★★</div><p class="testimonial-text">' + esc(t.text) + '</p><p class="testimonial-author">' + esc(t.author) + '</p></div>'; 
+            });
+            tg.innerHTML = tgHtml;
+
             var ci = document.getElementById('contactInfo');
             ci.innerHTML = '<p class="section-desc" style="margin-bottom:1.2rem">Estamos en Capulhuac de Mirafuentes. Llámanos o ven directamente a la tienda.</p>' +
                 '<div class="contact-detail"><span class="icon">📞</span> <a href="tel:' + s.phoneRaw + '" style="color:var(--text-muted);text-decoration:none">' + esc(s.phone) + '</a></div>' +
@@ -955,13 +960,18 @@
                 '<div class="contact-detail"><span class="icon">🕒</span> ' + esc(s.hours) + '</div>' +
                 '<div class="contact-detail"><span class="icon">🔗</span> <a href="' + esc(s.facebook) + '" target="_blank" rel="noopener" style="color:var(--accent)">facebook.com</a></div>' +
                 '<div class="map-container"><iframe src="' + esc(s.mapEmbed) + '" title="Ubicación" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>';
-            var sel = document.getElementById('servSelect'); sel.innerHTML = '<option value="" disabled selected>Tipo de servicio</option>';
-            D.services.forEach(function(svc) { sel.innerHTML += '<option>' + esc(svc.title) + '</option>'; }); sel.innerHTML += '<option>Otro</option>';
+            
+            var sel = document.getElementById('servSelect'); 
+            var selHtml = '<option value="" disabled selected>Tipo de servicio</option>';
+            D.services.forEach(function(svc) { selHtml += '<option>' + esc(svc.title) + '</option>'; }); 
+            selHtml += '<option>Otro</option>';
+            sel.innerHTML = selHtml;
             
             var pp = document.getElementById('printPrices'); 
             if (pp && D.printPrices) {
-                pp.innerHTML = '';
-                D.printPrices.forEach(function(p) { pp.innerHTML += '<tr><td>' + esc(p.label) + '</td><td>' + esc(p.measure) + '</td><td>$' + p.price + '</td></tr>'; });
+                var ppHtml = '';
+                D.printPrices.forEach(function(p) { ppHtml += '<tr><td>' + esc(p.label) + '</td><td>' + esc(p.measure) + '</td><td>$' + p.price + '</td></tr>'; });
+                pp.innerHTML = ppHtml;
             }
             
             document.getElementById('cpWaLink').href = 'https://wa.me/' + s.waNumber; document.getElementById('cpWaLink').textContent = s.phone;
@@ -1134,7 +1144,7 @@
             var container = document.getElementById('accessCardsContainer');
             var cards = document.getElementById('accessCards'); 
             
-            cards.innerHTML = '';
+            var cardsHtml = '';
             
             if (c.expireAt) {
                 var daysLeft = Math.ceil((c.expireAt - Date.now()) / 86400000);
@@ -1154,14 +1164,16 @@
                 banner.style.display = 'none'; lock.style.display = 'none'; container.style.display = 'block';
             }
 
-            if (c.hasVideo && c.video && c.video.youtubeId) { cards.innerHTML += ('<div class="access-card"><div class="access-card-icon">🎬</div><div class="access-card-info"><h3>Video</h3><p>' + esc(c.video.title || 'Tu video del evento') + '</p></div><button class="btn btn-accent btn-sm" onclick="openVideoView()">Ver video</button></div>'); }
-            if (c.hasPhotos && c.photos && c.photos.length) { cards.innerHTML += ('<div class="access-card"><div class="access-card-icon">📸</div><div class="access-card-info"><h3>Fotos</h3><p>' + c.photos.length + ' fotos disponibles</p></div><button class="btn btn-accent btn-sm" onclick="openGalleryView()">Ver galería</button></div>'); }
+            if (c.hasVideo && c.video && c.video.youtubeId) { cardsHtml += ('<div class="access-card"><div class="access-card-icon">🎬</div><div class="access-card-info"><h3>Video</h3><p>' + esc(c.video.title || 'Tu video del evento') + '</p></div><button class="btn btn-accent btn-sm" onclick="openVideoView()">Ver video</button></div>'); }
+            if (c.hasPhotos && c.photos && c.photos.length) { cardsHtml += ('<div class="access-card"><div class="access-card-icon">📸</div><div class="access-card-info"><h3>Fotos</h3><p>' + c.photos.length + ' fotos disponibles</p></div><button class="btn btn-accent btn-sm" onclick="openGalleryView()">Ver galería</button></div>'); }
             if (c.hasPhotobook) {
                 var pb = c.photobook || { cover: null, spreads: [null], hasBackCover: false, back: null };
                 var filledCount = (pb.cover ? 1 : 0) + pb.spreads.filter(function(s) { return !!s; }).length + (pb.hasBackCover && pb.back ? 1 : 0);
-                cards.innerHTML += ('<div class="access-card"><div class="access-card-icon">📖</div><div class="access-card-info"><h3>Fotolibro Digital</h3><p>' + (filledCount > 0 ? filledCount + ' páginas con contenido' : 'Próximamente disponible') + '</p></div><button class="btn btn-accent btn-sm" onclick="openPhotobookView()"' + (filledCount === 0 ? ' disabled style="opacity:.4;cursor:default"' : '') + '>Ver fotolibro</button></div>');
+                cardsHtml += ('<div class="access-card"><div class="access-card-icon">📖</div><div class="access-card-info"><h3>Fotolibro Digital</h3><p>' + (filledCount > 0 ? filledCount + ' páginas con contenido' : 'Próximamente disponible') + '</p></div><button class="btn btn-accent btn-sm" onclick="openPhotobookView()"' + (filledCount === 0 ? ' disabled style="opacity:.4;cursor:default"' : '') + '>Ver fotolibro</button></div>');
             }
-            if (!cards.innerHTML) { cards.innerHTML = '<div class="adm-empty">Aún no hay contenido disponible para este evento.</div>'; }
+            if (!cardsHtml) { cardsHtml = '<div class="adm-empty">Aún no hay contenido disponible para este evento.</div>'; }
+            
+            cards.innerHTML = cardsHtml;
         }
 
         /* ══════ VISTAS ESPECÍFICAS Y BOTONES "REGRESAR" ══════ */
@@ -1347,12 +1359,18 @@
             } else { bar.classList.remove('vis'); }
         }
         function openOrder() {
-            var items = document.getElementById('omItems'); items.innerHTML = ''; var c = D.clients[curClient]; document.getElementById('omSub').textContent = c.name + ' — ' + c.event; var total = 0;
+            var items = document.getElementById('omItems'); 
+            var itemsHtml = ''; 
+            var c = D.clients[curClient]; 
+            document.getElementById('omSub').textContent = c.name + ' — ' + c.event; 
+            var total = 0;
+            
             Object.keys(selected).forEach(function(i) {
                 i = parseInt(i); var p = portalPhotos[i]; if (!p) return; var sz = selected[i] || '10x15'; var pr = D.printPrices.find(function(x) { return x.size === sz; }); var price = pr ? pr.price : 10; total += price; var opts = '';
                 D.printPrices.forEach(function(ps) { opts += '<option value="' + ps.size + '"' + (ps.size === sz ? ' selected' : '') + '>' + ps.label + ' ($' + ps.price + ')</option>'; });
-                items.innerHTML += ('<div class="oi"><img class="oi-img" src="' + pSrc(p, 200) + '" alt=""><div class="oi-info"><div class="oi-nm">' + esc(p.name || 'Foto ' + (i + 1)) + '</div><div class="oi-ctrl"><select onchange="changeSize(' + i + ',this.value)">' + opts + '</select><div class="qty-c"><button class="qty-b" onclick="changeQty(\'' + i + '\',-1)">−</button><span class="qty-v" id="qty_' + i + '">1</span><button class="qty-b" onclick="changeQty(\'' + i + '\',1)">+</button></div></div><div class="oi-sub" id="sub_' + i + '">$' + price + '</div></div></div>');
+                itemsHtml += ('<div class="oi"><img class="oi-img" src="' + pSrc(p, 200) + '" alt=""><div class="oi-info"><div class="oi-nm">' + esc(p.name || 'Foto ' + (i + 1)) + '</div><div class="oi-ctrl"><select onchange="changeSize(' + i + ',this.value)">' + opts + '</select><div class="qty-c"><button class="qty-b" onclick="changeQty(\'' + i + '\',-1)">−</button><span class="qty-v" id="qty_' + i + '">1</span><button class="qty-b" onclick="changeQty(\'' + i + '\',1)">+</button></div></div><div class="oi-sub" id="sub_' + i + '">$' + price + '</div></div></div>');
             });
+            items.innerHTML = itemsHtml;
             document.getElementById('omTotV').textContent = '$' + total; document.getElementById('orderModal').classList.add('active'); document.body.style.overflow = 'hidden';
         }
         function closeOrder() { document.getElementById('orderModal').classList.remove('active'); document.body.style.overflow = ''; }
@@ -1387,7 +1405,7 @@
                 dlBtn.style.display = 'none'; 
             } else {
                 dlBtn.style.display = '';     
-                dlBtn.onclick = function(e) { downloadPhoto(p.src || pSrc(p, 1600), p.name, e); };
+                dlBtn.onclick = function(e) { downloadPhoto(p.src || pFull(p), p.name, e); };
                 dlBtn.removeAttribute('href');
             }
 
@@ -1637,7 +1655,7 @@
         }
         function toggleClientSection(sec) { document.getElementById('ce_' + sec + 'Sec').style.display = document.getElementById('ce_has' + sec.charAt(0).toUpperCase() + sec.slice(1)).checked ? 'block' : 'none'; }
         
-        /* ════ DRAG & DROP FOTOS (V1.3) ════ */
+        /* ════ DRAG & DROP FOTOS (V1.4) ════ */
         function dragPhotoStart(e, i) {
             draggedPhotoIdx = i;
             e.dataTransfer.effectAllowed = 'move';
@@ -1798,7 +1816,7 @@
         function renderPBSlotsAdmin(pb) {
             var container = document.getElementById('pbSlotsAdmin'); if (!container) return; 
             var h = '';
-            pb.spreads.forEach(function(src, i) { h += ('<div class="pb-slot" id="pbSlot_' + i + '" ondragover="allowDropPB(event)" ondragleave="leaveDropPB(event)" ondrop="leaveDropPB(event); dropOnPBSlot(event, \'spread\', ' + i + ')"><label>Lienzo ' + (i + 1) + '</label><input type="text" value="' + esc(src || '') + '" placeholder="URL de imagen panorámica" onchange="updatePBSpread(' + i + ',this.value)"><input type="file" accept="image/*" onchange="uploadPBImg(this,\'spread\',' + i + ')" style="font-size:.55rem;color:#999">' + (src ? '<img src="' + esc(src) + '">' : '') + '<button class="rm-slot" onclick="removePBSpread(' + i + ')">×</button></div>'); });
+            pb.spreads.forEach(function(src, i) { h += ('<div class="pb-slot" id="pbSlot_' + i + '" ondragover="allowDropPB(event)" ondragleave="leaveDropPB(event)" ondrop="leaveDropPB(event); dropOnPBSlot(event, \'spread\', ' + i + ')"><label>Lienzo ' + (i + 1) + '</label><input type="text" value="' + esc(src || '') + '" placeholder="URL de imagen panorámica" onchange="updatePBSpread(' + i + ',this.value)"><input type="file" accept="image/*" onchange="uploadPBImg(this,\'spread\',' + i + ')" style="font-size:.55rem;color:#999">' + (src ? '<img src="' + esc(src) + '">' : '') + '<button type="button" class="rm-slot" onclick="removePBSpread(' + i + ')">×</button></div>'); });
             container.innerHTML = h;
         }
         
