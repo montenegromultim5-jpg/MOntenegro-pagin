@@ -481,7 +481,7 @@
 
     <nav class="nav" id="navbar">
         <div class="nav-inner">
-            <a class="nav-logo" id="logoBtn">Foto<span>&amp;</span>Video Montenegro</a>
+            <a class="nav-logo" id="logoBtn">Foto<span>&</span>Video Montenegro</a>
             <ul class="nav-links" id="navLinks">
                 <li><a href="#portafolio" onclick="navTo('portafolio', event)">Portafolio</a></li>
                 <li><a href="#servicios" onclick="navTo('servicios', event)">Servicios</a></li>
@@ -535,7 +535,7 @@
             </div>
         </section>
         <footer class="footer">
-            <div>&copy; 2025 <strong>Foto y Video Montenegro</strong></div>
+            <div>© 2025 <strong>Foto y Video Montenegro</strong></div>
             <div style="margin-top:.3rem" id="ftAddr"></div>
             <div style="margin-top:.4rem"><a href="#" onclick="openLogin()">Acceso a clientes</a></div>
         </footer>
@@ -545,7 +545,7 @@
     <div class="cp" id="cpPortal">
         <header class="cp-hdr" id="cpHdrMain">
             <div class="cp-hdr-in">
-                <button class="cp-back" onclick="exitPortal()">&larr; Salir</button>
+                <button class="cp-back" onclick="exitPortal()">← Salir</button>
                 <div class="cp-info">
                     <div class="cp-name" id="cpName"></div>
                     <div class="cp-event" id="cpEvent"></div>
@@ -580,7 +580,7 @@
 
         <!-- Vista video -->
         <div id="cpVideoView" style="display:none">
-            <button class="btn-regresar-fijo" id="btnBackVideo" onclick="closeVideoView()">&larr; Regresar al menú</button>
+            <button class="btn-regresar-fijo" id="btnBackVideo" onclick="closeVideoView()">← Regresar al menú</button>
             <section class="vid-sec">
                 <p class="vid-title" id="vidTitle"></p>
                 <div class="vid-wrap" id="vidWrap"></div>
@@ -589,12 +589,12 @@
 
         <!-- VISTA GALERÍA (ESTILO PIXIESET) -->
         <div id="cpGalleryView" style="display:none">
-            <button class="btn-regresar-fijo" id="btnBackGallery" onclick="closeGalleryView()">&larr; Regresar al menú</button>
+            <button class="btn-regresar-fijo" id="btnBackGallery" onclick="closeGalleryView()">← Regresar al menú</button>
             <div class="px-header" id="pxHeader">
                 <div class="px-title-container">
                     <h1 id="pxTitle">Boda</h1>
                     <p id="pxSubtitle">Evento</p>
-                    <button class="px-scroll-btn" onclick="document.getElementById('pxNav').scrollIntoView({behavior:'smooth'})">Ver Galería &darr;</button>
+                    <button class="px-scroll-btn" onclick="document.getElementById('pxNav').scrollIntoView({behavior:'smooth'})">Ver Galería ↓</button>
                 </div>
             </div>
             
@@ -621,11 +621,11 @@
 
         <!-- Vista fotolibro AISLADO -->
         <div id="cpPhotobookView">
-            <button class="btn-regresar-fijo" id="btnBackPB" onclick="closePhotobookView()">&larr; Regresar al menú</button>
+            <button class="btn-regresar-fijo" id="btnBackPB" onclick="closePhotobookView()">← Regresar al menú</button>
             <button class="pb-fullscreen-btn" id="pb-fullscreen-btn" onclick="toggleFullscreen()" title="Pantalla completa">⛶</button>
             
-            <button class="pb-landscape-arrow pb-arrow-left" id="pb-arrow-left" onclick="prevPage()">&#8249;</button>
-            <button class="pb-landscape-arrow pb-arrow-right" id="pb-arrow-right" onclick="nextPage()">&#8250;</button>
+            <button class="pb-landscape-arrow pb-arrow-left" id="pb-arrow-left" onclick="prevPage()">‹</button>
+            <button class="pb-landscape-arrow pb-arrow-right" id="pb-arrow-right" onclick="nextPage()">›</button>
 
             <div class="pb-wrapper" id="pb-wrapper">
                 <div class="pb-ambient" aria-hidden="true"></div>
@@ -643,9 +643,9 @@
             </div>
             
             <div class="pb-mobile-toolbar" id="pb-mobile-toolbar">
-                <button class="pb-mobile-toolbar-btn" onclick="prevPage()">&#8249;</button>
+                <button class="pb-mobile-toolbar-btn" onclick="prevPage()">‹</button>
                 <button class="pb-mobile-toolbar-btn" onclick="goToCover()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></button>
-                <button class="pb-mobile-toolbar-btn" onclick="nextPage()">&#8250;</button>
+                <button class="pb-mobile-toolbar-btn" onclick="nextPage()">›</button>
                 <div class="pb-toolbar-sep"></div>
                 <button class="pb-mobile-toolbar-btn" id="pb-fs-mobile-btn" onclick="toggleFullscreen()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
@@ -665,12 +665,12 @@
 
     <!-- Modal login cliente -->
     <div class="modal-ov" id="loginModal" onclick="if(event.target===this)closeLogin()">
-        <div class="modal"><button class="modal-x" onclick="closeLogin()">&times;</button><h3>Acceso a clientes</h3><p>Ingresa el código que se te proporcionó.</p><input type="text" id="codeIn" placeholder="Ejemplo: boda2024" autocomplete="off" autocapitalize="off" spellcheck="false"><p class="modal-err" id="loginErr">Código no válido.</p><button class="btn btn-primary" onclick="doLogin()">Acceder</button></div>
+        <div class="modal"><button class="modal-x" onclick="closeLogin()">×</button><h3>Acceso a clientes</h3><p>Ingresa el código que se te proporcionó.</p><input type="text" id="codeIn" placeholder="Ejemplo: boda2024" autocomplete="off" autocapitalize="off" spellcheck="false"><p class="modal-err" id="loginErr">Código no válido.</p><button class="btn btn-primary" onclick="doLogin()">Acceder</button></div>
     </div>
 
     <!-- Modal login admin -->
     <div class="modal-ov" id="admLoginModal" onclick="if(event.target===this)closeAdmLogin()">
-        <div class="modal"><button class="modal-x" onclick="closeAdmLogin()">&times;</button><h3 id="admLoginTitle">Administración</h3><p id="admLoginDesc">Ingresa tu contraseña de administrador.</p><input type="password" id="admPassIn" placeholder="Contraseña" autocomplete="off"><p class="modal-err" id="admLoginErr">Contraseña incorrecta.</p><button class="btn btn-primary" onclick="doAdmLogin()">Entrar</button></div>
+        <div class="modal"><button class="modal-x" onclick="closeAdmLogin()">×</button><h3 id="admLoginTitle">Administración</h3><p id="admLoginDesc">Ingresa tu contraseña de administrador.</p><input type="password" id="admPassIn" placeholder="Contraseña" autocomplete="off"><p class="modal-err" id="admLoginErr">Contraseña incorrecta.</p><button class="btn btn-primary" onclick="doAdmLogin()">Entrar</button></div>
     </div>
 
     <!-- Modal pedido -->
@@ -683,7 +683,7 @@
     <!-- Modal Advertencia Descarga Completa -->
     <div class="modal-ov" id="downloadModal" onclick="if(event.target===this)closeDownloadModal()">
         <div class="modal-c">
-            <button class="modal-x-c" onclick="closeDownloadModal()">&times;</button>
+            <button class="modal-x-c" onclick="closeDownloadModal()">×</button>
             <h3>Descarga de Galería</h3>
             <p>Las fotografías se descargarán en <b>tamaño real y máxima calidad</b> directamente desde Google Drive.</p>
             <p style="background:var(--c-surface2); color:var(--c-text); padding:1rem; border-radius:8px; font-size:.85rem; margin-bottom:1rem; border:1px solid var(--c-border)">
@@ -698,8 +698,8 @@
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
-                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.5rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v1.2</span></h2>
-                <button class="adm-x" onclick="closeAdm()">&times;</button>
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.5rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v1.3</span></h2>
+                <button class="adm-x" onclick="closeAdm()">×</button>
             </div>
             <div class="adm-tabs" id="admTabs">
                 <button class="active" data-t="services">Paquetes</button>
@@ -713,7 +713,7 @@
     </div>
 
     <!-- Lightbox -->
-    <div class="lb" id="lb"><button class="lb-x" onclick="closeLB()">&times;</button><button class="lb-n lb-p" onclick="navLB(-1)">&#8249;</button><button class="lb-n lb-nx" onclick="navLB(1)">&#8250;</button><img id="lbImg" src="" alt=""><div class="lb-bot"><span class="lb-c" id="lbC"></span><a class="lb-dl" id="lbDl" style="cursor:pointer;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Descargar Foto</a></div></div>
+    <div class="lb" id="lb"><button class="lb-x" onclick="closeLB()">×</button><button class="lb-n lb-p" onclick="navLB(-1)">‹</button><button class="lb-n lb-nx" onclick="navLB(1)">›</button><img id="lbImg" src="" alt=""><div class="lb-bot"><span class="lb-c" id="lbC"></span><a class="lb-dl" id="lbDl" style="cursor:pointer;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Descargar Foto</a></div></div>
 
     <div class="toast" id="toast"></div>
 
@@ -777,7 +777,7 @@
         const db = firebase.firestore();
 
         var D;
-        var isPublicPortfolioView = false; // Variable global para proteger descargas
+        var isPublicPortfolioView = false; 
 
         async function loadData(forceServer = false) {
             const loader = document.getElementById('loader');
@@ -851,7 +851,7 @@
         var currentDriveFiles = []; 
         var tempClientPhotos = []; 
         var isPrintMode = false;
-        var draggedPhotoIdx = -1; // Para el Drag & Drop
+        var draggedPhotoIdx = -1; 
 
         function pSrc(p, s) { s = s || 800; if (p.driveId) return 'https://lh3.googleusercontent.com/d/' + p.driveId + '=s' + s; return (p.src || '').replace(/w=\d+/, 'w=' + s); }
         function pDl(p) { if (p.driveId) return 'https://drive.google.com/uc?export=download&id=' + p.driveId; return (p.src || '').replace('w=800', 'w=1600'); }
@@ -915,7 +915,6 @@
             var s = D.settings;
             document.getElementById('heroDesc').textContent = s.heroDesc; document.getElementById('ftAddr').textContent = s.address;
             
-            // Renderizado de Portafolio con Filtros
             var pg = document.getElementById('portGrid'); pg.innerHTML = '';
             var pf = document.getElementById('portFilters'); pf.innerHTML = '';
             
@@ -1566,8 +1565,9 @@
                 body.innerHTML = '<h3 style="margin-bottom:1rem">' + (isEdit ? 'Editar' : 'Nuevo') + ' paquete</h3><label class="af-l">Icono (emoji)</label><input class="af-i" id="ae_icon" value="' + esc(svc ? svc.icon : '') + '" placeholder="💍"><label class="af-l">Título</label><input class="af-i" id="ae_title" value="' + esc(svc ? svc.title : '') + '" placeholder="Boda Básico"><label class="af-l">Descripción</label><input class="af-i" id="ae_desc" value="' + esc(svc ? svc.desc : '') + '" placeholder="Cobertura de..."><label class="af-l">Precio</label><input class="af-i" id="ae_price" value="' + esc(svc ? svc.price : '') + '" placeholder="Desde $3,500"><label class="af-l">Características (una por línea)</label><textarea class="af-i af-ta" id="ae_feats" placeholder="100 fotos editadas\nVideo resumen">' + esc((svc && svc.features) ? svc.features.join('\n') : '') + '</textarea><div class="af-btns"><button class="af-btn af-btn-p" onclick="saveService(\'' + (svc ? svc.id : '') + '\')">Guardar</button><button class="af-btn af-btn-s" onclick="admState.view=\'list\';renderAdmBody()">Cancelar</button></div>';
                 return;
             }
-            body.innerHTML = '<button class="adm-add-btn" onclick="admState.view=\'edit\';admState.editId=null;renderAdmBody()">+ Nuevo paquete</button>';
-            D.services.sort(function(a, b) { return (a.order || 0) - (b.order || 0); }).forEach(function(svc) { body.innerHTML += ('<div class="al-item"><div class="al-item-info"><div class="al-item-t">' + esc(svc.icon) + ' ' + esc(svc.title) + '</div><div class="al-item-s">' + esc(svc.price) + '</div></div><div class="al-acts"><button class="al-btn" onclick="editService(\'' + svc.id + '\')">Editar</button><button class="al-btn del" onclick="delService(\'' + svc.id + '\')">Eliminar</button></div></div>'); });
+            var h = '<button class="adm-add-btn" onclick="admState.view=\'edit\';admState.editId=null;renderAdmBody()">+ Nuevo paquete</button>';
+            D.services.sort(function(a, b) { return (a.order || 0) - (b.order || 0); }).forEach(function(svc) { h += ('<div class="al-item"><div class="al-item-info"><div class="al-item-t">' + esc(svc.icon) + ' ' + esc(svc.title) + '</div><div class="al-item-s">' + esc(svc.price) + '</div></div><div class="al-acts"><button class="al-btn" onclick="editService(\'' + svc.id + '\')">Editar</button><button class="al-btn del" onclick="delService(\'' + svc.id + '\')">Eliminar</button></div></div>'); });
+            body.innerHTML = h;
         }
         function editService(id) { admState.view = 'edit'; admState.editId = id; renderAdmBody(); }
         function saveService(oldId) { var icon = document.getElementById('ae_icon').value.trim(), title = document.getElementById('ae_title').value.trim(), desc = document.getElementById('ae_desc').value.trim(), price = document.getElementById('ae_price').value.trim(), feats = document.getElementById('ae_feats').value.trim().split('\n').filter(function(f) { return f.trim(); }); if (!title) { toast('El título es obligatorio'); return; } if (oldId) { var svc = D.services.find(function(s) { return s.id === oldId; }); if (svc) { svc.icon = icon; svc.title = title; svc.desc = desc; svc.price = price; svc.features = feats; } } else { D.services.push({ id: uid(), icon: icon, title: title, desc: desc, price: price, features: feats, order: D.services.length }); } saveData(); admState.view = 'list'; renderAdmBody(); renderPublic(); }
@@ -1577,8 +1577,8 @@
         function renderAdmClients(body) {
             if (admState.view === 'edit') { renderClientForm(body); return; }
             if (admState.view === 'photobook') { renderPhotobookAdmin(body); return; }
-            body.innerHTML = '<button class="adm-add-btn" onclick="newClient()">+ Nuevo evento / cliente</button><p class="adm-hint">Cada cliente tiene un código único para acceder.</p>';
-            var codes = Object.keys(D.clients); if (!codes.length) { body.innerHTML += '<div class="adm-empty">No hay clientes registrados.</div>'; return; }
+            var h = '<button class="adm-add-btn" onclick="newClient()">+ Nuevo evento / cliente</button><p class="adm-hint">Cada cliente tiene un código único para acceder.</p>';
+            var codes = Object.keys(D.clients); if (!codes.length) { body.innerHTML = h + '<div class="adm-empty">No hay clientes registrados.</div>'; return; }
             codes.forEach(function(code) {
                 var c = D.clients[code], badges = '';
                 if (c.hasVideo) badges += '<span class="toggle-badge on">Video</span> ';
@@ -1586,8 +1586,9 @@
                 if (c.hasPhotobook) badges += '<span class="toggle-badge on">Fotolibro</span> ';
                 if (!badges) badges = '<span class="toggle-badge off">Sin contenido</span>';
                 
-                body.innerHTML += ('<div class="al-item" style="flex-wrap:wrap"><div class="al-item-info"><div class="al-item-t">' + esc(c.name) + '</div><div class="al-item-s">' + esc(c.event) + ' · Código: <strong>' + esc(code) + '</strong></div><div style="margin-top:.3rem">' + badges + '</div></div><div class="al-acts" style="flex-wrap:wrap"><button class="al-btn" onclick="copyClientUrl(\'' + code + '\')">🔗 Copiar Link</button><button class="al-btn" onclick="editClient(\'' + code + '\')">Editar</button>' + (c.hasPhotobook ? '<button class="al-btn" onclick="editPhotobook(\'' + code + '\')">Fotolibro</button>' : '') + '<button class="al-btn del" onclick="delClient(\'' + code + '\')">Eliminar</button></div></div>');
+                h += ('<div class="al-item" style="flex-wrap:wrap"><div class="al-item-info"><div class="al-item-t">' + esc(c.name) + '</div><div class="al-item-s">' + esc(c.event) + ' · Código: <strong>' + esc(code) + '</strong></div><div style="margin-top:.3rem">' + badges + '</div></div><div class="al-acts" style="flex-wrap:wrap"><button class="al-btn" onclick="copyClientUrl(\'' + code + '\')">🔗 Copiar Link</button><button class="al-btn" onclick="editClient(\'' + code + '\')">Editar</button>' + (c.hasPhotobook ? '<button class="al-btn" onclick="editPhotobook(\'' + code + '\')">Fotolibro</button>' : '') + '<button class="al-btn del" onclick="delClient(\'' + code + '\')">Eliminar</button></div></div>');
             });
+            body.innerHTML = h;
         }
         function newClient() { admState.view = 'edit'; admState.editId = null; renderAdmBody(); }
         function editClient(code) { admState.view = 'edit'; admState.editId = code; renderAdmBody(); }
@@ -1636,7 +1637,7 @@
         }
         function toggleClientSection(sec) { document.getElementById('ce_' + sec + 'Sec').style.display = document.getElementById('ce_has' + sec.charAt(0).toUpperCase() + sec.slice(1)).checked ? 'block' : 'none'; }
         
-        /* ════ DRAG & DROP FOTOS (V1.2) ════ */
+        /* ════ DRAG & DROP FOTOS (V1.3) ════ */
         function dragPhotoStart(e, i) {
             draggedPhotoIdx = i;
             e.dataTransfer.effectAllowed = 'move';
@@ -1657,9 +1658,10 @@
         }
 
         function renderClientPhotosList(photos) {
-            var list = document.getElementById('ce_photosList'); if (!list) return; list.innerHTML = '';
+            var list = document.getElementById('ce_photosList'); if (!list) return; 
+            var h = '';
             (photos || []).forEach(function(p, i) { 
-                list.innerHTML += `<div class="adm-photo-item" draggable="true" ondragstart="dragPhotoStart(event, ${i})" ondragover="dragPhotoOver(event)" ondrop="dropPhoto(event, ${i})" style="cursor:grab; flex-wrap:wrap">
+                h += `<div class="adm-photo-item" draggable="true" ondragstart="dragPhotoStart(event, ${i})" ondragover="dragPhotoOver(event)" ondrop="dropPhoto(event, ${i})" style="cursor:grab; flex-wrap:wrap">
                     <span style="color:#999; margin-right:5px; font-size:1.2rem;" title="Arrastrar para ordenar">↕</span>
                     <img src="${esc(p.src)}" alt="">
                     <input type="text" value="${esc(p.name || '')}" placeholder="Nombre / Etiqueta" onchange="updateClientPhotoName(${i},this.value)" style="flex:1; min-width:80px;">
@@ -1667,6 +1669,7 @@
                     <button type="button" onclick="removeClientPhoto(${i})" title="Quitar">×</button>
                 </div>`; 
             });
+            list.innerHTML = h;
         }
         
         /* EXTRACCIÓN CON SUBCARPETAS (API DRIVE) */
@@ -1688,6 +1691,7 @@
                 let folders = data.files.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
                 let looseImages = data.files.filter(f => f.mimeType.includes('image/'));
 
+                // ORDENAR ALFABÉTICAMENTE / NUMÉRICAMENTE AL EXTRAER
                 folders.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
                 looseImages.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
 
@@ -1702,6 +1706,7 @@
                     let subRes = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folder.id}'+in+parents+and+mimeType+contains+'image/'+and+trashed=false&fields=files(id,name)&key=${apiKey}&pageSize=1000`);
                     let subData = await subRes.json();
                     if (subData.files) {
+                        // ORDENAR ALFABÉTICAMENTE LAS FOTOS DENTRO DE LA SUBCARPETA
                         subData.files.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
                         subData.files.forEach(img => {
                             allPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s1600`, name: img.name, set: folder.name, driveId: img.id });
@@ -1791,8 +1796,10 @@
             renderPBSlotsAdmin(pb);
         }
         function renderPBSlotsAdmin(pb) {
-            var container = document.getElementById('pbSlotsAdmin'); if (!container) return; container.innerHTML = '';
-            pb.spreads.forEach(function(src, i) { container.innerHTML += ('<div class="pb-slot" id="pbSlot_' + i + '" ondragover="allowDropPB(event)" ondragleave="leaveDropPB(event)" ondrop="leaveDropPB(event); dropOnPBSlot(event, \'spread\', ' + i + ')"><label>Lienzo ' + (i + 1) + '</label><input type="text" value="' + esc(src || '') + '" placeholder="URL de imagen panorámica" onchange="updatePBSpread(' + i + ',this.value)"><input type="file" accept="image/*" onchange="uploadPBImg(this,\'spread\',' + i + ')" style="font-size:.55rem;color:#999">' + (src ? '<img src="' + esc(src) + '">' : '') + '<button class="rm-slot" onclick="removePBSpread(' + i + ')">×</button></div>'); });
+            var container = document.getElementById('pbSlotsAdmin'); if (!container) return; 
+            var h = '';
+            pb.spreads.forEach(function(src, i) { h += ('<div class="pb-slot" id="pbSlot_' + i + '" ondragover="allowDropPB(event)" ondragleave="leaveDropPB(event)" ondrop="leaveDropPB(event); dropOnPBSlot(event, \'spread\', ' + i + ')"><label>Lienzo ' + (i + 1) + '</label><input type="text" value="' + esc(src || '') + '" placeholder="URL de imagen panorámica" onchange="updatePBSpread(' + i + ',this.value)"><input type="file" accept="image/*" onchange="uploadPBImg(this,\'spread\',' + i + ')" style="font-size:.55rem;color:#999">' + (src ? '<img src="' + esc(src) + '">' : '') + '<button class="rm-slot" onclick="removePBSpread(' + i + ')">×</button></div>'); });
+            container.innerHTML = h;
         }
         
         /* Drag & Drop Lógica */
@@ -1904,9 +1911,11 @@
                 <div id="admPortList"></div>
             `;
             var list = document.getElementById('admPortList');
+            var h = '';
             D.portfolio.forEach(function(img, i) { 
-                list.innerHTML += ('<div class="adm-photo-item"><img src="' + esc(img.src) + '" alt=""><input type="text" value="' + esc(img.label) + '" placeholder="Etiqueta / Categoría" onchange="updPortLabel(' + i + ',this.value)"><button type="button" onclick="delPortfolioImg(' + i + ')" title="Quitar">×</button></div>'); 
+                h += ('<div class="adm-photo-item"><img src="' + esc(img.src) + '" alt=""><input type="text" value="' + esc(img.label) + '" placeholder="Etiqueta / Categoría" onchange="updPortLabel(' + i + ',this.value)"><button type="button" onclick="delPortfolioImg(' + i + ')" title="Quitar">×</button></div>'); 
             });
+            list.innerHTML = h;
         }
         
         async function fetchDrivePortfolio() {
@@ -1967,8 +1976,9 @@
 
         /* ════ ADMIN: TESTIMONIOS ════ */
         function renderAdmTestimonials(body) {
-            body.innerHTML = '<button class="adm-add-btn" onclick="addTestimonial()">+ Agregar testimonio</button>';
-            D.testimonials.forEach(function(t, i) { body.innerHTML += ('<div class="al-item" style="flex-wrap:wrap"><div class="al-item-info" style="flex-basis:100%"><div class="al-item-t" style="white-space:normal;font-weight:400;font-style:italic">' + esc(t.text) + '</div><div class="al-item-s" style="margin-top:.3rem">— ' + esc(t.author) + '</div></div><div class="al-acts"><button class="al-btn" onclick="editTestimonial(' + i + ')">Editar</button><button class="al-btn del" onclick="delTestimonial(' + i + ')">Eliminar</button></div></div>'); });
+            var h = '<button class="adm-add-btn" onclick="addTestimonial()">+ Agregar testimonio</button>';
+            D.testimonials.forEach(function(t, i) { h += ('<div class="al-item" style="flex-wrap:wrap"><div class="al-item-info" style="flex-basis:100%"><div class="al-item-t" style="white-space:normal;font-weight:400;font-style:italic">' + esc(t.text) + '</div><div class="al-item-s" style="margin-top:.3rem">— ' + esc(t.author) + '</div></div><div class="al-acts"><button class="al-btn" onclick="editTestimonial(' + i + ')">Editar</button><button class="al-btn del" onclick="delTestimonial(' + i + ')">Eliminar</button></div></div>'); });
+            body.innerHTML = h;
         }
         function addTestimonial() { D.testimonials.push({ text: '"Escribe aquí el testimonio..."', author: 'Nombre del cliente' }); saveData(); renderAdmBody(); }
         function editTestimonial(i) { var t = D.testimonials[i]; var newText = prompt('Testimonio:', t.text.replace(/"/g, '')); if (newText === null) return; var newAuthor = prompt('Autor:', t.author); if (newAuthor === null) return; D.testimonials[i].text = newText; D.testimonials[i].author = newAuthor; saveData(); renderAdmBody(); renderPublic(); }
