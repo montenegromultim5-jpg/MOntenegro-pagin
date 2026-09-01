@@ -882,7 +882,7 @@
             }
         }
 
-        /* ══════ DESCARGA DIRECTA FORZADA (V1.4) ══════ */
+        /* ══════ DESCARGA DIRECTA FORZADA (V1.5) ══════ */
         function downloadPhoto(src, name, e) {
             if(e) { e.preventDefault(); e.stopPropagation(); }
             var dId = null;
@@ -894,14 +894,23 @@
                 if (m) dId = m[1];
             }
             
-            var dlUrl = dId ? 'https://drive.google.com/uc?export=download&id=' + dId : src.replace('w=800','w=1600');
-            
-            var a = document.createElement('a');
-            a.href = dlUrl;
-            a.download = name || 'fotografia.jpg';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            if (dId) {
+                // Forzar descarga de Google Drive silenciosamente con iframe
+                var iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = 'https://drive.google.com/uc?export=download&id=' + dId;
+                document.body.appendChild(iframe);
+                setTimeout(function(){ document.body.removeChild(iframe); }, 5000);
+                toast('Iniciando descarga en tu dispositivo...');
+            } else {
+                var a = document.createElement('a');
+                a.href = src.replace('w=800','w=1600');
+                a.download = name || 'fotografia.jpg';
+                a.target = '_blank';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
         }
 
         /* ══════ RENDERIZADO PÚBLICO Y FILTROS MÓVILES ══════ */
@@ -1629,25 +1638,26 @@
                 /* VISTA FOTOS CON PIXIESET API */
                 '<div id="ce_photosSec" style="display:' + (c.hasPhotos ? 'block' : 'none') + ';margin-bottom:1rem;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)">' +
                 '<label class="af-l" style="color:var(--accent)">Extraer Galería (Soporta Subcarpetas / Sets)</label>' +
-                '<p class="adm-hint">Pega la URL de la carpeta principal de Google Drive. El sistema buscará las subcarpetas dentro y creará automáticamente los <b>Sets</b> (ej. "Sesión", "Evento") para la galería.</p>' +
-                '<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;"><input class="af-i" id="ce_driveFolderInput" placeholder="URL o ID de la carpeta principal" style="margin-bottom:0;flex:1;min-width:200px;"><button class="af-btn af-btn-p" style="margin:0" onclick="fetchDriveGalleryForClient()">Extraer Galería</button></div><div id="ce_driveGalleryStatus" style="font-size:0.8rem; color:var(--accent); margin-bottom:1rem; font-weight:500;"></div>' +
+                '<p class="adm-hint">Pega la URL de la carpeta principal de Google Drive.</p>' +
+                
+                '<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">' +
+                    '<input class="af-i" id="ce_driveFolderInput" placeholder="URL o ID de la carpeta principal" style="margin-bottom:0;flex:1;min-width:200px;">' +
+                    '<button type="button" class="af-btn af-btn-p" style="margin:0; background:#2b5797;" onclick="fetchDriveGalleryForClient()">1. Refrescar / Extraer de Drive</button>' +
+                '</div>' +
+                
+                '<div id="ce_driveGalleryStatus" style="font-size:0.8rem; color:var(--accent); margin-bottom:1rem; font-weight:500;"></div>' +
                 '<label class="af-l">URL de carpeta para descargar todo (Botón "Descargar Galería Completa")</label><input class="af-i" id="ce_driveUrl" value="' + esc(c.driveFolderUrl || '') + '">' +
                 '<label class="af-l" style="margin-top:.5rem">Fotos en la galería</label>' +
                 
                 '<div id="ce_photosSummary" class="adm-hint" style="padding: 1rem; background: var(--accent-subtle); border: 1px dashed var(--accent); border-radius: var(--radius); text-align: center; font-weight: 600; color: var(--accent); font-size: 0.9rem; margin-top:0.5rem;">📸 ' + (c.photos ? c.photos.length : 0) + ' fotos cargadas</div>' +
                 
-                '<div style="display:flex; gap:0.5rem; margin-top:0.5rem;">' +
-                    '<button type="button" class="af-btn af-btn-s" style="flex:1;" onclick="document.getElementById(\'ce_photosList\').style.display=\'block\'; document.getElementById(\'ce_sortToolbar\').style.display=\'flex\'; this.style.display=\'none\';">Ver y Ordenar Fotos Manualmente</button>' +
+                '<div style="display:flex; gap:0.5rem; margin-top:0.5rem; flex-wrap:wrap;">' +
+                    '<button type="button" class="af-btn af-btn-p" style="flex:1; background:#1da851;" onclick="sortClientPhotosAsc()">2. Ordenar de Menor a Mayor</button>' +
+                    '<button type="button" class="af-btn af-btn-s" style="flex:1;" onclick="document.getElementById(\'ce_photosList\').style.display=\'block\'; this.style.display=\'none\';">Ver y Ordenar Fotos Manualmente</button>' +
                 '</div>' +
                 
-                '<div id="ce_sortToolbar" style="display:none; gap:0.5rem; flex-wrap:wrap; margin-top:0.8rem; background:#f0ece5; padding:0.5rem; border-radius:var(--radius); align-items:center;">' +
-                    '<span style="font-size:0.8rem; font-weight:600; color:var(--text-muted)">Orden Automático:</span>' +
-                    '<button type="button" class="af-btn af-btn-p" style="padding:0.4rem 0.8rem; min-height:auto" onclick="sortClientPhotos(\'asc\')">A-Z / 1-100 ↓</button>' +
-                    '<button type="button" class="af-btn af-btn-p" style="padding:0.4rem 0.8rem; min-height:auto" onclick="sortClientPhotos(\'desc\')">Z-A / 100-1 ↑</button>' +
-                '</div>' +
-                
-                '<div id="ce_photosList" style="display:none; margin-top:0.5rem;"></div>' +
-                '<button class="adm-add-btn" style="margin-top:.5rem" onclick="addClientPhoto()">+ Agregar foto manual</button></div>' +
+                '<div id="ce_photosList" style="display:none; margin-top:1rem;"></div>' +
+                '<button type="button" class="adm-add-btn" style="margin-top:.5rem" onclick="addClientPhoto()">+ Agregar foto manual</button></div>' +
                 
                 '<div id="ce_photobookSec" style="display:' + (c.hasPhotobook ? 'block' : 'none') + ';margin-bottom:1rem;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)"><p class="adm-hint">El contenido del fotolibro se configura por separado. Guárdalo primero y luego usa el botón "Fotolibro" en la lista de clientes.</p></div>' +
                 '<div class="af-btns"><button class="af-btn af-btn-p" onclick="saveClient(\'' + (isNew ? '' : admState.editId) + '\')">Guardar Evento</button><button class="af-btn af-btn-s" onclick="admState.view=\'list\';renderAdmBody()">Cancelar</button></div>';
@@ -1657,18 +1667,17 @@
         function toggleClientSection(sec) { document.getElementById('ce_' + sec + 'Sec').style.display = document.getElementById('ce_has' + sec.charAt(0).toUpperCase() + sec.slice(1)).checked ? 'block' : 'none'; }
         
         /* ════ ORDEN AUTOMÁTICO (V1.5) ════ */
-        function sortClientPhotos(dir) {
+        function sortClientPhotosAsc() {
             if (!tempClientPhotos || tempClientPhotos.length === 0) {
                 toast('No hay fotos para ordenar.');
                 return;
             }
             var collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
             tempClientPhotos.sort(function(a, b) {
-                var cmp = collator.compare(a.name || '', b.name || '');
-                return dir === 'asc' ? cmp : -cmp;
+                return collator.compare(a.name || '', b.name || '');
             });
             renderClientPhotosList(tempClientPhotos);
-            toast('✅ Fotos ordenadas (' + (dir === 'asc' ? '1 a 100' : '100 a 1') + '). Recuerda Guardar Evento.');
+            toast('✅ Ordenado de menor a mayor. Haz clic en "Guardar Evento" abajo para aplicar.');
         }
 
         /* ════ DRAG & DROP FOTOS (V1.4) ════ */
@@ -1725,10 +1734,11 @@
                 let folders = data.files.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
                 let looseImages = data.files.filter(f => f.mimeType.includes('image/'));
 
+                // ORDENAR ALFABÉTICAMENTE / NUMÉRICAMENTE AL EXTRAER
                 folders.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
                 looseImages.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
 
-                let allPhotos = [];
+                let allPhotos = []; // Vaciamos para refrescar limpio
 
                 looseImages.forEach(img => {
                     allPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s1600`, name: img.name, set: 'General', driveId: img.id });
@@ -1739,6 +1749,7 @@
                     let subRes = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folder.id}'+in+parents+and+mimeType+contains+'image/'+and+trashed=false&fields=files(id,name)&key=${apiKey}&pageSize=1000`);
                     let subData = await subRes.json();
                     if (subData.files) {
+                        // ORDENAR ALFABÉTICAMENTE LAS FOTOS DENTRO DE LA SUBCARPETA
                         subData.files.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
                         subData.files.forEach(img => {
                             allPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s1600`, name: img.name, set: folder.name, driveId: img.id });
@@ -1747,10 +1758,10 @@
                 }
 
                 tempClientPhotos = allPhotos;
-                document.getElementById('ce_photosSummary').innerHTML = '✅ ' + allPhotos.length + ' fotos extraídas con éxito. (Orden Alfabético/Drive)';
+                document.getElementById('ce_photosSummary').innerHTML = '✅ ' + allPhotos.length + ' fotos extraídas y refrescadas.';
                 renderClientPhotosList(tempClientPhotos);
                 status.textContent = `¡Éxito! Se importaron ${allPhotos.length} fotos organizadas en ${folders.length + (looseImages.length?1:0)} sets.`;
-                toast('Galería extraída y ordenada correctamente.');
+                toast('Galería extraída/refrescada correctamente.');
 
             } catch(e) {
                 status.textContent = 'Error al extraer: ' + e.message;
