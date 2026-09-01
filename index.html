@@ -88,12 +88,15 @@
         .port-filter-btn { padding: 0.4rem 1.2rem; border-radius: 50px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-family: var(--fb); font-size: 0.85rem; font-weight: 500; cursor: pointer; white-space: nowrap; transition: var(--tr); min-height: 44px; touch-action: manipulation;}
         .port-filter-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
 
-        .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; margin-top: 1rem; }
-        .portfolio-item { position: relative; overflow: hidden; border-radius: var(--radius); cursor: pointer; aspect-ratio: 4/5; background: #eae7e2; }
-        .portfolio-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; pointer-events: none; }
+        .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; margin-top: 1rem; align-items: start;}
+        .portfolio-item { position: relative; overflow: hidden; border-radius: var(--radius); cursor: pointer; background: #eae7e2; }
+        .portfolio-item img { width: 100%; height: auto; object-fit: cover; transition: transform .5s; pointer-events: none; display:block; aspect-ratio: 4/5; }
         .portfolio-item:hover img { transform: scale(1.03); }
         .portfolio-item .il { position: absolute; bottom: .8rem; left: .8rem; color: #fff; font-family: var(--fh); font-size: .85rem; z-index: 2; opacity: .9; font-weight: 500; text-shadow: 0 1px 3px rgba(0, 0, 0, .5); }
-        
+        .play-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.6); width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 2; pointer-events: none; transition: .3s; }
+        .play-overlay svg { width: 20px; height: 20px; fill: #fff; margin-left: 4px; }
+        .portfolio-item:hover .play-overlay { background: var(--accent); }
+
         .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-top: 2rem; }
         .service-card { background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.8rem 1.2rem; text-align: center; transition: .2s; }
         .service-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
@@ -171,7 +174,7 @@
         .access-card-info p { color: var(--c-muted); font-size: .82rem; }
         .access-card .btn { flex-shrink: 0; }
 
-        /* VISTA GALERÍA: MASONRY INTELIGENTE (v2.0) */
+        /* VISTA GALERÍA: GRID INTELIGENTE */
         #cpGalleryView { padding: 0; background: var(--c-bg); position: relative; }
         .px-header { position: relative; width: 100%; height: 60vh; min-height: 400px; background-size: cover; background-position: center; background-repeat: no-repeat; display: flex; align-items: center; justify-content: center; text-align: center; color: #fff; }
         .px-header::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%); }
@@ -192,7 +195,7 @@
         .px-set-section { margin-bottom: 4rem; scroll-margin-top: 90px; }
         .px-set-title { font-family: var(--fh); font-size: 2.2rem; text-align: center; margin-bottom: 2rem; font-weight: 400; color: var(--c-text); letter-spacing: 1px; }
         
-        /* ════ LA MAGIA DEL ACOMODO V2.0 (MASONRY DENSE) ════ */
+        /* ════ LA MAGIA DEL ACOMODO V2.0 ════ */
         .px-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
@@ -440,9 +443,6 @@
             .portfolio-grid { grid-template-columns: repeat(2, 1fr); gap: .5rem; }
             .services-grid, .testimonials-grid { grid-template-columns: 1fr; gap: .8rem; }
             
-            /* Grid Móvil V2.0 */
-            .px-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
-
             .cp-sec { padding: 1.5rem .8rem; }
             .access-card { flex-direction: column; text-align: center; gap: .8rem; }
             .access-card .btn { width: 100%; }
@@ -463,6 +463,10 @@
             .pb-fullscreen-btn { top: 1rem; right: 1rem; }
             #cpVideoView { padding-top: 60px; }
             .vid-sec { padding: 1rem; }
+
+            /* Grid Móvil Ajustado */
+            .px-grid { grid-template-columns: repeat(2, 1fr) !important; grid-auto-rows: 130px !important; gap: 8px !important; display: grid !important; }
+            .pc { margin-bottom: 0 !important; display: block; }
         }
         @media(max-width:480px) {
             html { font-size: 14px; }
@@ -525,8 +529,9 @@
             <p class="section-desc">Una muestra de nuestro trabajo en eventos, retratos y producciones.</p>
             
             <div id="portFilters" class="port-filters"></div>
-            
             <div class="portfolio-grid" id="portGrid"></div>
+            <!-- Contenedor para el botón "Ver más" -->
+            <div id="portMoreBtn" style="text-align: center; margin-top: 2rem;"></div>
         </section>
         <section class="section" id="servicios">
             <p class="section-label">Servicios</p>
@@ -701,7 +706,7 @@
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
-                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.5rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.1</span></h2>
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.5rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.2</span></h2>
                 <button class="adm-x" onclick="closeAdm()">×</button>
             </div>
             <div class="adm-tabs" id="admTabs">
@@ -715,8 +720,18 @@
         </div>
     </div>
 
-    <!-- Lightbox -->
-    <div class="lb" id="lb"><button class="lb-x" onclick="closeLB()">×</button><button class="lb-n lb-p" onclick="navLB(-1)">&#8249;</button><button class="lb-n lb-nx" onclick="navLB(1)">&#8250;</button><img id="lbImg" src="" alt=""><div class="lb-bot"><span class="lb-c" id="lbC"></span><a class="lb-dl" id="lbDl" style="cursor:pointer;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Descargar Foto</a></div></div>
+    <!-- Lightbox con soporte para VIDEO -->
+    <div class="lb" id="lb">
+        <button class="lb-x" onclick="closeLB()">×</button>
+        <button class="lb-n lb-p" onclick="navLB(-1)">&#8249;</button>
+        <button class="lb-n lb-nx" onclick="navLB(1)">&#8250;</button>
+        <img id="lbImg" src="" alt="" style="display:none;">
+        <iframe id="lbVid" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="display:none; width:90%; height:80vh; max-width:1000px; border-radius:8px;"></iframe>
+        <div class="lb-bot">
+            <span class="lb-c" id="lbC"></span>
+            <a class="lb-dl" id="lbDl" style="cursor:pointer;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Descargar Foto</a>
+        </div>
+    </div>
 
     <div class="toast" id="toast"></div>
 
@@ -752,9 +767,9 @@
                     { id: 's3', icon: '🎬', title: 'Video Profesional', desc: 'Producción de video para cualquier proyecto.', price: 'Desde $2,000', features: ['Grabación con equipo profesional', 'Edición completa', 'Subtítulos si se requiere', 'Entrega en formato digital'], order: 2 }
                 ],
                 portfolio: [
-                    { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=500&h=650&fit=crop&auto=format', label: 'Bodas' },
-                    { src: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=500&h=650&fit=crop&auto=format', label: 'Corporativo' },
-                    { src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=650&fit=crop&auto=format', label: 'Retratos' }
+                    { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=500&h=650&fit=crop&auto=format', label: 'Bodas', type: 'image' },
+                    { src: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=500&h=650&fit=crop&auto=format', label: 'Corporativo', type: 'image' },
+                    { src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=650&fit=crop&auto=format', label: 'Retratos', type: 'image' }
                 ],
                 testimonials: [
                     { text: '"Excelente trabajo. Excelente servicio. Muy recomendado para cualquier evento."', author: 'Yessica Santana' }
@@ -856,6 +871,8 @@
         var tempClientPhotos = []; 
         var isPrintMode = false;
         var draggedPhotoIdx = -1; 
+        
+        window.portfolioLimit = 6; // Límite de items a mostrar inicialmente en el portafolio
 
         function pSrc(p, s) { s = s || 800; if (p.driveId) return 'https://lh3.googleusercontent.com/d/' + p.driveId + '=s' + s; return (p.src || '').replace(/w=\d+/, 'w=' + s); }
         function pDl(p) { if (p.driveId) return 'https://drive.google.com/uc?export=download&id=' + p.driveId; return (p.src || '').replace('w=800', 'w=1600'); }
@@ -867,6 +884,19 @@
         function toDateInput(ms) { if (!ms) return ''; let d = new Date(ms); let m = ('0' + (d.getMonth() + 1)).slice(-2); let day = ('0' + d.getDate()).slice(-2); return `${d.getFullYear()}-${m}-${day}`; }
         function toDisplayDate(ms) { if (!ms) return ''; let d = new Date(ms); let m = ('0' + (d.getMonth() + 1)).slice(-2); let day = ('0' + d.getDate()).slice(-2); return `${day}/${m}/${d.getFullYear()}`; }
         function addOneYear() { let el = document.getElementById('ce_expire'); if(!el.value) return; let d = new Date(el.value + 'T12:00:00'); d.setFullYear(d.getFullYear() + 1); el.value = toDateInput(d.getTime()); }
+
+        /* Convertir links a Embed (V2.2) */
+        function getEmbedUrl(url) {
+            if (!url) return '';
+            if (url.includes('drive.google.com/file/d/')) {
+                var m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (m) return 'https://drive.google.com/file/d/' + m[1] + '/preview';
+            } else if (url.includes('youtu.be/') || (url.includes('youtube.com/'))) {
+                var ytM = url.match(/(?:youtu\.be\/|v=|\/v\/|\/embed\/)([^&?\s]+)/);
+                if (ytM) return 'https://www.youtube.com/embed/' + ytM[1];
+            }
+            return url;
+        }
 
         /* ══════ FUNCIÓN DE CARGA GENERAL (BASE64) V2.1 ══════ */
         function uploadGeneralImg(input, targetId) {
@@ -948,7 +978,6 @@
                 document.getElementById('heroImgMain').src = s.heroImage || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&h=800&fit=crop&auto=format';
             }
             
-            var pg = document.getElementById('portGrid'); 
             var pf = document.getElementById('portFilters'); 
             
             var labels = ['Todos'];
@@ -965,7 +994,7 @@
                 });
             }
             pf.innerHTML = pfHtml;
-            filterPortfolio(window.currentPortFilter);
+            filterPortfolio(window.currentPortFilter); // Llamamos con el límite por defecto
 
             var sg = document.getElementById('servGrid');
             var sgHtml = '';
@@ -1006,22 +1035,56 @@
             document.getElementById('cpWaLink').href = 'https://wa.me/' + s.waNumber; document.getElementById('cpWaLink').textContent = s.phone;
         }
 
-        function filterPortfolio(filter) {
+        /* ══════ PORTAFOLIO COMPACTO Y VIDEO (V2.2) ══════ */
+        function filterPortfolio(filter, showAll = false) {
             window.currentPortFilter = filter;
             var grid = document.getElementById('portGrid'); grid.innerHTML = '';
-            D.portfolio.forEach(function(img) {
-                var l = img.label || 'General';
-                if (filter !== 'Todos' && l !== filter) return;
+            
+            var filtered = D.portfolio.filter(function(item) {
+                var l = item.label || 'General';
+                return filter === 'Todos' || l === filter;
+            });
+
+            var limit = showAll ? filtered.length : window.portfolioLimit;
+            var toShow = filtered.slice(0, limit);
+
+            toShow.forEach(function(item) {
                 var d = document.createElement('div'); d.className = 'portfolio-item';
-                d.innerHTML = '<img src="' + img.src + '" alt="' + esc(l) + '" loading="lazy"><span class="il">' + esc(l) + '</span>';
+                var isVid = item.type === 'video';
+                var playIcon = isVid ? '<div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>' : '';
+                
+                d.innerHTML = '<img src="' + esc(item.src) + '" alt="' + esc(item.label || '') + '" loading="lazy">' + playIcon + '<span class="il">' + esc(item.label || '') + '</span>';
+                
                 d.addEventListener('click', function() { 
                     isPublicPortfolioView = true;
-                    portalPhotos = [{ src: img.src.replace(/s\d+/, 's1600').replace(/w=\d+/, 'w=1600'), name: l }];
+                    // Abrimos para visualización
+                    portalPhotos = [{ 
+                        src: item.src.replace(/s\d+/, 's1600').replace(/w=\d+/, 'w=1600'), 
+                        name: item.label || '',
+                        type: item.type || 'image',
+                        videoUrl: item.videoUrl || ''
+                    }];
                     lbIdx = 0;
                     showLB();
                 });
                 grid.appendChild(d);
             });
+
+            // Botón Ver Más
+            var btnContainer = document.getElementById('portMoreBtn');
+            if (!btnContainer) {
+                btnContainer = document.createElement('div');
+                btnContainer.id = 'portMoreBtn';
+                btnContainer.style.textAlign = 'center';
+                btnContainer.style.marginTop = '2rem';
+                grid.parentNode.insertBefore(btnContainer, grid.nextSibling);
+            }
+            
+            if (filtered.length > limit) {
+                btnContainer.innerHTML = '<button class="btn btn-outline" onclick="filterPortfolio(\'' + esc(filter) + '\', true)">Ver más de ' + esc(filter) + ' (' + (filtered.length - limit) + ' restantes)</button>';
+            } else {
+                btnContainer.innerHTML = '';
+            }
         }
 
         /* ══════ NAVEGACIÓN OPTIMIZADA ══════ */
@@ -1235,7 +1298,6 @@
             
             portalPhotos = c.photos || [];
             
-            /* ════ PORTADA PERSONALIZADA (V2.1) ════ */
             var coverImg = c.galleryCover ? c.galleryCover : (portalPhotos.length > 0 ? pSrc(portalPhotos[0], 1600) : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&fit=crop');
             
             if (coverImg.includes('/d/')) {
@@ -1425,35 +1487,53 @@
             togglePrintMode(); 
         }
 
-        /* ══════ LIGHTBOX (VISUALIZACIÓN) ══════ */
+        /* ══════ LIGHTBOX CON VIDEO (V2.2) ══════ */
         function openLB(idx) { 
             isPublicPortfolioView = false; 
             lbIdx = idx; showLB(); 
         }
         function openLBSingle(src, label) { 
             isPublicPortfolioView = true;  
-            portalPhotos = [{ src: src, name: label || '' }]; 
+            portalPhotos = [{ src: src, name: label || '', type: 'image' }]; 
             lbIdx = 0; showLB(); 
         }
         function showLB() {
             var p = portalPhotos[lbIdx]; if (!p) return; 
-            document.getElementById('lbImg').src = pFull(p); 
             document.getElementById('lbC').textContent = p.name || ''; 
             
+            var imgEl = document.getElementById('lbImg');
+            var vidEl = document.getElementById('lbVid');
             var dlBtn = document.getElementById('lbDl');
-            if (isPublicPortfolioView) {
-                dlBtn.style.display = 'none'; 
+
+            if (p.type === 'video') {
+                imgEl.style.display = 'none';
+                vidEl.style.display = 'block';
+                vidEl.src = getEmbedUrl(p.videoUrl) + '?autoplay=1';
+                dlBtn.style.display = 'none'; // No descargamos video directo desde aquí
             } else {
-                dlBtn.style.display = '';     
-                dlBtn.onclick = function(e) { downloadPhoto(p.src || pFull(p), p.name, e); };
-                dlBtn.removeAttribute('href');
+                vidEl.style.display = 'none';
+                vidEl.src = '';
+                imgEl.style.display = 'block';
+                imgEl.src = pFull(p);
+                
+                if (isPublicPortfolioView) {
+                    dlBtn.style.display = 'none'; 
+                } else {
+                    dlBtn.style.display = '';     
+                    dlBtn.onclick = function(e) { downloadPhoto(p.src || pFull(p), p.name, e); };
+                    dlBtn.removeAttribute('href');
+                }
             }
 
             document.querySelector('.lb-p').style.display = portalPhotos.length > 1 ? '' : 'none'; 
             document.querySelector('.lb-nx').style.display = portalPhotos.length > 1 ? '' : 'none';
             document.getElementById('lb').classList.add('active'); document.body.style.overflow = 'hidden';
         }
-        function closeLB() { document.getElementById('lb').classList.remove('active'); document.body.style.overflow = ''; }
+        function closeLB() { 
+            document.getElementById('lb').classList.remove('active'); 
+            document.body.style.overflow = ''; 
+            document.getElementById('lbVid').src = ''; // Corta el audio del video al cerrar
+        }
         function navLB(d) { lbIdx += d; if (lbIdx < 0) lbIdx = portalPhotos.length - 1; if (lbIdx >= portalPhotos.length) lbIdx = 0; showLB(); }
         document.getElementById('lb').addEventListener('click', function(e) { if (e.target === this) closeLB(); });
 
@@ -1689,7 +1769,6 @@
                 '<div id="ce_driveGalleryStatus" style="font-size:0.8rem; color:var(--accent); margin-bottom:1rem; font-weight:500;"></div>' +
                 '<label class="af-l">URL de carpeta para descargar todo (Botón "Descargar Galería Completa")</label><input class="af-i" id="ce_driveUrl" value="' + esc(c.driveFolderUrl || '') + '">' +
                 
-                /* ════ PORTADA PERSONALIZADA V2.1 ════ */
                 '<label class="af-l" style="margin-top:.5rem">Foto de Portada de la Galería (Opcional)</label>' +
                 '<div style="display:flex;gap:10px;margin-bottom:0.5rem;">' +
                     '<input class="af-i" id="ce_galleryCover" placeholder="Si está vacío, usará la 1ra foto de la galería" value="' + esc(c.galleryCover || '') + '" style="margin-bottom:0;flex:1;">' +
@@ -1715,7 +1794,7 @@
         }
         function toggleClientSection(sec) { document.getElementById('ce_' + sec + 'Sec').style.display = document.getElementById('ce_has' + sec.charAt(0).toUpperCase() + sec.slice(1)).checked ? 'block' : 'none'; }
         
-        /* ════ ORDEN AUTOMÁTICO CON AUTO-GUARDADO (V2.0) ════ */
+        /* ════ ORDEN AUTOMÁTICO CON AUTO-GUARDADO ════ */
         function sortClientPhotosAsc() {
             if (!tempClientPhotos || tempClientPhotos.length === 0) {
                 toast('No hay fotos para ordenar.');
@@ -1999,7 +2078,7 @@
             toast('Fotolibro autollenado por orden numérico');
         }
 
-        /* ════ ADMIN: PORTAFOLIO PÚBLICO (NUEVO CON DRIVE) CON PAGINACIÓN ════ */
+        /* ════ ADMIN: PORTAFOLIO PÚBLICO (V2.2 - SOPORTE DE VIDEO) ════ */
         function renderAdmPortfolio(body) {
             body.innerHTML = `
                 <div style="margin-bottom:1.5rem;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)">
@@ -2011,13 +2090,29 @@
                     </div>
                     <div id="port_driveStatus" style="font-size:0.8rem; color:var(--accent); font-weight:500;"></div>
                 </div>
-                <button class="adm-add-btn" onclick="addPortfolioImg()">+ Agregar imagen manual</button>
+                
+                <div style="display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;">
+                    <button class="adm-add-btn" style="margin-bottom:0;" onclick="addPortfolioImg()">+ Agregar Imagen</button>
+                    <button class="adm-add-btn" style="margin-bottom:0;" onclick="addPortfolioVid()">+ Agregar Video</button>
+                </div>
+                
                 <div id="admPortList"></div>
             `;
             var list = document.getElementById('admPortList');
             var h = '';
-            D.portfolio.forEach(function(img, i) { 
-                h += ('<div class="adm-photo-item"><img src="' + esc(img.src) + '" alt=""><input type="text" value="' + esc(img.label) + '" placeholder="Etiqueta / Categoría" onchange="updPortLabel(' + i + ',this.value)"><button type="button" onclick="delPortfolioImg(' + i + ')" title="Quitar">×</button></div>'); 
+            D.portfolio.forEach(function(item, i) { 
+                var isVid = item.type === 'video';
+                h += '<div class="adm-photo-item" style="flex-wrap:wrap;">';
+                h += '<img src="' + esc(item.src) + '" alt="" style="width:60px; height:60px;">';
+                
+                if (isVid) {
+                    h += '<input type="text" value="' + esc(item.videoUrl || '') + '" placeholder="Enlace del Video (YouTube o Drive)" onchange="updPortVid(' + i + ',this.value)" style="flex:1; min-width:150px; background:#f4ede4;">';
+                }
+                
+                h += '<input type="text" value="' + esc(item.src) + '" placeholder="URL de la ' + (isVid ? 'Miniatura' : 'Imagen') + '" onchange="updPortSrc(' + i + ',this.value)" style="flex:1; min-width:150px;">';
+                h += '<input type="text" value="' + esc(item.label) + '" placeholder="Categoría (Ej. Bodas)" onchange="updPortLabel(' + i + ',this.value)" style="flex:1; min-width:100px;">';
+                h += '<button type="button" onclick="delPortfolioImg(' + i + ')" title="Quitar">×</button>';
+                h += '</div>';
             });
             list.innerHTML = h;
         }
@@ -2060,7 +2155,7 @@
                 let newPhotos = [];
 
                 looseImages.forEach(img => {
-                    newPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s800`, label: 'General' });
+                    newPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s800`, label: 'General', type: 'image' });
                 });
 
                 for (let folder of folders) {
@@ -2068,7 +2163,7 @@
                     let subFiles = await getAllFiles(folder.id, true);
                     subFiles.sort((a, b) => collator.compare(a.name, b.name));
                     subFiles.forEach(img => {
-                        newPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s800`, label: folder.name });
+                        newPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s800`, label: folder.name, type: 'image' });
                     });
                 }
 
@@ -2085,8 +2180,13 @@
             }
         }
 
-        function addPortfolioImg() { D.portfolio.push({ src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=500&h=650&fit=crop&auto=format', label: 'Nuevo' }); saveData(); renderAdmBody(); }
-        function updPortLabel(i, val) { D.portfolio[i].label = val; saveData(); renderPublic(); }
+        function addPortfolioImg() { D.portfolio.push({ type: 'image', src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=500&h=650&fit=crop&auto=format', label: 'Nuevo' }); saveData(); renderAdmBody(); }
+        function addPortfolioVid() { D.portfolio.push({ type: 'video', src: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&h=650&fit=crop&auto=format', videoUrl: '', label: 'Nuevo Video' }); saveData(); renderAdmBody(); }
+        
+        function updPortSrc(i, val) { D.portfolio[i].src = val.trim(); saveData(); renderPublic(); renderAdmBody(); }
+        function updPortVid(i, val) { D.portfolio[i].videoUrl = val.trim(); saveData(); renderPublic(); renderAdmBody(); }
+        function updPortLabel(i, val) { D.portfolio[i].label = val.trim(); saveData(); renderPublic(); }
+        
         function delPortfolioImg(i) { D.portfolio.splice(i, 1); saveData(); renderAdmBody(); renderPublic(); }
 
         /* ════ ADMIN: TESTIMONIOS ════ */
@@ -2110,7 +2210,7 @@
                 '<label class="af-l">WhatsApp Number</label><input class="af-i" id="se_wa" value="' + esc(s.waNumber) + '">' +
                 '<label class="af-l">Texto del hero</label><textarea class="af-i af-ta" id="se_hero">' + esc(s.heroDesc) + '</textarea>' +
                 
-                /* ════ IMAGEN PRINCIPAL (V2.1) ════ */
+                /* ════ IMAGEN PRINCIPAL ════ */
                 '<label class="af-l">Imagen Principal (Inicio)</label>' +
                 '<div style="display:flex;gap:10px;margin-bottom:1rem;">' +
                     '<input class="af-i" id="se_heroImg" placeholder="Pega URL o usa el botón de lado ->" value="' + esc(s.heroImage || '') + '" style="margin-bottom:0;flex:1;">' +
