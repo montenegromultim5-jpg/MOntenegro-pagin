@@ -698,7 +698,7 @@
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
-                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.5rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v1.6</span></h2>
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.5rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v1.7</span></h2>
                 <button class="adm-x" onclick="closeAdm()">&times;</button>
             </div>
             <div class="adm-tabs" id="admTabs">
@@ -892,7 +892,7 @@
             }
         }
 
-        /* ══════ DESCARGA DIRECTA FORZADA (V1.6) ══════ */
+        /* ══════ DESCARGA DIRECTA FORZADA (V1.7) ══════ */
         function downloadPhoto(src, name, e) {
             if(e) { e.preventDefault(); e.stopPropagation(); }
             var dId = null;
@@ -905,7 +905,6 @@
             }
             
             if (dId) {
-                // Fuerzo descarga a nivel de sistema operativo
                 window.location.href = 'https://drive.google.com/uc?export=download&id=' + dId;
                 toast('Descargando foto directamente...');
             } else {
@@ -1211,12 +1210,6 @@
             document.getElementById('cpPhotobookView').style.display = 'none'; document.getElementById('cpGalleryView').style.display = 'block';
             
             portalPhotos = c.photos || [];
-            
-            /* ════ AUTO-ORDEN FUERTE PARA EL CLIENTE (V1.6) ════ */
-            var collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
-            portalPhotos.sort(function(a, b) {
-                return collator.compare(a.name || '', b.name || '');
-            });
             
             var coverImg = portalPhotos.length > 0 ? pSrc(portalPhotos[0], 1600) : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&fit=crop';
             document.getElementById('pxHeader').style.backgroundImage = `url('${coverImg}')`;
@@ -1679,7 +1672,7 @@
         }
         function toggleClientSection(sec) { document.getElementById('ce_' + sec + 'Sec').style.display = document.getElementById('ce_has' + sec.charAt(0).toUpperCase() + sec.slice(1)).checked ? 'block' : 'none'; }
         
-        /* ════ ORDEN AUTOMÁTICO (V1.6) ════ */
+        /* ════ ORDEN AUTOMÁTICO CON AUTO-GUARDADO (V1.7) ════ */
         function sortClientPhotosAsc() {
             if (!tempClientPhotos || tempClientPhotos.length === 0) {
                 toast('No hay fotos para ordenar.');
@@ -1731,7 +1724,7 @@
             list.innerHTML = h;
         }
         
-        /* EXTRACCIÓN CON SUBCARPETAS (API DRIVE) */
+        /* EXTRACCIÓN CON SUBCARPETAS Y PAGINACIÓN TOTAL (API DRIVE V1.7) */
         async function fetchDriveGalleryForClient() {
             var apiKey = D.settings.driveApiKey;
             if (!apiKey) { toast('Configura tu Clave API en la pestaña General.'); return; }
@@ -1740,21 +1733,35 @@
             if (!folderId) { toast('URL o ID de carpeta inválido.'); return; }
 
             var status = document.getElementById('ce_driveGalleryStatus');
-            status.textContent = 'Analizando carpeta principal... Por favor, espera.';
+            status.textContent = 'Analizando carpeta principal y extrayendo TODAS las fotos (paginación activa)... Por favor, espera.';
 
             try {
-                let res = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&fields=files(id,name,mimeType)&key=${apiKey}&pageSize=1000`);
-                let data = await res.json();
-                if (data.error) throw new Error(data.error.message);
+                // Función interna para paginar y sacar TODOS los archivos sin límite
+                async function getAllFiles(fId, onlyImages) {
+                    let all = []; let pToken = '';
+                    let q = `'${fId}' in parents and trashed=false`;
+                    if (onlyImages) q += " and mimeType contains 'image/'";
+                    do {
+                        let url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=nextPageToken,files(id,name,mimeType)&key=${apiKey}&pageSize=1000`;
+                        if (pToken) url += `&pageToken=${pToken}`;
+                        let res = await fetch(url);
+                        let data = await res.json();
+                        if (data.error) throw new Error(data.error.message);
+                        if (data.files) all = all.concat(data.files);
+                        pToken = data.nextPageToken;
+                    } while (pToken);
+                    return all;
+                }
 
-                let folders = data.files.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
-                let looseImages = data.files.filter(f => f.mimeType.includes('image/'));
+                let rootFiles = await getAllFiles(folderId, false);
+                let folders = rootFiles.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
+                let looseImages = rootFiles.filter(f => f.mimeType.includes('image/'));
 
                 // ORDENAR ALFABÉTICAMENTE / NUMÉRICAMENTE AL EXTRAER
                 folders.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
                 looseImages.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
 
-                let allPhotos = []; // Vaciamos para refrescar limpio
+                let allPhotos = [];
 
                 looseImages.forEach(img => {
                     allPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s1600`, name: img.name, set: 'General', driveId: img.id });
@@ -1762,22 +1769,19 @@
 
                 for (let folder of folders) {
                     status.textContent = `Extrayendo set: ${folder.name}...`;
-                    let subRes = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folder.id}'+in+parents+and+mimeType+contains+'image/'+and+trashed=false&fields=files(id,name)&key=${apiKey}&pageSize=1000`);
-                    let subData = await subRes.json();
-                    if (subData.files) {
-                        // ORDENAR ALFABÉTICAMENTE LAS FOTOS DENTRO DE LA SUBCARPETA
-                        subData.files.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
-                        subData.files.forEach(img => {
-                            allPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s1600`, name: img.name, set: folder.name, driveId: img.id });
-                        });
-                    }
+                    let subFiles = await getAllFiles(folder.id, true);
+                    // ORDENAR ALFABÉTICAMENTE LAS FOTOS DENTRO DE LA SUBCARPETA
+                    subFiles.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
+                    subFiles.forEach(img => {
+                        allPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s1600`, name: img.name, set: folder.name, driveId: img.id });
+                    });
                 }
 
                 tempClientPhotos = allPhotos;
-                document.getElementById('ce_photosSummary').innerHTML = '✅ ' + allPhotos.length + ' fotos extraídas y refrescadas.';
+                document.getElementById('ce_photosSummary').innerHTML = '✅ ' + allPhotos.length + ' fotos extraídas con éxito. Usa el botón de abajo para ordenar.';
                 renderClientPhotosList(tempClientPhotos);
                 status.textContent = `¡Éxito! Se importaron ${allPhotos.length} fotos organizadas en ${folders.length + (looseImages.length?1:0)} sets.`;
-                toast('Galería extraída y ordenada correctamente.');
+                toast('Galería extraída correctamente.');
 
             } catch(e) {
                 status.textContent = 'Error al extraer: ' + e.message;
@@ -1882,19 +1886,34 @@
         }
         function savePBData() { saveData(); toast('Fotolibro guardado correctamente'); }
 
-        /* API Drive y Autollenado */
-        function fetchDriveFolderForPB() {
+        /* API Drive y Autollenado (CON PAGINACIÓN V1.7) */
+        async function fetchDriveFolderForPB() {
             var apiKey = D.settings.driveApiKey; if (!apiKey) { toast('Por favor configura tu Clave API en la pestaña General primero.'); return; }
             var folderInput = document.getElementById('pb_driveFolderId').value.trim(); var folderId = folderInput;
             var match = folderInput.match(/\/folders\/([a-zA-Z0-9_-]+)/) || folderInput.match(/id=([a-zA-Z0-9_-]+)/); if (match) folderId = match[1];
             if (!folderId) { toast('ID o URL de carpeta inválido.'); return; }
-            var url = 'https://www.googleapis.com/drive/v3/files?q=%27' + folderId + '%27+in+parents+and+mimeType+contains+%27image/%27&fields=files(id,name)&key=' + apiKey;
+            
             document.getElementById('pbDriveGallery').innerHTML = '<p class="adm-hint">Cargando imágenes de la carpeta...</p>';
-            fetch(url).then(function(res) { return res.json(); }).then(function(data) {
-                if (data.error) throw new Error(data.error.message); var files = data.files || [];
-                if (!files.length) { document.getElementById('pbDriveGallery').innerHTML = '<p class="adm-hint">La carpeta está vacía o no tiene permisos de lectura pública.</p>'; return; }
-                renderDriveGalleryForPB(files);
-            }).catch(function(err) { toast('Error: ' + err.message); document.getElementById('pbDriveGallery').innerHTML = '<p class="adm-hint" style="color:#c0392b">Error al cargar. Verifica tu API Key y asegúrate de que la carpeta de Drive sea "Pública".</p>'; });
+            
+            try {
+                let all = []; let pToken = '';
+                let q = `'${folderId}' in parents and trashed=false and mimeType contains 'image/'`;
+                do {
+                    let url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=nextPageToken,files(id,name,mimeType)&key=${apiKey}&pageSize=1000`;
+                    if (pToken) url += `&pageToken=${pToken}`;
+                    let res = await fetch(url);
+                    let data = await res.json();
+                    if (data.error) throw new Error(data.error.message);
+                    if (data.files) all = all.concat(data.files);
+                    pToken = data.nextPageToken;
+                } while (pToken);
+                
+                if (!all.length) { document.getElementById('pbDriveGallery').innerHTML = '<p class="adm-hint">La carpeta está vacía o no tiene permisos de lectura pública.</p>'; return; }
+                renderDriveGalleryForPB(all);
+            } catch(err) { 
+                toast('Error: ' + err.message); 
+                document.getElementById('pbDriveGallery').innerHTML = '<p class="adm-hint" style="color:#c0392b">Error al cargar. Verifica tu API Key y asegúrate de que la carpeta de Drive sea "Pública".</p>'; 
+            }
         }
         function renderDriveGalleryForPB(files) {
             currentDriveFiles = files; // Guardamos globalmente
@@ -1954,7 +1973,7 @@
             toast('Fotolibro autollenado por orden numérico');
         }
 
-        /* ════ ADMIN: PORTAFOLIO PÚBLICO (NUEVO CON DRIVE) ════ */
+        /* ════ ADMIN: PORTAFOLIO PÚBLICO (NUEVO CON DRIVE) CON PAGINACIÓN V1.7 ════ */
         function renderAdmPortfolio(body) {
             body.innerHTML = `
                 <div style="margin-bottom:1.5rem;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)">
@@ -1985,15 +2004,28 @@
             if (!folderId) { toast('URL o ID de carpeta inválido.'); return; }
 
             var status = document.getElementById('port_driveStatus');
-            status.textContent = 'Analizando carpeta principal...';
+            status.textContent = 'Analizando carpeta principal y paginando...';
 
             try {
-                let res = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&fields=files(id,name,mimeType)&key=${apiKey}&pageSize=1000`);
-                let data = await res.json();
-                if (data.error) throw new Error(data.error.message);
+                async function getAllFiles(fId, onlyImages) {
+                    let all = []; let pToken = '';
+                    let q = `'${fId}' in parents and trashed=false`;
+                    if (onlyImages) q += " and mimeType contains 'image/'";
+                    do {
+                        let url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=nextPageToken,files(id,name,mimeType)&key=${apiKey}&pageSize=1000`;
+                        if (pToken) url += `&pageToken=${pToken}`;
+                        let res = await fetch(url);
+                        let data = await res.json();
+                        if (data.error) throw new Error(data.error.message);
+                        if (data.files) all = all.concat(data.files);
+                        pToken = data.nextPageToken;
+                    } while (pToken);
+                    return all;
+                }
 
-                let folders = data.files.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
-                let looseImages = data.files.filter(f => f.mimeType.includes('image/'));
+                let rootFiles = await getAllFiles(folderId, false);
+                let folders = rootFiles.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
+                let looseImages = rootFiles.filter(f => f.mimeType.includes('image/'));
 
                 folders.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true}));
                 looseImages.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true}));
@@ -2006,14 +2038,11 @@
 
                 for (let folder of folders) {
                     status.textContent = `Extrayendo categoría: ${folder.name}...`;
-                    let subRes = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folder.id}'+in+parents+and+mimeType+contains+'image/'+and+trashed=false&fields=files(id,name)&key=${apiKey}&pageSize=1000`);
-                    let subData = await subRes.json();
-                    if (subData.files) {
-                        subData.files.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true}));
-                        subData.files.forEach(img => {
-                            newPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s800`, label: folder.name });
-                        });
-                    }
+                    let subFiles = await getAllFiles(folder.id, true);
+                    subFiles.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true}));
+                    subFiles.forEach(img => {
+                        newPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s800`, label: folder.name });
+                    });
                 }
 
                 D.portfolio = D.portfolio.concat(newPhotos);
