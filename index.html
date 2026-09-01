@@ -171,7 +171,7 @@
         .access-card-info p { color: var(--c-muted); font-size: .82rem; }
         .access-card .btn { flex-shrink: 0; }
 
-        /* VISTA GALERÍA: GRID INTELIGENTE (v2.0) */
+        /* VISTA GALERÍA: MASONRY INTELIGENTE (v2.0) */
         #cpGalleryView { padding: 0; background: var(--c-bg); position: relative; }
         .px-header { position: relative; width: 100%; height: 60vh; min-height: 400px; background-size: cover; background-position: center; background-repeat: no-repeat; display: flex; align-items: center; justify-content: center; text-align: center; color: #fff; }
         .px-header::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%); }
@@ -192,7 +192,7 @@
         .px-set-section { margin-bottom: 4rem; scroll-margin-top: 90px; }
         .px-set-title { font-family: var(--fh); font-size: 2.2rem; text-align: center; margin-bottom: 2rem; font-weight: 400; color: var(--c-text); letter-spacing: 1px; }
         
-        /* ════ LA MAGIA DEL ACOMODO V2.0 ════ */
+        /* ════ LA MAGIA DEL ACOMODO V2.0 (MASONRY DENSE) ════ */
         .px-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
@@ -440,6 +440,9 @@
             .portfolio-grid { grid-template-columns: repeat(2, 1fr); gap: .5rem; }
             .services-grid, .testimonials-grid { grid-template-columns: 1fr; gap: .8rem; }
             
+            /* Grid Móvil V2.0 */
+            .px-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+
             .cp-sec { padding: 1.5rem .8rem; }
             .access-card { flex-direction: column; text-align: center; gap: .8rem; }
             .access-card .btn { width: 100%; }
@@ -460,10 +463,6 @@
             .pb-fullscreen-btn { top: 1rem; right: 1rem; }
             #cpVideoView { padding-top: 60px; }
             .vid-sec { padding: 1rem; }
-
-            /* Grid Móvil Ajustado v2.0 */
-            .px-grid { grid-template-columns: repeat(2, 1fr) !important; grid-auto-rows: 130px !important; gap: 8px !important; display: grid !important; }
-            .pc { margin-bottom: 0 !important; display: block; }
         }
         @media(max-width:480px) {
             html { font-size: 14px; }
@@ -517,7 +516,7 @@
                     <p class="hero-desc" id="heroDesc"></p>
                     <div class="hero-buttons"><a href="#contacto" class="btn btn-primary">Solicitar presupuesto</a><a href="#portafolio" class="btn btn-outline">Ver portafolio</a></div>
                 </div>
-                <div class="hero-visual"><img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&h=800&fit=crop&auto=format" alt="Fotógrafo profesional" class="hero-img-main" loading="eager" width="600" height="800"></div>
+                <div class="hero-visual"><img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&h=800&fit=crop&auto=format" alt="Fotógrafo profesional" class="hero-img-main" id="heroImgMain" loading="eager" width="600" height="800"></div>
             </div>
         </section>
         <section class="section" id="portafolio">
@@ -664,22 +663,27 @@
         </footer>
     </div>
 
+    <!-- Barra pedido -->
     <div class="order-bar" id="orderBar"><div class="ob-in"><div class="ob-info"><span class="ob-cnt" id="obCnt">0</span><span>seleccionadas</span><span class="ob-tot" id="obTot">$0</span></div><button class="btn btn-accent" onclick="openOrder()">Ver pedido de Impresión</button></div></div>
 
+    <!-- Modal login cliente -->
     <div class="modal-ov" id="loginModal" onclick="if(event.target===this)closeLogin()">
         <div class="modal"><button class="modal-x" onclick="closeLogin()">×</button><h3>Acceso a clientes</h3><p>Ingresa el código que se te proporcionó.</p><input type="text" id="codeIn" placeholder="Ejemplo: boda2024" autocomplete="off" autocapitalize="off" spellcheck="false"><p class="modal-err" id="loginErr">Código no válido.</p><button class="btn btn-primary" onclick="doLogin()">Acceder</button></div>
     </div>
 
+    <!-- Modal login admin -->
     <div class="modal-ov" id="admLoginModal" onclick="if(event.target===this)closeAdmLogin()">
         <div class="modal"><button class="modal-x" onclick="closeAdmLogin()">×</button><h3 id="admLoginTitle">Administración</h3><p id="admLoginDesc">Ingresa tu contraseña de administrador.</p><input type="password" id="admPassIn" placeholder="Contraseña" autocomplete="off"><p class="modal-err" id="admLoginErr">Contraseña incorrecta.</p><button class="btn btn-primary" onclick="doAdmLogin()">Entrar</button></div>
     </div>
 
+    <!-- Modal pedido -->
     <div class="om-ov" id="orderModal" onclick="if(event.target===this)closeOrder()">
         <div class="om-pn"><div class="om-hd"></div><div class="om-ttl">Pedido de impresión</div><div class="om-sub" id="omSub"></div><div id="omItems"></div><div class="om-tot"><span class="om-tot-l">Total</span><span class="om-tot-v" id="omTotV">$0</span></div>
             <div class="om-acts"><button class="btn btn-wa" onclick="sendWA()">Enviar pedido por WhatsApp</button><button class="btn btn-gh" onclick="clearSel()">Limpiar selección</button></div>
         </div>
     </div>
     
+    <!-- Modal Advertencia Descarga Completa -->
     <div class="modal-ov" id="downloadModal" onclick="if(event.target===this)closeDownloadModal()">
         <div class="modal-c">
             <button class="modal-x-c" onclick="closeDownloadModal()">×</button>
@@ -693,10 +697,11 @@
         </div>
     </div>
 
+    <!-- Admin panel -->
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
-                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.5rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.0</span></h2>
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.5rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.1</span></h2>
                 <button class="adm-x" onclick="closeAdm()">×</button>
             </div>
             <div class="adm-tabs" id="admTabs">
@@ -710,10 +715,12 @@
         </div>
     </div>
 
+    <!-- Lightbox -->
     <div class="lb" id="lb"><button class="lb-x" onclick="closeLB()">×</button><button class="lb-n lb-p" onclick="navLB(-1)">&#8249;</button><button class="lb-n lb-nx" onclick="navLB(1)">&#8250;</button><img id="lbImg" src="" alt=""><div class="lb-bot"><span class="lb-c" id="lbC"></span><a class="lb-dl" id="lbDl" style="cursor:pointer;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Descargar Foto</a></div></div>
 
     <div class="toast" id="toast"></div>
 
+    <!-- Librerías de Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
@@ -729,7 +736,8 @@
                     facebook: 'https://facebook.com', mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3765.12789114885!2d-99.5265!3d19.1386!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTnCsDA4JzE5LjAiTiA5OcKwMzEnMzUuNCJX!5e0!3m2!1ses!2smx!4v1610000000000',
                     waNumber: '527296990786',
                     heroDesc: 'Desde Capulhuac de Mirafuentes, ofrecemos servicios de fotografía y video con calidad profesional. Bodas, eventos sociales, retratos, producción corporativa e impresión digital de alta calidad.',
-                    driveApiKey: ''
+                    driveApiKey: '',
+                    heroImage: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&h=800&fit=crop&auto=format'
                 },
                 printPrices: [
                     { size: '10x15', label: '10 x 15 cm', measure: '10 x 15 cm', price: 10 },
@@ -860,6 +868,22 @@
         function toDisplayDate(ms) { if (!ms) return ''; let d = new Date(ms); let m = ('0' + (d.getMonth() + 1)).slice(-2); let day = ('0' + d.getDate()).slice(-2); return `${day}/${m}/${d.getFullYear()}`; }
         function addOneYear() { let el = document.getElementById('ce_expire'); if(!el.value) return; let d = new Date(el.value + 'T12:00:00'); d.setFullYear(d.getFullYear() + 1); el.value = toDateInput(d.getTime()); }
 
+        /* ══════ FUNCIÓN DE CARGA GENERAL (BASE64) V2.1 ══════ */
+        function uploadGeneralImg(input, targetId) {
+            var file = input.files[0]; if (!file) return; var reader = new FileReader();
+            reader.onload = function(e) { 
+                var img = new Image(); img.onload = function() { 
+                    var canvas = document.createElement('canvas'); var w = img.width, h = img.height; 
+                    if (w > 1800) { h = Math.floor(h * (1800 / w)); w = 1800; } 
+                    canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h); 
+                    document.getElementById(targetId).value = canvas.toDataURL('image/jpeg', .82); 
+                    toast('Imagen cargada. Haz clic en Guardar.'); 
+                }; 
+                img.src = e.target.result; 
+            };
+            reader.readAsDataURL(file); input.value = '';
+        }
+
         /* ══════ GESTIÓN DE URL Y BOTON ATRÁS (POPSTATE) ══════ */
         function pushUrlState(client, view) {
             var cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
@@ -919,6 +943,10 @@
         function renderPublic() {
             var s = D.settings;
             document.getElementById('heroDesc').textContent = s.heroDesc; document.getElementById('ftAddr').textContent = s.address;
+            
+            if (document.getElementById('heroImgMain')) {
+                document.getElementById('heroImgMain').src = s.heroImage || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&h=800&fit=crop&auto=format';
+            }
             
             var pg = document.getElementById('portGrid'); 
             var pf = document.getElementById('portFilters'); 
@@ -1207,7 +1235,17 @@
             
             portalPhotos = c.photos || [];
             
+            /* ════ PORTADA PERSONALIZADA (V2.1) ════ */
             var coverImg = c.galleryCover ? c.galleryCover : (portalPhotos.length > 0 ? pSrc(portalPhotos[0], 1600) : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&fit=crop');
+            
+            if (coverImg.includes('/d/')) {
+                var m = coverImg.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (m) coverImg = 'https://lh3.googleusercontent.com/d/' + m[1] + '=s1600';
+            } else if (coverImg.includes('id=')) {
+                var m = coverImg.match(/id=([a-zA-Z0-9_-]+)/);
+                if (m) coverImg = 'https://lh3.googleusercontent.com/d/' + m[1] + '=s1600';
+            }
+            
             document.getElementById('pxHeader').style.backgroundImage = `url('${coverImg}')`;
             document.getElementById('pxTitle').textContent = c.name;
             document.getElementById('pxSubtitle').textContent = c.event;
@@ -1260,7 +1298,6 @@
             }
         }
 
-        /* ════ LA MAGIA DEL ACOMODO V2.0 ════ */
         function renderPixiesetGallery() {
             var photos = portalPhotos;
             var sets = {};
@@ -1293,7 +1330,6 @@
                     var d = document.createElement('div');
                     d.className = 'pc';
                     
-                    // El truco del tamaño automático al cargar (onload)
                     d.innerHTML = `
                         <img src="${pSrc(p, 600)}" alt="${esc(p.name || '')}" loading="lazy" onload="this.parentElement.classList.add(this.naturalHeight > this.naturalWidth ? 'vertical' : 'horizontal'); this.classList.add('loaded');">
                         <div class="chk${isSel ? ' on' : ''}" id="chk-${i}">
@@ -1652,7 +1688,14 @@
                 
                 '<div id="ce_driveGalleryStatus" style="font-size:0.8rem; color:var(--accent); margin-bottom:1rem; font-weight:500;"></div>' +
                 '<label class="af-l">URL de carpeta para descargar todo (Botón "Descargar Galería Completa")</label><input class="af-i" id="ce_driveUrl" value="' + esc(c.driveFolderUrl || '') + '">' +
-                '<label class="af-l" style="margin-top:.5rem">Foto de Portada de la Galería (Opcional)</label><input class="af-i" id="ce_galleryCover" placeholder="Si está vacío, usará la 1ra foto de la galería" value="' + esc(c.galleryCover || '') + '">' +
+                
+                /* ════ PORTADA PERSONALIZADA V2.1 ════ */
+                '<label class="af-l" style="margin-top:.5rem">Foto de Portada de la Galería (Opcional)</label>' +
+                '<div style="display:flex;gap:10px;margin-bottom:0.5rem;">' +
+                    '<input class="af-i" id="ce_galleryCover" placeholder="Si está vacío, usará la 1ra foto de la galería" value="' + esc(c.galleryCover || '') + '" style="margin-bottom:0;flex:1;">' +
+                    '<input type="file" accept="image/*" onchange="uploadGeneralImg(this, \'ce_galleryCover\')" style="width:100px;font-size:0.7rem;padding-top:10px;">' +
+                '</div>' +
+                
                 '<label class="af-l" style="margin-top:.5rem">Fotos en la galería</label>' +
                 
                 '<div id="ce_photosSummary" class="adm-hint" style="padding: 1rem; background: var(--accent-subtle); border: 1px dashed var(--accent); border-radius: var(--radius); text-align: center; font-weight: 600; color: var(--accent); font-size: 0.9rem; margin-top:0.5rem;">📸 ' + (c.photos ? c.photos.length : 0) + ' fotos cargadas</div>' +
@@ -1889,28 +1932,13 @@
             var folderInput = document.getElementById('pb_driveFolderId').value.trim(); var folderId = folderInput;
             var match = folderInput.match(/\/folders\/([a-zA-Z0-9_-]+)/) || folderInput.match(/id=([a-zA-Z0-9_-]+)/); if (match) folderId = match[1];
             if (!folderId) { toast('ID o URL de carpeta inválido.'); return; }
-            
+            var url = 'https://www.googleapis.com/drive/v3/files?q=%27' + folderId + '%27+in+parents+and+mimeType+contains+%27image/%27&fields=files(id,name)&key=' + apiKey;
             document.getElementById('pbDriveGallery').innerHTML = '<p class="adm-hint">Cargando imágenes de la carpeta...</p>';
-            
-            try {
-                let all = []; let pToken = '';
-                let q = `'${folderId}' in parents and trashed=false and mimeType contains 'image/'`;
-                do {
-                    let url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=nextPageToken,files(id,name,mimeType)&key=${apiKey}&pageSize=1000`;
-                    if (pToken) url += `&pageToken=${pToken}`;
-                    let res = await fetch(url);
-                    let data = await res.json();
-                    if (data.error) throw new Error(data.error.message);
-                    if (data.files) all = all.concat(data.files);
-                    pToken = data.nextPageToken;
-                } while (pToken);
-                
-                if (!all.length) { document.getElementById('pbDriveGallery').innerHTML = '<p class="adm-hint">La carpeta está vacía o no tiene permisos de lectura pública.</p>'; return; }
-                renderDriveGalleryForPB(all);
-            } catch(err) { 
-                toast('Error: ' + err.message); 
-                document.getElementById('pbDriveGallery').innerHTML = '<p class="adm-hint" style="color:#c0392b">Error al cargar. Verifica tu API Key y asegúrate de que la carpeta de Drive sea "Pública".</p>'; 
-            }
+            fetch(url).then(function(res) { return res.json(); }).then(function(data) {
+                if (data.error) throw new Error(data.error.message); var files = data.files || [];
+                if (!files.length) { document.getElementById('pbDriveGallery').innerHTML = '<p class="adm-hint">La carpeta está vacía o no tiene permisos de lectura pública.</p>'; return; }
+                renderDriveGalleryForPB(files);
+            }).catch(function(err) { toast('Error: ' + err.message); document.getElementById('pbDriveGallery').innerHTML = '<p class="adm-hint" style="color:#c0392b">Error al cargar. Verifica tu API Key y asegúrate de que la carpeta de Drive sea "Pública".</p>'; });
         }
         function renderDriveGalleryForPB(files) {
             currentDriveFiles = files; // Guardamos globalmente
@@ -1971,7 +1999,7 @@
             toast('Fotolibro autollenado por orden numérico');
         }
 
-        /* ════ ADMIN: PORTAFOLIO PÚBLICO ════ */
+        /* ════ ADMIN: PORTAFOLIO PÚBLICO (NUEVO CON DRIVE) CON PAGINACIÓN ════ */
         function renderAdmPortfolio(body) {
             body.innerHTML = `
                 <div style="margin-bottom:1.5rem;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)">
@@ -2081,6 +2109,14 @@
                 '<label class="af-l">Facebook URL</label><input class="af-i" id="se_fb" value="' + esc(s.facebook) + '">' +
                 '<label class="af-l">WhatsApp Number</label><input class="af-i" id="se_wa" value="' + esc(s.waNumber) + '">' +
                 '<label class="af-l">Texto del hero</label><textarea class="af-i af-ta" id="se_hero">' + esc(s.heroDesc) + '</textarea>' +
+                
+                /* ════ IMAGEN PRINCIPAL (V2.1) ════ */
+                '<label class="af-l">Imagen Principal (Inicio)</label>' +
+                '<div style="display:flex;gap:10px;margin-bottom:1rem;">' +
+                    '<input class="af-i" id="se_heroImg" placeholder="Pega URL o usa el botón de lado ->" value="' + esc(s.heroImage || '') + '" style="margin-bottom:0;flex:1;">' +
+                    '<input type="file" accept="image/*" onchange="uploadGeneralImg(this, \'se_heroImg\')" style="width:100px;font-size:0.7rem;padding-top:10px;">' +
+                '</div>' +
+                
                 '<label class="af-l">Google Maps Embed URL</label><input class="af-i" id="se_map" value="' + esc(s.mapEmbed) + '">' +
                 '<label class="af-l" style="margin-top:1rem; color:var(--accent)">Clave API de Google Drive</label><input class="af-i" id="se_driveApi" placeholder="AIzaSy..." value="' + esc(s.driveApiKey || '') + '">' +
                 '<label class="af-l" style="margin-top:1rem">Cambiar contraseña admin</label><input class="af-i" type="password" id="se_pass" placeholder="Dejar vacío para no cambiar">' +
@@ -2096,7 +2132,7 @@
                 '<button class="af-btn" style="background:#2b5797; color:#fff; width:100%; margin-top:10px;" onclick="downloadJSON()">📥 Descargar Respaldo JSON (Manual)</button>';
         }
         function saveSettings() {
-            var s = D.settings; s.phone = document.getElementById('se_phone').value.trim(); s.phoneRaw = document.getElementById('se_phoneRaw').value.trim(); s.address = document.getElementById('se_addr').value.trim(); s.hours = document.getElementById('se_hours').value.trim(); s.facebook = document.getElementById('se_fb').value.trim(); s.waNumber = document.getElementById('se_wa').value.trim(); s.heroDesc = document.getElementById('se_hero').value.trim(); s.mapEmbed = document.getElementById('se_map').value.trim(); s.driveApiKey = document.getElementById('se_driveApi').value.trim();
+            var s = D.settings; s.phone = document.getElementById('se_phone').value.trim(); s.phoneRaw = document.getElementById('se_phoneRaw').value.trim(); s.address = document.getElementById('se_addr').value.trim(); s.hours = document.getElementById('se_hours').value.trim(); s.facebook = document.getElementById('se_fb').value.trim(); s.waNumber = document.getElementById('se_wa').value.trim(); s.heroDesc = document.getElementById('se_hero').value.trim(); s.heroImage = document.getElementById('se_heroImg').value.trim(); s.mapEmbed = document.getElementById('se_map').value.trim(); s.driveApiKey = document.getElementById('se_driveApi').value.trim();
             var newPass = document.getElementById('se_pass').value; if (newPass && newPass.length >= 4) { D.adminPass = newPass; toast('Contraseña actualizada'); }
             saveData(); renderPublic(); toast('Configuración guardada');
         }
