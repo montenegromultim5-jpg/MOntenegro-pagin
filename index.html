@@ -171,7 +171,7 @@
         .access-card-info p { color: var(--c-muted); font-size: .82rem; }
         .access-card .btn { flex-shrink: 0; }
 
-        /* VISTA GALERÍA: PIXIESET STYLE / MASONRY GRID */
+        /* VISTA GALERÍA: CUADRÍCULA SEGURA SIN RECORTE (v1.9) */
         #cpGalleryView { padding: 0; background: var(--c-bg); position: relative; }
         .px-header { position: relative; width: 100%; height: 60vh; min-height: 400px; background-size: cover; background-position: center; background-repeat: no-repeat; display: flex; align-items: center; justify-content: center; text-align: center; color: #fff; }
         .px-header::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%); }
@@ -192,10 +192,10 @@
         .px-set-section { margin-bottom: 4rem; scroll-margin-top: 90px; }
         .px-set-title { font-family: var(--fh); font-size: 2.2rem; text-align: center; margin-bottom: 2rem; font-weight: 400; color: var(--c-text); letter-spacing: 1px; }
         
-        /* MASONRY GRID (v1.8) */
-        .px-grid { column-count: 3; column-gap: 12px; }
-        .pc { position: relative; border-radius: 4px; overflow: hidden; background: var(--c-surface2); cursor: pointer; break-inside: avoid; page-break-inside: avoid; -webkit-column-break-inside: avoid; margin-bottom: 12px; }
-        .pc img { width: 100%; height: auto; object-fit: cover; transition: .4s; pointer-events: none; display: block; }
+        /* Grid Clásico de Izquierda a Derecha con Altura Automática (No recorta caras) */
+        .px-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; align-items: start; }
+        .pc { position: relative; border-radius: 4px; overflow: hidden; background: var(--c-surface2); cursor: pointer; width: 100%; }
+        .pc img { width: 100%; height: auto; display: block; transition: .4s; pointer-events: none; }
         .pc:hover img { transform: scale(1.04); filter: brightness(0.8); }
         
         .pc .chk { display: none; position: absolute; top: .6rem; right: .6rem; width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .6); background: rgba(0, 0, 0, .4); backdrop-filter: blur(4px); cursor: pointer; align-items: center; justify-content: center; transition: .2s; z-index: 3; padding: 0; }
@@ -431,9 +431,8 @@
             .portfolio-grid { grid-template-columns: repeat(2, 1fr); gap: .5rem; }
             .services-grid, .testimonials-grid { grid-template-columns: 1fr; gap: .8rem; }
             
-            /* Masonry Mobile Adjustment */
-            .px-grid { column-count: 2 !important; column-gap: 8px !important; display: block !important; }
-            .pc { margin-bottom: 8px !important; display: inline-block; width: 100%; }
+            .px-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; align-items: start; }
+            .pc { margin-bottom: 0 !important; }
 
             .cp-sec { padding: 1.5rem .8rem; }
             .access-card { flex-direction: column; text-align: center; gap: .8rem; }
@@ -655,27 +654,22 @@
         </footer>
     </div>
 
-    <!-- Barra pedido -->
     <div class="order-bar" id="orderBar"><div class="ob-in"><div class="ob-info"><span class="ob-cnt" id="obCnt">0</span><span>seleccionadas</span><span class="ob-tot" id="obTot">$0</span></div><button class="btn btn-accent" onclick="openOrder()">Ver pedido de Impresión</button></div></div>
 
-    <!-- Modal login cliente -->
     <div class="modal-ov" id="loginModal" onclick="if(event.target===this)closeLogin()">
         <div class="modal"><button class="modal-x" onclick="closeLogin()">×</button><h3>Acceso a clientes</h3><p>Ingresa el código que se te proporcionó.</p><input type="text" id="codeIn" placeholder="Ejemplo: boda2024" autocomplete="off" autocapitalize="off" spellcheck="false"><p class="modal-err" id="loginErr">Código no válido.</p><button class="btn btn-primary" onclick="doLogin()">Acceder</button></div>
     </div>
 
-    <!-- Modal login admin -->
     <div class="modal-ov" id="admLoginModal" onclick="if(event.target===this)closeAdmLogin()">
         <div class="modal"><button class="modal-x" onclick="closeAdmLogin()">×</button><h3 id="admLoginTitle">Administración</h3><p id="admLoginDesc">Ingresa tu contraseña de administrador.</p><input type="password" id="admPassIn" placeholder="Contraseña" autocomplete="off"><p class="modal-err" id="admLoginErr">Contraseña incorrecta.</p><button class="btn btn-primary" onclick="doAdmLogin()">Entrar</button></div>
     </div>
 
-    <!-- Modal pedido -->
     <div class="om-ov" id="orderModal" onclick="if(event.target===this)closeOrder()">
         <div class="om-pn"><div class="om-hd"></div><div class="om-ttl">Pedido de impresión</div><div class="om-sub" id="omSub"></div><div id="omItems"></div><div class="om-tot"><span class="om-tot-l">Total</span><span class="om-tot-v" id="omTotV">$0</span></div>
             <div class="om-acts"><button class="btn btn-wa" onclick="sendWA()">Enviar pedido por WhatsApp</button><button class="btn btn-gh" onclick="clearSel()">Limpiar selección</button></div>
         </div>
     </div>
     
-    <!-- Modal Advertencia Descarga Completa -->
     <div class="modal-ov" id="downloadModal" onclick="if(event.target===this)closeDownloadModal()">
         <div class="modal-c">
             <button class="modal-x-c" onclick="closeDownloadModal()">×</button>
@@ -689,11 +683,10 @@
         </div>
     </div>
 
-    <!-- Admin panel -->
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
-                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.5rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v1.8</span></h2>
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.5rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v1.9</span></h2>
                 <button class="adm-x" onclick="closeAdm()">×</button>
             </div>
             <div class="adm-tabs" id="admTabs">
@@ -707,12 +700,10 @@
         </div>
     </div>
 
-    <!-- Lightbox -->
     <div class="lb" id="lb"><button class="lb-x" onclick="closeLB()">×</button><button class="lb-n lb-p" onclick="navLB(-1)">&#8249;</button><button class="lb-n lb-nx" onclick="navLB(1)">&#8250;</button><img id="lbImg" src="" alt=""><div class="lb-bot"><span class="lb-c" id="lbC"></span><a class="lb-dl" id="lbDl" style="cursor:pointer;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Descargar Foto</a></div></div>
 
     <div class="toast" id="toast"></div>
 
-    <!-- Librerías de Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
@@ -887,7 +878,7 @@
             }
         }
 
-        /* ══════ DESCARGA DIRECTA FORZADA (V1.7) ══════ */
+        /* ══════ DESCARGA DIRECTA FORZADA (V1.9) ══════ */
         function downloadPhoto(src, name, e) {
             if(e) { e.preventDefault(); e.stopPropagation(); }
             var dId = null;
@@ -1206,7 +1197,6 @@
             
             portalPhotos = c.photos || [];
             
-            /* ════ PORTADA PERSONALIZADA (V1.8) ════ */
             var coverImg = c.galleryCover ? c.galleryCover : (portalPhotos.length > 0 ? pSrc(portalPhotos[0], 1600) : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&fit=crop');
             document.getElementById('pxHeader').style.backgroundImage = `url('${coverImg}')`;
             document.getElementById('pxTitle').textContent = c.name;
@@ -1669,7 +1659,7 @@
         }
         function toggleClientSection(sec) { document.getElementById('ce_' + sec + 'Sec').style.display = document.getElementById('ce_has' + sec.charAt(0).toUpperCase() + sec.slice(1)).checked ? 'block' : 'none'; }
         
-        /* ════ ORDEN AUTOMÁTICO CON AUTO-GUARDADO (V1.7) ════ */
+        /* ════ ORDEN AUTOMÁTICO CON AUTO-GUARDADO (V1.9) ════ */
         function sortClientPhotosAsc() {
             if (!tempClientPhotos || tempClientPhotos.length === 0) {
                 toast('No hay fotos para ordenar.');
@@ -1681,12 +1671,11 @@
             });
             renderClientPhotosList(tempClientPhotos);
             
-            // Auto Guardar para evitar desorden si se sale sin guardar
             saveClient(admState.editId);
             toast('✅ Ordenado y guardado. Refresca la galería de tu cliente.');
         }
 
-        /* ════ DRAG & DROP FOTOS (V1.4) ════ */
+        /* ════ DRAG & DROP FOTOS (V1.9) ════ */
         function dragPhotoStart(e, i) {
             draggedPhotoIdx = i;
             e.dataTransfer.effectAllowed = 'move';
@@ -1721,7 +1710,7 @@
             list.innerHTML = h;
         }
         
-        /* EXTRACCIÓN CON SUBCARPETAS Y PAGINACIÓN TOTAL (API DRIVE V1.7) */
+        /* EXTRACCIÓN CON SUBCARPETAS Y PAGINACIÓN TOTAL (API DRIVE V1.9) */
         async function fetchDriveGalleryForClient() {
             var apiKey = D.settings.driveApiKey;
             if (!apiKey) { toast('Configura tu Clave API en la pestaña General.'); return; }
@@ -1733,7 +1722,6 @@
             status.textContent = 'Analizando carpeta principal y extrayendo TODAS las fotos (paginación activa)... Por favor, espera.';
 
             try {
-                // Función interna para paginar y sacar TODOS los archivos sin límite
                 async function getAllFiles(fId, onlyImages) {
                     let all = []; let pToken = '';
                     let q = `'${fId}' in parents and trashed=false`;
@@ -1754,9 +1742,9 @@
                 let folders = rootFiles.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
                 let looseImages = rootFiles.filter(f => f.mimeType.includes('image/'));
 
-                // ORDENAR ALFABÉTICAMENTE / NUMÉRICAMENTE AL EXTRAER
-                folders.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
-                looseImages.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
+                var collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+                folders.sort((a, b) => collator.compare(a.name, b.name));
+                looseImages.sort((a, b) => collator.compare(a.name, b.name));
 
                 let allPhotos = [];
 
@@ -1767,8 +1755,7 @@
                 for (let folder of folders) {
                     status.textContent = `Extrayendo set: ${folder.name}...`;
                     let subFiles = await getAllFiles(folder.id, true);
-                    // ORDENAR ALFABÉTICAMENTE LAS FOTOS DENTRO DE LA SUBCARPETA
-                    subFiles.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
+                    subFiles.sort((a, b) => collator.compare(a.name, b.name));
                     subFiles.forEach(img => {
                         allPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s1600`, name: img.name, set: folder.name, driveId: img.id });
                     });
@@ -1883,7 +1870,7 @@
         }
         function savePBData() { saveData(); toast('Fotolibro guardado correctamente'); }
 
-        /* API Drive y Autollenado (CON PAGINACIÓN V1.7) */
+        /* API Drive y Autollenado (CON PAGINACIÓN V1.9) */
         async function fetchDriveFolderForPB() {
             var apiKey = D.settings.driveApiKey; if (!apiKey) { toast('Por favor configura tu Clave API en la pestaña General primero.'); return; }
             var folderInput = document.getElementById('pb_driveFolderId').value.trim(); var folderId = folderInput;
@@ -1939,8 +1926,9 @@
             
             var code = admState.editId, pb = D.clients[code].photobook;
             
+            var collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
             var sortedFiles = currentDriveFiles.slice().sort(function(a, b) {
-                return a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'});
+                return collator.compare(a.name, b.name);
             });
             
             var totalFiles = sortedFiles.length; 
@@ -1970,7 +1958,7 @@
             toast('Fotolibro autollenado por orden numérico');
         }
 
-        /* ════ ADMIN: PORTAFOLIO PÚBLICO (NUEVO CON DRIVE) CON PAGINACIÓN V1.7 ════ */
+        /* ════ ADMIN: PORTAFOLIO PÚBLICO (NUEVO CON DRIVE) CON PAGINACIÓN V1.9 ════ */
         function renderAdmPortfolio(body) {
             body.innerHTML = `
                 <div style="margin-bottom:1.5rem;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)">
@@ -2024,8 +2012,9 @@
                 let folders = rootFiles.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
                 let looseImages = rootFiles.filter(f => f.mimeType.includes('image/'));
 
-                folders.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true}));
-                looseImages.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true}));
+                var collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+                folders.sort((a, b) => collator.compare(a.name, b.name));
+                looseImages.sort((a, b) => collator.compare(a.name, b.name));
 
                 let newPhotos = [];
 
@@ -2036,7 +2025,7 @@
                 for (let folder of folders) {
                     status.textContent = `Extrayendo categoría: ${folder.name}...`;
                     let subFiles = await getAllFiles(folder.id, true);
-                    subFiles.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true}));
+                    subFiles.sort((a, b) => collator.compare(a.name, b.name));
                     subFiles.forEach(img => {
                         newPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s800`, label: folder.name });
                     });
