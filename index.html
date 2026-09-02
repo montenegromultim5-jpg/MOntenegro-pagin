@@ -80,7 +80,7 @@
         .btn-outline:active { border-color: var(--text); background: var(--text); color: #fff; }
         .btn-accent { background: var(--accent); color: #fff; }
         .btn-accent:active { background: var(--accent-hover); transform: scale(.97); }
-        .btn-sm { padding: .45rem 1rem; font-size: .78rem; min-height: 44px; }
+        .btn-sm { padding: .45rem 1rem; font-size: .78rem; min-height: 44px; /* Mejorado para touch */ }
         
         /* FILTROS PORTAFOLIO */
         .port-filters { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.8rem; margin-top: 1.5rem; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
@@ -88,18 +88,14 @@
         .port-filter-btn { padding: 0.4rem 1.2rem; border-radius: 50px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-family: var(--fb); font-size: 0.85rem; font-weight: 500; cursor: pointer; white-space: nowrap; transition: var(--tr); min-height: 44px; touch-action: manipulation;}
         .port-filter-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
 
-        /* MASONRY PORTAFOLIO PÚBLICO */
-        .portfolio-grid { column-count: 3; column-gap: 1rem; margin-top: 1rem; }
-        .portfolio-item { position: relative; overflow: hidden; border-radius: var(--radius); cursor: pointer; background: #eae7e2; break-inside: avoid; margin-bottom: 1rem; }
-        .portfolio-item img { width: 100%; height: auto; object-fit: cover; transition: transform .5s; pointer-events: none; display: block; }
+        .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; margin-top: 1rem; align-items: start;}
+        .portfolio-item { position: relative; overflow: hidden; border-radius: var(--radius); cursor: pointer; background: #eae7e2; }
+        .portfolio-item img { width: 100%; height: auto; object-fit: cover; transition: transform .5s; pointer-events: none; display:block; aspect-ratio: 4/5; }
         .portfolio-item:hover img { transform: scale(1.03); }
         .portfolio-item .il { position: absolute; bottom: .8rem; left: .8rem; color: #fff; font-family: var(--fh); font-size: .85rem; z-index: 2; opacity: .9; font-weight: 500; text-shadow: 0 1px 3px rgba(0, 0, 0, .5); }
-
-        /* VIDEOS DEL PORTAFOLIO EN IFRAME */
-        .portfolio-vid-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1rem; }
-        .portfolio-vid-item { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); }
-        .portfolio-vid-item iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        .portfolio-vid-item .il { position: absolute; bottom: .8rem; left: .8rem; color: #fff; font-family: var(--fh); font-size: .85rem; z-index: 2; opacity: .9; font-weight: 500; text-shadow: 0 1px 3px rgba(0, 0, 0, .5); background: rgba(0,0,0,0.5); padding: 0.2rem 0.6rem; border-radius: 50px; pointer-events:none;}
+        .play-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.6); width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 2; pointer-events: none; transition: .3s; }
+        .play-overlay svg { width: 20px; height: 20px; fill: #fff; margin-left: 4px; }
+        .portfolio-item:hover .play-overlay { background: var(--accent); }
 
         .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-top: 2rem; }
         .service-card { background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.8rem 1.2rem; text-align: center; transition: .2s; }
@@ -178,7 +174,7 @@
         .access-card-info p { color: var(--c-muted); font-size: .82rem; }
         .access-card .btn { flex-shrink: 0; }
 
-        /* VISTA GALERÍA: GRID INTELIGENTE (CLIENTES) */
+        /* VISTA GALERÍA: GRID INTELIGENTE */
         #cpGalleryView { padding: 0; background: var(--c-bg); position: relative; }
         .px-header { position: relative; width: 100%; height: 60vh; min-height: 400px; background-size: cover; background-position: center; background-repeat: no-repeat; display: flex; align-items: center; justify-content: center; text-align: center; color: #fff; }
         .px-header::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%); }
@@ -199,6 +195,7 @@
         .px-set-section { margin-bottom: 4rem; scroll-margin-top: 90px; }
         .px-set-title { font-family: var(--fh); font-size: 2.2rem; text-align: center; margin-bottom: 2rem; font-weight: 400; color: var(--c-text); letter-spacing: 1px; }
         
+        /* ════ LA MAGIA DEL ACOMODO V2.0 ════ */
         .px-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
@@ -432,7 +429,7 @@
             .hero-buttons { justify-content: center; }
             .services-grid, .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
             .contact-wrapper { grid-template-columns: 1fr; gap: 2rem; }
-            .portfolio-grid { column-count: 2; }
+            .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
         }
         @media(max-width:768px) {
             .nav-links { position: fixed; top: 0; right: -100%; width: 75vw; max-width: 300px; height: 100vh; height: 100dvh; background: var(--surface); flex-direction: column; padding: 5rem 1.8rem 2rem; gap: 1.2rem; transition: right .35s cubic-bezier(.4, 0, .2, 1); box-shadow: var(--shadow-lg); z-index: 999; overflow-y: auto; will-change: right; }
@@ -443,11 +440,7 @@
             .mob-ov.active { display: block; }
             .section { padding: 4rem 1.2rem; }
             .hero-inner { padding: 3rem 1.2rem 1.5rem; }
-            
-            .portfolio-grid { column-count: 2 !important; column-gap: 8px !important; display: block !important; }
-            .portfolio-item { margin-bottom: 8px !important; display: inline-block; width: 100%; }
-            .portfolio-vid-grid { grid-template-columns: 1fr; }
-
+            .portfolio-grid { grid-template-columns: repeat(2, 1fr); gap: .5rem; }
             .services-grid, .testimonials-grid { grid-template-columns: 1fr; gap: .8rem; }
             
             .cp-sec { padding: 1.5rem .8rem; }
@@ -470,6 +463,10 @@
             .pb-fullscreen-btn { top: 1rem; right: 1rem; }
             #cpVideoView { padding-top: 60px; }
             .vid-sec { padding: 1rem; }
+
+            /* Grid Móvil Ajustado */
+            .px-grid { grid-template-columns: repeat(2, 1fr) !important; grid-auto-rows: 130px !important; gap: 8px !important; display: grid !important; }
+            .pc { margin-bottom: 0 !important; display: block; }
         }
         @media(max-width:480px) {
             html { font-size: 14px; }
@@ -532,15 +529,8 @@
             <p class="section-desc">Una muestra de nuestro trabajo en eventos, retratos y producciones.</p>
             
             <div id="portFilters" class="port-filters"></div>
-            
-            <div class="portfolio-grid" id="portGridImg"></div>
-            
-            <!-- CONTENEDOR SEPARADO PARA VIDEOS (IFRAMES) -->
-            <div id="portVidContainer" style="display:none; margin-top: 3rem;">
-                <h3 style="text-align:center; font-family:var(--fh); font-size:1.8rem; margin-bottom:1.5rem;">Videos Destacados</h3>
-                <div class="portfolio-vid-grid" id="portGridVid"></div>
-            </div>
-            
+            <div class="portfolio-grid" id="portGrid"></div>
+            <!-- Contenedor para el botón "Ver más" -->
             <div id="portMoreBtn" style="text-align: center; margin-top: 2rem;"></div>
         </section>
         <section class="section" id="servicios">
@@ -716,7 +706,7 @@
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
-                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.5rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.4</span></h2>
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.5rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.2</span></h2>
                 <button class="adm-x" onclick="closeAdm()">×</button>
             </div>
             <div class="adm-tabs" id="admTabs">
@@ -727,6 +717,19 @@
                 <button data-t="settings">General</button>
             </div>
             <div class="adm-body" id="admBody"></div>
+        </div>
+    </div>
+
+    <!-- Lightbox con soporte para VIDEO -->
+    <div class="lb" id="lb">
+        <button class="lb-x" onclick="closeLB()">×</button>
+        <button class="lb-n lb-p" onclick="navLB(-1)">&#8249;</button>
+        <button class="lb-n lb-nx" onclick="navLB(1)">&#8250;</button>
+        <img id="lbImg" src="" alt="" style="display:none;">
+        <iframe id="lbVid" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="display:none; width:90%; height:80vh; max-width:1000px; border-radius:8px;"></iframe>
+        <div class="lb-bot">
+            <span class="lb-c" id="lbC"></span>
+            <a class="lb-dl" id="lbDl" style="cursor:pointer;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Descargar Foto</a>
         </div>
     </div>
 
@@ -775,7 +778,7 @@
             };
         }
 
-        /* ══════ GESTIÓN DE DATOS Y FIREBASE (TRY/CATCH ANTI-ERRORES) ══════ */
+        /* ══════ GESTIÓN DE DATOS Y FIREBASE ══════ */
         const firebaseConfig = {
             apiKey: "AIzaSyAJSdiQtL0m7xFjlEyosh3Rfbt2JpMrTzs",
             authDomain: "monte-eb262.firebaseapp.com",
@@ -787,17 +790,10 @@
             measurementId: "G-5FTK1HF5L3"
         };
 
-        var db = null;
-        try {
-            if (typeof firebase !== 'undefined') {
-                if (!firebase.apps.length) {
-                    firebase.initializeApp(firebaseConfig);
-                }
-                db = firebase.firestore();
-            }
-        } catch(err) {
-            console.warn("Firebase no está disponible. Usando datos locales.");
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
+        const db = firebase.firestore();
 
         var D;
         var isPublicPortfolioView = false; 
@@ -807,23 +803,20 @@
             if (loader) { loader.style.display = 'flex'; loader.style.opacity = '1'; }
             
             try {
-                if (db) {
-                    const docRef = db.collection("web_data").doc("fvm_data");
-                    const options = forceServer ? { source: 'server' } : {};
-                    const docSnap = await docRef.get(options);
-                    
-                    if (docSnap.exists) {
-                        D = docSnap.data();
-                        localStorage.setItem('fvm_data', JSON.stringify(D));
-                        if(forceServer) toast('Datos actualizados desde el servidor', 2500);
-                    } else {
-                        D = getDefaults();
-                        saveData();
-                    }
+                const docRef = db.collection("web_data").doc("fvm_data");
+                const options = forceServer ? { source: 'server' } : {};
+                const docSnap = await docRef.get(options);
+                
+                if (docSnap.exists) {
+                    D = docSnap.data();
+                    localStorage.setItem('fvm_data', JSON.stringify(D));
+                    if(forceServer) toast('Datos actualizados desde el servidor', 2500);
                 } else {
-                    throw new Error("Sin conexión a Base de Datos");
+                    D = getDefaults();
+                    saveData();
                 }
             } catch (error) {
+                console.error("Error conectando a Firebase:", error);
                 var s = localStorage.getItem('fvm_data'); 
                 D = s ? JSON.parse(s) : getDefaults();
             } finally {
@@ -847,23 +840,15 @@
 
             try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch(e){} 
             
-            if (db) {
-                db.collection("web_data").doc("fvm_data").set(D)
-                    .then(() => { toast('✅ Datos guardados correctamente', 2500); })
-                    .catch((error) => { toast('❌ Error al subir datos. Se guardó localmente.', 4000); })
-                    .finally(() => {
-                        if (loader && loaderText) {
-                            loader.style.opacity = '0';
-                            setTimeout(() => { loader.style.display = 'none'; loaderText.innerText = "Cargando contenido..."; }, 500);
-                        }
-                    });
-            } else {
-                toast('Guardado localmente (Sin conexión).', 3000);
-                if (loader && loaderText) {
-                    loader.style.opacity = '0';
-                    setTimeout(() => { loader.style.display = 'none'; loaderText.innerText = "Cargando contenido..."; }, 500);
-                }
-            }
+            db.collection("web_data").doc("fvm_data").set(D)
+                .then(() => { toast('✅ Datos guardados correctamente', 2500); })
+                .catch((error) => { toast('❌ Error al subir datos. Se guardó localmente.', 4000); })
+                .finally(() => {
+                    if (loader && loaderText) {
+                        loader.style.opacity = '0';
+                        setTimeout(() => { loader.style.display = 'none'; loaderText.innerText = "Cargando contenido..."; }, 500);
+                    }
+                });
         }
         
         function downloadJSON() {
@@ -887,7 +872,7 @@
         var isPrintMode = false;
         var draggedPhotoIdx = -1; 
         
-        window.portfolioLimit = 6; 
+        window.portfolioLimit = 6; // Límite de items a mostrar inicialmente en el portafolio
 
         function pSrc(p, s) { s = s || 800; if (p.driveId) return 'https://lh3.googleusercontent.com/d/' + p.driveId + '=s' + s; return (p.src || '').replace(/w=\d+/, 'w=' + s); }
         function pDl(p) { if (p.driveId) return 'https://drive.google.com/uc?export=download&id=' + p.driveId; return (p.src || '').replace('w=800', 'w=1600'); }
@@ -900,20 +885,20 @@
         function toDisplayDate(ms) { if (!ms) return ''; let d = new Date(ms); let m = ('0' + (d.getMonth() + 1)).slice(-2); let day = ('0' + d.getDate()).slice(-2); return `${day}/${m}/${d.getFullYear()}`; }
         function addOneYear() { let el = document.getElementById('ce_expire'); if(!el.value) return; let d = new Date(el.value + 'T12:00:00'); d.setFullYear(d.getFullYear() + 1); el.value = toDateInput(d.getTime()); }
 
-        /* Convertir links a Embed */
+        /* Convertir links a Embed (V2.2) */
         function getEmbedUrl(url) {
             if (!url) return '';
             if (url.includes('drive.google.com/file/d/')) {
                 var m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
                 if (m) return 'https://drive.google.com/file/d/' + m[1] + '/preview';
             } else if (url.includes('youtu.be/') || (url.includes('youtube.com/'))) {
-                var ytM = url.match(/(?:youtu\.be\/|v=|\/v\/|\/embed\/|watch\?v=)([^&?\s]+)/);
+                var ytM = url.match(/(?:youtu\.be\/|v=|\/v\/|\/embed\/)([^&?\s]+)/);
                 if (ytM) return 'https://www.youtube.com/embed/' + ytM[1];
             }
             return url;
         }
 
-        /* ══════ FUNCIÓN DE CARGA GENERAL (BASE64) ══════ */
+        /* ══════ FUNCIÓN DE CARGA GENERAL (BASE64) V2.1 ══════ */
         function uploadGeneralImg(input, targetId) {
             var file = input.files[0]; if (!file) return; var reader = new FileReader();
             reader.onload = function(e) { 
@@ -1009,7 +994,7 @@
                 });
             }
             pf.innerHTML = pfHtml;
-            filterPortfolio(window.currentPortFilter);
+            filterPortfolio(window.currentPortFilter); // Llamamos con el límite por defecto
 
             var sg = document.getElementById('servGrid');
             var sgHtml = '';
@@ -1050,100 +1035,55 @@
             document.getElementById('cpWaLink').href = 'https://wa.me/' + s.waNumber; document.getElementById('cpWaLink').textContent = s.phone;
         }
 
-        /* ══════ PORTAFOLIO COMPACTO (2 POR SET) Y VIDEOS ══════ */
+        /* ══════ PORTAFOLIO COMPACTO Y VIDEO (V2.2) ══════ */
         function filterPortfolio(filter, showAll = false) {
             window.currentPortFilter = filter;
-            var gridImg = document.getElementById('portGridImg'); 
-            var gridVid = document.getElementById('portGridVid');
-            var vidContainer = document.getElementById('portVidContainer');
+            var grid = document.getElementById('portGrid'); grid.innerHTML = '';
             
-            if(!gridImg) return;
-            
-            gridImg.innerHTML = ''; 
-            if(gridVid) gridVid.innerHTML = '';
-            
-            var allItems = D.portfolio || [];
-            var isTodos = filter === 'Todos';
-            
-            var imagesToShow = [];
-            var videosToShow = [];
-            var groupedImages = {};
-            var groupedVideos = {};
-
-            allItems.forEach(function(item) {
+            var filtered = D.portfolio.filter(function(item) {
                 var l = item.label || 'General';
-                var matchFilter = isTodos || l === filter;
+                return filter === 'Todos' || l === filter;
+            });
+
+            var limit = showAll ? filtered.length : window.portfolioLimit;
+            var toShow = filtered.slice(0, limit);
+
+            toShow.forEach(function(item) {
+                var d = document.createElement('div'); d.className = 'portfolio-item';
+                var isVid = item.type === 'video';
+                var playIcon = isVid ? '<div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>' : '';
                 
-                if (matchFilter) {
-                    if (item.type === 'video') {
-                        if (!groupedVideos[l]) groupedVideos[l] = [];
-                        groupedVideos[l].push(item);
-                    } else {
-                        if (!groupedImages[l]) groupedImages[l] = [];
-                        groupedImages[l].push(item);
-                    }
-                }
-            });
-
-            Object.keys(groupedImages).forEach(function(key) {
-                var imgs = groupedImages[key];
-                if (isTodos && !showAll) {
-                    imagesToShow = imagesToShow.concat(imgs.slice(0, 2));
-                } else {
-                    imagesToShow = imagesToShow.concat(imgs);
-                }
-            });
-            
-            Object.keys(groupedVideos).forEach(function(key) {
-                var vids = groupedVideos[key];
-                if (isTodos && !showAll) {
-                    videosToShow = videosToShow.concat(vids.slice(0, 2));
-                } else {
-                    videosToShow = videosToShow.concat(vids);
-                }
-            });
-
-            if(imagesToShow.length > 0) {
-                imagesToShow.forEach(function(item) {
-                    var d = document.createElement('div'); d.className = 'portfolio-item';
-                    d.innerHTML = '<img src="' + esc(item.src) + '" alt="' + esc(item.label || '') + '" loading="lazy"><span class="il">' + esc(item.label || '') + '</span>';
-                    d.addEventListener('click', function() { 
-                        isPublicPortfolioView = true;
-                        portalPhotos = [{ src: item.src.replace(/s\d+/, 's1600').replace(/w=\d+/, 'w=1600'), name: item.label || '', type: 'image' }];
-                        lbIdx = 0;
-                        showLB();
-                    });
-                    gridImg.appendChild(d);
+                d.innerHTML = '<img src="' + esc(item.src) + '" alt="' + esc(item.label || '') + '" loading="lazy">' + playIcon + '<span class="il">' + esc(item.label || '') + '</span>';
+                
+                d.addEventListener('click', function() { 
+                    isPublicPortfolioView = true;
+                    // Abrimos para visualización
+                    portalPhotos = [{ 
+                        src: item.src.replace(/s\d+/, 's1600').replace(/w=\d+/, 'w=1600'), 
+                        name: item.label || '',
+                        type: item.type || 'image',
+                        videoUrl: item.videoUrl || ''
+                    }];
+                    lbIdx = 0;
+                    showLB();
                 });
-            } else if (Object.keys(groupedImages).length === 0 && Object.keys(groupedVideos).length === 0) {
-                gridImg.innerHTML = '<p style="color:var(--text-muted); text-align:center; grid-column: 1 / -1;">No hay fotos en esta categoría.</p>';
-            }
+                grid.appendChild(d);
+            });
 
-            if (videosToShow.length > 0 && gridVid && vidContainer) {
-                vidContainer.style.display = 'block';
-                videosToShow.forEach(function(item) {
-                    var v = document.createElement('div'); v.className = 'portfolio-vid-item';
-                    var embedUrl = getEmbedUrl(item.videoUrl || '');
-                    v.innerHTML = '<iframe src="' + embedUrl + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><span class="il">' + esc(item.label || 'Video') + '</span>';
-                    gridVid.appendChild(v);
-                });
-            } else if (vidContainer) {
-                vidContainer.style.display = 'none';
-            }
-            
+            // Botón Ver Más
             var btnContainer = document.getElementById('portMoreBtn');
-            if (btnContainer) {
-                var totalFilteredImages = 0;
-                Object.keys(groupedImages).forEach(function(key) { totalFilteredImages += groupedImages[key].length; });
-                
-                var totalFilteredVideos = 0;
-                Object.keys(groupedVideos).forEach(function(key) { totalFilteredVideos += groupedVideos[key].length; });
-
-                if (isTodos && !showAll && (totalFilteredImages > imagesToShow.length || totalFilteredVideos > videosToShow.length)) {
-                    btnContainer.innerHTML = '<button class="btn btn-outline" onclick="filterPortfolio(\'' + esc(filter) + '\', true)">Ver portafolio completo</button>';
-                } else {
-                    btnContainer.innerHTML = '';
-                }
+            if (!btnContainer) {
+                btnContainer = document.createElement('div');
+                btnContainer.id = 'portMoreBtn';
+                btnContainer.style.textAlign = 'center';
+                btnContainer.style.marginTop = '2rem';
+                grid.parentNode.insertBefore(btnContainer, grid.nextSibling);
+            }
+            
+            if (filtered.length > limit) {
+                btnContainer.innerHTML = '<button class="btn btn-outline" onclick="filterPortfolio(\'' + esc(filter) + '\', true)">Ver más de ' + esc(filter) + ' (' + (filtered.length - limit) + ' restantes)</button>';
+            } else {
+                btnContainer.innerHTML = '';
             }
         }
 
@@ -1438,11 +1378,11 @@
 
             setNames.forEach((setName, idx) => {
                 var safeId = 'set-' + setName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-                navInner.innerHTML += '<div class="px-nav-item ' + (idx===0?'active':'') + '" onclick="scrollToSet(\'' + safeId + '\', this)">' + esc(setName) + '</div>';
+                navInner.innerHTML += `<div class="px-nav-item ${idx===0?'active':''}" onclick="scrollToSet('${safeId}', this)">${esc(setName)}</div>`;
                 var section = document.createElement('div');
                 section.className = 'px-set-section';
                 section.id = safeId;
-                section.innerHTML = '<h3 class="px-set-title">' + esc(setName) + '</h3>';
+                section.innerHTML = `<h3 class="px-set-title">${esc(setName)}</h3>`;
                 
                 var grid = document.createElement('div');
                 grid.className = 'px-grid';
@@ -1452,13 +1392,14 @@
                     var d = document.createElement('div');
                     d.className = 'pc';
                     
-                    d.innerHTML = '<img src="' + pSrc(p, 600) + '" alt="' + esc(p.name || '') + '" loading="lazy" onload="this.parentElement.classList.add(this.naturalHeight > this.naturalWidth ? \'vertical\' : \'horizontal\'); this.classList.add(\'loaded\');">' +
-                        '<div class="chk' + (isSel ? ' on' : '') + '" id="chk-' + i + '">' +
-                            '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>' +
-                        '</div>' +
-                        '<button class="dlb" type="button" onclick="triggerDownload(' + i + ', event)" title="Descargar">' +
-                            '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>' +
-                        '</button>';
+                    d.innerHTML = `
+                        <img src="${pSrc(p, 600)}" alt="${esc(p.name || '')}" loading="lazy" onload="this.parentElement.classList.add(this.naturalHeight > this.naturalWidth ? 'vertical' : 'horizontal'); this.classList.add('loaded');">
+                        <div class="chk${isSel ? ' on' : ''}" id="chk-${i}">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        <button class="dlb" type="button" onclick="triggerDownload(${i}, event)" title="Descargar">
+                            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                        </button>`;
                     
                     d.addEventListener('click', function(e) {
                         if (isPrintMode) { toggleSel(i); } else { openLB(i); }
@@ -1546,35 +1487,53 @@
             togglePrintMode(); 
         }
 
-        /* ══════ LIGHTBOX (VISUALIZACIÓN DE FOTOS) ══════ */
+        /* ══════ LIGHTBOX CON VIDEO (V2.2) ══════ */
         function openLB(idx) { 
             isPublicPortfolioView = false; 
             lbIdx = idx; showLB(); 
         }
         function openLBSingle(src, label) { 
             isPublicPortfolioView = true;  
-            portalPhotos = [{ src: src, name: label || '' }]; 
+            portalPhotos = [{ src: src, name: label || '', type: 'image' }]; 
             lbIdx = 0; showLB(); 
         }
         function showLB() {
             var p = portalPhotos[lbIdx]; if (!p) return; 
-            document.getElementById('lbImg').src = pFull(p); 
             document.getElementById('lbC').textContent = p.name || ''; 
             
+            var imgEl = document.getElementById('lbImg');
+            var vidEl = document.getElementById('lbVid');
             var dlBtn = document.getElementById('lbDl');
-            if (isPublicPortfolioView) {
-                dlBtn.style.display = 'none'; 
+
+            if (p.type === 'video') {
+                imgEl.style.display = 'none';
+                vidEl.style.display = 'block';
+                vidEl.src = getEmbedUrl(p.videoUrl) + '?autoplay=1';
+                dlBtn.style.display = 'none'; // No descargamos video directo desde aquí
             } else {
-                dlBtn.style.display = '';     
-                dlBtn.onclick = function(e) { downloadPhoto(p.src || pFull(p), p.name, e); };
-                dlBtn.removeAttribute('href');
+                vidEl.style.display = 'none';
+                vidEl.src = '';
+                imgEl.style.display = 'block';
+                imgEl.src = pFull(p);
+                
+                if (isPublicPortfolioView) {
+                    dlBtn.style.display = 'none'; 
+                } else {
+                    dlBtn.style.display = '';     
+                    dlBtn.onclick = function(e) { downloadPhoto(p.src || pFull(p), p.name, e); };
+                    dlBtn.removeAttribute('href');
+                }
             }
 
             document.querySelector('.lb-p').style.display = portalPhotos.length > 1 ? '' : 'none'; 
             document.querySelector('.lb-nx').style.display = portalPhotos.length > 1 ? '' : 'none';
             document.getElementById('lb').classList.add('active'); document.body.style.overflow = 'hidden';
         }
-        function closeLB() { document.getElementById('lb').classList.remove('active'); document.body.style.overflow = ''; }
+        function closeLB() { 
+            document.getElementById('lb').classList.remove('active'); 
+            document.body.style.overflow = ''; 
+            document.getElementById('lbVid').src = ''; // Corta el audio del video al cerrar
+        }
         function navLB(d) { lbIdx += d; if (lbIdx < 0) lbIdx = portalPhotos.length - 1; if (lbIdx >= portalPhotos.length) lbIdx = 0; showLB(); }
         document.getElementById('lb').addEventListener('click', function(e) { if (e.target === this) closeLB(); });
 
@@ -1629,8 +1588,8 @@
 
         function getPBData() { return (D.clients[curClient] && D.clients[curClient].photobook) ? D.clients[curClient].photobook : { cover: null, spreads: [null], hasBackCover: false, back: null }; }
         function getMaxState() { const pb = getPBData(); return pb.hasBackCover ? pb.spreads.length + 1 : pb.spreads.length; }
-        function getImgTag(src, isPano, side) { if (!src) return ''; if (!isPano) return '<img src="' + src + '" class="pb-img-fit" alt="">'; return '<img src="' + src + '" class="pb-pano pb-pano-' + side + '" alt="">'; }
-        function getPlaceholder(text) { return '<div class="pb-placeholder-text">' + text + '</div>'; }
+        function getImgTag(src, isPano, side) { if (!src) return ''; if (!isPano) return `<img src="${src}" class="pb-img-fit" alt="">`; return `<img src="${src}" class="pb-pano pb-pano-${side}" alt="">`; }
+        function getPlaceholder(text) { return `<div class="pb-placeholder-text">${text}</div>`; }
 
         function renderBook() {
             const pb = getPBData(); if (!pb.spreads || pb.spreads.length === 0) pb.spreads = [null];
@@ -1639,10 +1598,10 @@
             for (let i = 0; i < totalPapers; i++) {
                 let frontContent = '', backContent = '', effectLayer = '';
                 if (i === 0) { frontContent = getImgTag(pb.cover, false) || getPlaceholder("Portada"); effectLayer = '<div class="pb-acrylic-led"></div><div class="pb-beveled"></div>'; } 
-                else { const s = pb.spreads[i - 1]; frontContent = getImgTag(s, true, 'right') || getPlaceholder('Lienzo ' + i + '<br>Derecha'); }
+                else { const s = pb.spreads[i - 1]; frontContent = getImgTag(s, true, 'right') || getPlaceholder(`Lienzo ${i}<br>Derecha`); }
                 if (i === totalPapers - 1) { backContent = pb.hasBackCover ? (getImgTag(pb.back, false) || getPlaceholder("Final")) : ''; } 
-                else { const s = pb.spreads[i]; backContent = getImgTag(s, true, 'left') || getPlaceholder('Lienzo ' + (i + 1) + '<br>Izquierda'); }
-                book.innerHTML += '<div class="pb-paper" id="pb-paper-' + i + '"><div class="pb-front">' + frontContent + effectLayer + '</div><div class="pb-back">' + backContent + '</div></div>';
+                else { const s = pb.spreads[i]; backContent = getImgTag(s, true, 'left') || getPlaceholder(`Lienzo ${i + 1}<br>Izquierda`); }
+                book.innerHTML += `<div class="pb-paper" id="pb-paper-${i}"><div class="pb-front">${frontContent}${effectLayer}</div><div class="pb-back">${backContent}</div></div>`;
             }
             currentBookState = 0; updateBookTransform();
         }
@@ -1656,9 +1615,9 @@
 
         function updatePageIndicator() {
             const pb = getPBData(), dotsEl = document.getElementById('pb-page-dots'), labelEl = document.getElementById('pb-page-label'), total = getMaxState() + 1, numSpreads = pb.spreads.length;
-            let dotsHTML = ''; for (let i = 0; i < total; i++) { dotsHTML += '<div class="pb-page-dot' + (i === currentBookState ? ' active' : '') + '"></div>'; }
+            let dotsHTML = ''; for (let i = 0; i < total; i++) { dotsHTML += `<div class="pb-page-dot${i === currentBookState ? ' active' : ''}"></div>`; }
             dotsEl.innerHTML = dotsHTML;
-            if (currentBookState === 0) labelEl.textContent = 'Portada'; else if (currentBookState >= getMaxState()) labelEl.textContent = 'Final'; else labelEl.textContent = 'Lienzo ' + currentBookState + ' de ' + numSpreads;
+            if (currentBookState === 0) labelEl.textContent = 'Portada'; else if (currentBookState >= getMaxState()) labelEl.textContent = 'Final'; else labelEl.textContent = `Lienzo ${currentBookState} de ${numSpreads}`;
         }
 
         function updateNavButtons(maxS) {
@@ -1752,7 +1711,7 @@
         function saveService(oldId) { var icon = document.getElementById('ae_icon').value.trim(), title = document.getElementById('ae_title').value.trim(), desc = document.getElementById('ae_desc').value.trim(), price = document.getElementById('ae_price').value.trim(), feats = document.getElementById('ae_feats').value.trim().split('\n').filter(function(f) { return f.trim(); }); if (!title) { toast('El título es obligatorio'); return; } if (oldId) { var svc = D.services.find(function(s) { return s.id === oldId; }); if (svc) { svc.icon = icon; svc.title = title; svc.desc = desc; svc.price = price; svc.features = feats; } } else { D.services.push({ id: uid(), icon: icon, title: title, desc: desc, price: price, features: feats, order: D.services.length }); } saveData(); admState.view = 'list'; renderAdmBody(); renderPublic(); }
         function delService(id) { if (!confirm('¿Eliminar este paquete?')) return; D.services = D.services.filter(function(s) { return s.id !== id; }); saveData(); renderAdmBody(); renderPublic(); toast('Paquete eliminado'); }
 
-        /* ════ ADMIN: CLIENTES ════ */
+        /* ════ ADMIN: CLIENTES Y GALERÍA PIXIESET ════ */
         function renderAdmClients(body) {
             if (admState.view === 'edit') { renderClientForm(body); return; }
             if (admState.view === 'photobook') { renderPhotobookAdmin(body); return; }
@@ -1875,13 +1834,13 @@
             var list = document.getElementById('ce_photosList'); if (!list) return; 
             var h = '';
             (photos || []).forEach(function(p, i) { 
-                h += '<div class="adm-photo-item" draggable="true" ondragstart="dragPhotoStart(event, ' + i + ')" ondragover="dragPhotoOver(event)" ondrop="dropPhoto(event, ' + i + ')" style="cursor:grab; flex-wrap:wrap">' +
-                    '<span style="color:#999; margin-right:5px; font-size:1.2rem;" title="Arrastrar para ordenar">↕</span>' +
-                    '<img src="' + esc(p.src) + '" alt="">' +
-                    '<input type="text" value="' + esc(p.name || '') + '" placeholder="Nombre / Etiqueta" onchange="updateClientPhotoName(' + i + ',this.value)" style="flex:1; min-width:80px;">' +
-                    '<input type="text" value="' + esc(p.set || 'General') + '" placeholder="Categoría / Set" onchange="updateClientPhotoSet(' + i + ',this.value)" style="flex:1; min-width:80px;">' +
-                    '<button type="button" onclick="removeClientPhoto(' + i + ')" title="Quitar">×</button>' +
-                '</div>'; 
+                h += `<div class="adm-photo-item" draggable="true" ondragstart="dragPhotoStart(event, ${i})" ondragover="dragPhotoOver(event)" ondrop="dropPhoto(event, ${i})" style="cursor:grab; flex-wrap:wrap">
+                    <span style="color:#999; margin-right:5px; font-size:1.2rem;" title="Arrastrar para ordenar">↕</span>
+                    <img src="${esc(p.src)}" alt="">
+                    <input type="text" value="${esc(p.name || '')}" placeholder="Nombre / Etiqueta" onchange="updateClientPhotoName(${i},this.value)" style="flex:1; min-width:80px;">
+                    <input type="text" value="${esc(p.set || 'General')}" placeholder="Categoría / Set" onchange="updateClientPhotoSet(${i},this.value)" style="flex:1; min-width:80px;">
+                    <button type="button" onclick="removeClientPhoto(${i})" title="Quitar">×</button>
+                </div>`; 
             });
             list.innerHTML = h;
         }
@@ -1900,11 +1859,11 @@
             try {
                 async function getAllFiles(fId, onlyImages) {
                     let all = []; let pToken = '';
-                    let q = "'" + fId + "' in parents and trashed=false";
+                    let q = `'${fId}' in parents and trashed=false`;
                     if (onlyImages) q += " and mimeType contains 'image/'";
                     do {
-                        let url = 'https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent(q) + '&fields=nextPageToken,files(id,name,mimeType)&key=' + apiKey + '&pageSize=1000';
-                        if (pToken) url += '&pageToken=' + pToken;
+                        let url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=nextPageToken,files(id,name,mimeType)&key=${apiKey}&pageSize=1000`;
+                        if (pToken) url += `&pageToken=${pToken}`;
                         let res = await fetch(url);
                         let data = await res.json();
                         if (data.error) throw new Error(data.error.message);
@@ -1925,22 +1884,22 @@
                 let allPhotos = [];
 
                 looseImages.forEach(img => {
-                    allPhotos.push({ src: 'https://lh3.googleusercontent.com/d/' + img.id + '=s1600', name: img.name, set: 'General', driveId: img.id });
+                    allPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s1600`, name: img.name, set: 'General', driveId: img.id });
                 });
 
                 for (let folder of folders) {
-                    status.textContent = 'Extrayendo set: ' + folder.name + '...';
+                    status.textContent = `Extrayendo set: ${folder.name}...`;
                     let subFiles = await getAllFiles(folder.id, true);
                     subFiles.sort((a, b) => collator.compare(a.name, b.name));
                     subFiles.forEach(img => {
-                        allPhotos.push({ src: 'https://lh3.googleusercontent.com/d/' + img.id + '=s1600', name: img.name, set: folder.name, driveId: img.id });
+                        allPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s1600`, name: img.name, set: folder.name, driveId: img.id });
                     });
                 }
 
                 tempClientPhotos = allPhotos;
                 document.getElementById('ce_photosSummary').innerHTML = '✅ ' + allPhotos.length + ' fotos extraídas con éxito. Usa el botón de abajo para ordenar.';
                 renderClientPhotosList(tempClientPhotos);
-                status.textContent = '¡Éxito! Se importaron ' + allPhotos.length + ' fotos organizadas en ' + (folders.length + (looseImages.length?1:0)) + ' sets.';
+                status.textContent = `¡Éxito! Se importaron ${allPhotos.length} fotos organizadas en ${folders.length + (looseImages.length?1:0)} sets.`;
                 toast('Galería extraída correctamente.');
 
             } catch(e) {
@@ -1951,11 +1910,11 @@
 
         function addClientPhoto() {
             var list = document.getElementById('ce_photosList'); if (!list) return; var idx = list.children.length; var div = document.createElement('div'); div.className = 'adm-photo-item';
-            div.innerHTML = '<img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="" style="opacity:.3">' +
-                '<input type="text" value="" placeholder="URL de la imagen" onchange="updateClientPhotoSrc(' + idx + ',this.value)" style="flex:1.5;">' +
-                '<input type="text" value="" placeholder="Nombre" onchange="updateClientPhotoName(' + idx + ',this.value)" style="flex:1;">' +
-                '<input type="text" value="General" placeholder="Set" onchange="updateClientPhotoSet(' + idx + ',this.value)" style="flex:1;">' +
-                '<button type="button" onclick="removeClientPhoto(' + idx + ')" title="Quitar">×</button>';
+            div.innerHTML = `<img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="" style="opacity:.3">
+                <input type="text" value="" placeholder="URL de la imagen" onchange="updateClientPhotoSrc(${idx},this.value)" style="flex:1.5;">
+                <input type="text" value="" placeholder="Nombre" onchange="updateClientPhotoName(${idx},this.value)" style="flex:1;">
+                <input type="text" value="General" placeholder="Set" onchange="updateClientPhotoSet(${idx},this.value)" style="flex:1;">
+                <button type="button" onclick="removeClientPhoto(${idx})" title="Quitar">×</button>`;
             list.appendChild(div);
         }
         function updateClientPhotoSrc(idx, val) { while (tempClientPhotos.length <= idx) tempClientPhotos.push({ src: '', name: '', set: 'General' }); tempClientPhotos[idx].src = val.trim(); var img = document.getElementById('ce_photosList').children[idx].querySelector('img'); if (img && val) img.src = val; else if (img) img.style.opacity = '.3'; }
@@ -1974,7 +1933,7 @@
                 var m = ytRaw.match(/\/d\/([a-zA-Z0-9_-]+)/);
                 if (m) finalIframe = '<iframe src="https://drive.google.com/file/d/' + m[1] + '/preview" allow="autoplay; fullscreen" width="100%" height="100%" frameborder="0"></iframe>';
             } else if (ytRaw.includes('youtu.be/') || (ytRaw.includes('youtube.com/') && !ytRaw.includes('<iframe'))) {
-                var ytM = ytRaw.match(/(?:youtu\.be\/|v=|\/v\/|\/embed\/|watch\?v=)([^&?\s]+)/);
+                var ytM = ytRaw.match(/(?:youtu\.be\/|v=|\/v\/|\/embed\/)([^&?\s]+)/);
                 if (ytM) finalIframe = '<iframe src="https://www.youtube.com/embed/' + ytM[1] + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen width="100%" height="100%" frameborder="0"></iframe>';
             }
 
@@ -2119,39 +2078,41 @@
             toast('Fotolibro autollenado por orden numérico');
         }
 
-        /* ════ ADMIN: PORTAFOLIO PÚBLICO (V2.4 - SOPORTE DE VIDEO) ════ */
+        /* ════ ADMIN: PORTAFOLIO PÚBLICO (V2.2 - SOPORTE DE VIDEO) ════ */
         function renderAdmPortfolio(body) {
-            body.innerHTML = 
-                '<div style="margin-bottom:1.5rem;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)">' +
-                    '<label class="af-l" style="color:var(--accent)">Importar Portafolio desde Google Drive</label>' +
-                    '<p class="adm-hint">Pega el link de la carpeta principal. Las subcarpetas (ej. "Bodas", "15 Años") se usarán como <b>categorías</b> para mostrar los filtros en tu sitio web.</p>' +
-                    '<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">' +
-                        '<input class="af-i" id="port_driveFolderId" placeholder="URL o ID de la carpeta" style="margin-bottom:0;flex:1;min-width:200px;">' +
-                        '<button class="af-btn af-btn-p" style="margin:0" onclick="fetchDrivePortfolio()">Extraer Portafolio</button>' +
-                    '</div>' +
-                    '<div id="port_driveStatus" style="font-size:0.8rem; color:var(--accent); font-weight:500;"></div>' +
-                '</div>' +
-                '<div style="display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;">' +
-                    '<button class="adm-add-btn" style="margin-bottom:0;" onclick="addPortfolioImg()">+ Agregar Imagen</button>' +
-                    '<button class="adm-add-btn" style="margin-bottom:0;" onclick="addPortfolioVid()">+ Agregar Video</button>' +
-                '</div>' +
-                '<div id="admPortList"></div>';
+            body.innerHTML = `
+                <div style="margin-bottom:1.5rem;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)">
+                    <label class="af-l" style="color:var(--accent)">Importar Portafolio desde Google Drive</label>
+                    <p class="adm-hint">Pega el link de la carpeta principal. Las subcarpetas (ej. "Bodas", "15 Años") se usarán como <b>categorías</b> para mostrar los filtros en tu sitio web.</p>
+                    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+                        <input class="af-i" id="port_driveFolderId" placeholder="URL o ID de la carpeta" style="margin-bottom:0;flex:1;min-width:200px;">
+                        <button class="af-btn af-btn-p" style="margin:0" onclick="fetchDrivePortfolio()">Extraer Portafolio</button>
+                    </div>
+                    <div id="port_driveStatus" style="font-size:0.8rem; color:var(--accent); font-weight:500;"></div>
+                </div>
                 
+                <div style="display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;">
+                    <button class="adm-add-btn" style="margin-bottom:0;" onclick="addPortfolioImg()">+ Agregar Imagen</button>
+                    <button class="adm-add-btn" style="margin-bottom:0;" onclick="addPortfolioVid()">+ Agregar Video</button>
+                </div>
+                
+                <div id="admPortList"></div>
+            `;
             var list = document.getElementById('admPortList');
             var h = '';
             D.portfolio.forEach(function(item, i) { 
                 var isVid = item.type === 'video';
-                h += '<div class="adm-photo-item" style="flex-wrap:wrap;">' +
-                    '<img src="' + esc(item.src) + '" alt="" style="width:60px; height:60px;">';
+                h += '<div class="adm-photo-item" style="flex-wrap:wrap;">';
+                h += '<img src="' + esc(item.src) + '" alt="" style="width:60px; height:60px;">';
                 
                 if (isVid) {
                     h += '<input type="text" value="' + esc(item.videoUrl || '') + '" placeholder="Enlace del Video (YouTube o Drive)" onchange="updPortVid(' + i + ',this.value)" style="flex:1; min-width:150px; background:#f4ede4;">';
                 }
                 
-                h += '<input type="text" value="' + esc(item.src) + '" placeholder="URL de la ' + (isVid ? 'Miniatura' : 'Imagen') + '" onchange="updPortSrc(' + i + ',this.value)" style="flex:1; min-width:150px;">' +
-                    '<input type="text" value="' + esc(item.label) + '" placeholder="Categoría (Ej. Bodas)" onchange="updPortLabel(' + i + ',this.value)" style="flex:1; min-width:100px;">' +
-                    '<button type="button" onclick="delPortfolioImg(' + i + ')" title="Quitar">×</button>' +
-                '</div>';
+                h += '<input type="text" value="' + esc(item.src) + '" placeholder="URL de la ' + (isVid ? 'Miniatura' : 'Imagen') + '" onchange="updPortSrc(' + i + ',this.value)" style="flex:1; min-width:150px;">';
+                h += '<input type="text" value="' + esc(item.label) + '" placeholder="Categoría (Ej. Bodas)" onchange="updPortLabel(' + i + ',this.value)" style="flex:1; min-width:100px;">';
+                h += '<button type="button" onclick="delPortfolioImg(' + i + ')" title="Quitar">×</button>';
+                h += '</div>';
             });
             list.innerHTML = h;
         }
@@ -2169,11 +2130,11 @@
             try {
                 async function getAllFiles(fId, onlyImages) {
                     let all = []; let pToken = '';
-                    let q = "'" + fId + "' in parents and trashed=false";
+                    let q = `'${fId}' in parents and trashed=false`;
                     if (onlyImages) q += " and mimeType contains 'image/'";
                     do {
-                        let url = 'https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent(q) + '&fields=nextPageToken,files(id,name,mimeType)&key=' + apiKey + '&pageSize=1000';
-                        if (pToken) url += '&pageToken=' + pToken;
+                        let url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=nextPageToken,files(id,name,mimeType)&key=${apiKey}&pageSize=1000`;
+                        if (pToken) url += `&pageToken=${pToken}`;
                         let res = await fetch(url);
                         let data = await res.json();
                         if (data.error) throw new Error(data.error.message);
@@ -2194,15 +2155,15 @@
                 let newPhotos = [];
 
                 looseImages.forEach(img => {
-                    newPhotos.push({ src: 'https://lh3.googleusercontent.com/d/' + img.id + '=s800', label: 'General', type: 'image' });
+                    newPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s800`, label: 'General', type: 'image' });
                 });
 
                 for (let folder of folders) {
-                    status.textContent = 'Extrayendo categoría: ' + folder.name + '...';
+                    status.textContent = `Extrayendo categoría: ${folder.name}...`;
                     let subFiles = await getAllFiles(folder.id, true);
                     subFiles.sort((a, b) => collator.compare(a.name, b.name));
                     subFiles.forEach(img => {
-                        newPhotos.push({ src: 'https://lh3.googleusercontent.com/d/' + img.id + '=s800', label: folder.name, type: 'image' });
+                        newPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s800`, label: folder.name, type: 'image' });
                     });
                 }
 
@@ -2210,7 +2171,7 @@
                 saveData();
                 renderAdmBody();
                 renderPublic();
-                status.textContent = '¡Éxito! Se añadieron ' + newPhotos.length + ' fotos al portafolio.';
+                status.textContent = `¡Éxito! Se añadieron ${newPhotos.length} fotos al portafolio.`;
                 toast('Portafolio actualizado correctamente.');
 
             } catch(e) {
@@ -2241,8 +2202,7 @@
         /* ════ ADMIN: GENERAL ════ */
         function renderAdmSettings(body) {
             var s = D.settings;
-            body.innerHTML = 
-                '<h3 style="margin-bottom:1rem">Datos generales del sitio</h3>' +
+            body.innerHTML = '<h3 style="margin-bottom:1rem">Datos generales del sitio</h3>' +
                 '<div class="af-row"><div><label class="af-l">Teléfono</label><input class="af-i" id="se_phone" value="' + esc(s.phone) + '"></div><div><label class="af-l">Teléfono (solo números)</label><input class="af-i" id="se_phoneRaw" value="' + esc(s.phoneRaw) + '"></div></div>' +
                 '<label class="af-l">Dirección</label><input class="af-i" id="se_addr" value="' + esc(s.address) + '">' +
                 '<label class="af-l">Horario</label><input class="af-i" id="se_hours" value="' + esc(s.hours) + '">' +
@@ -2250,6 +2210,7 @@
                 '<label class="af-l">WhatsApp Number</label><input class="af-i" id="se_wa" value="' + esc(s.waNumber) + '">' +
                 '<label class="af-l">Texto del hero</label><textarea class="af-i af-ta" id="se_hero">' + esc(s.heroDesc) + '</textarea>' +
                 
+                /* ════ IMAGEN PRINCIPAL ════ */
                 '<label class="af-l">Imagen Principal (Inicio)</label>' +
                 '<div style="display:flex;gap:10px;margin-bottom:1rem;">' +
                     '<input class="af-i" id="se_heroImg" placeholder="Pega URL o usa el botón de lado ->" value="' + esc(s.heroImage || '') + '" style="margin-bottom:0;flex:1;">' +
