@@ -38,8 +38,9 @@
         .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(250, 250, 248, .9); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-bottom: 1px solid var(--border-light); height: var(--nav-h); transition: background .3s; }
         .nav.scrolled { background: rgba(250, 250, 248, .97); box-shadow: var(--shadow-sm); }
         .nav-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 1.2rem; display: flex; align-items: center; justify-content: space-between; height: 100%; }
-        .nav-logo { font-family: var(--fh); font-size: 1.2rem; font-weight: 600; text-decoration: none; letter-spacing: -.03em; white-space: nowrap; cursor: default; user-select: none; }
+        .nav-logo { font-family: var(--fh); font-size: 1.3rem; font-weight: 600; text-decoration: none; letter-spacing: -.03em; white-space: nowrap; cursor: default; user-select: none; display: flex; align-items: center; }
         .nav-logo span { color: var(--accent); }
+        .nav-logo img { max-height: 40px; width: auto; display: block; }
         .nav-links { display: flex; gap: 1.4rem; list-style: none; align-items: center; }
         .nav-links a { text-decoration: none; color: var(--text-muted); font-size: .85rem; font-weight: 450; transition: var(--tr); position: relative; padding-bottom: 3px; white-space: nowrap; }
         .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1.5px; background: var(--accent); transition: var(--tr); border-radius: 1px; }
@@ -56,15 +57,17 @@
         .mob-ov { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .4); z-index: 998; opacity: 0; transition: opacity .3s; will-change: opacity; }
         .mob-ov.active { display: block; opacity: 1; }
         
+        /* Ajuste elegante y centrado */
         .section { padding: 5rem 1.2rem; max-width: var(--max-w); margin: 0 auto; }
-        .section-label { font-size: .75rem; text-transform: uppercase; letter-spacing: .13em; color: var(--accent); margin-bottom: .8rem; font-weight: 500; }
-        .section-desc { color: var(--text-muted); font-size: 1rem; max-width: 600px; line-height: 1.7; }
+        .section-label, .section h2, .section-desc { text-align: center; margin-left: auto; margin-right: auto; }
+        .section-label { font-size: .75rem; text-transform: uppercase; letter-spacing: .13em; color: var(--accent); margin-bottom: .8rem; font-weight: 500; display: block; }
+        .section-desc { color: var(--text-muted); font-size: 1rem; max-width: 600px; line-height: 1.7; margin-bottom: 2rem; }
         
         .hero { min-height: 100vh; display: flex; align-items: center; padding-top: var(--nav-h); background: var(--surface); }
         .hero-inner { max-width: var(--max-w); margin: 0 auto; padding: 2rem 1.2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: center; width: 100%; }
-        .hero-content .section-label { animation: fadeUp .8s ease forwards; }
+        .hero-content .section-label { animation: fadeUp .8s ease forwards; text-align: left; margin-left: 0; }
         .hero-content h1 { animation: fadeUp .8s .15s ease forwards; opacity: 0; animation-fill-mode: forwards; }
-        .hero-desc { color: var(--text-muted); font-size: 1rem; line-height: 1.7; margin: 1rem 0 1.5rem; animation: fadeUp .8s .3s ease forwards; opacity: 0; animation-fill-mode: forwards; }
+        .hero-desc { color: var(--text-muted); font-size: 1rem; line-height: 1.7; margin: 1rem 0 1.5rem; animation: fadeUp .8s .3s ease forwards; opacity: 0; animation-fill-mode: forwards; text-align: left; margin-left: 0; }
         .hero-buttons { display: flex; gap: .8rem; flex-wrap: wrap; animation: fadeUp .8s .45s ease forwards; opacity: 0; animation-fill-mode: forwards; }
         .hero-visual { position: relative; animation: fadeIn 1s .3s ease forwards; opacity: 0; animation-fill-mode: forwards; }
         .hero-img-main { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); }
@@ -80,40 +83,42 @@
         .btn-outline:active { border-color: var(--text); background: var(--text); color: #fff; }
         .btn-accent { background: var(--accent); color: #fff; }
         .btn-accent:active { background: var(--accent-hover); transform: scale(.97); }
-        .btn-sm { padding: .45rem 1rem; font-size: .78rem; min-height: 44px; /* Mejorado para touch */ }
+        .btn-sm { padding: .45rem 1rem; font-size: .78rem; min-height: 44px; }
         
         /* FILTROS PORTAFOLIO */
-        .port-filters { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.8rem; margin-top: 1.5rem; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .port-filters { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.8rem; margin-top: 1.5rem; justify-content: center; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
         .port-filters::-webkit-scrollbar { display: none; }
         .port-filter-btn { padding: 0.4rem 1.2rem; border-radius: 50px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-family: var(--fb); font-size: 0.85rem; font-weight: 500; cursor: pointer; white-space: nowrap; transition: var(--tr); min-height: 44px; touch-action: manipulation;}
         .port-filter-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
 
-        .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; margin-top: 1rem; align-items: start;}
+        .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; margin-top: 1rem; align-items: start; text-align: left; }
         .portfolio-item { position: relative; overflow: hidden; border-radius: var(--radius); cursor: pointer; background: #eae7e2; }
         .portfolio-item img { width: 100%; height: auto; object-fit: cover; transition: transform .5s; pointer-events: none; display:block; aspect-ratio: 4/5; }
         .portfolio-item:hover img { transform: scale(1.03); }
         .portfolio-item .il { position: absolute; bottom: .8rem; left: .8rem; color: #fff; font-family: var(--fh); font-size: .85rem; z-index: 2; opacity: .9; font-weight: 500; text-shadow: 0 1px 3px rgba(0, 0, 0, .5); }
-        .play-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.6); width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 2; pointer-events: none; transition: .3s; }
-        .play-overlay svg { width: 20px; height: 20px; fill: #fff; margin-left: 4px; }
-        .portfolio-item:hover .play-overlay { background: var(--accent); }
+        
+        /* VIDEOS DE MUESTRA */
+        .video-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 2rem; }
+        .video-item { position: relative; width: 100%; padding-bottom: 56.25%; border-radius: var(--radius-lg); overflow: hidden; background: #000; box-shadow: var(--shadow-md); }
+        .video-item iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
         .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-top: 2rem; }
         .service-card { background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.8rem 1.2rem; text-align: center; transition: .2s; }
         .service-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
         .service-icon { font-size: 2rem; margin-bottom: .8rem; display: block; }
-        .service-card p { color: var(--text-muted); font-size: .88rem; line-height: 1.5; }
+        .service-card p { color: var(--text-muted); font-size: .88rem; line-height: 1.5; margin-bottom: 0; }
         .service-price { display: inline-block; margin-top: .8rem; font-family: var(--fh); font-size: 1.1rem; font-weight: 600; color: var(--accent); }
         .service-features { list-style: none; margin-top: .8rem; text-align: left; padding: 0; }
         .service-features li { font-size: .82rem; color: var(--text-muted); padding: .25rem 0; display: flex; align-items: center; gap: .4rem; }
         .service-features li::before { content: '✓'; color: var(--accent); font-weight: 700; font-size: .75rem; flex-shrink: 0; }
         
-        .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-top: 2rem; }
+        .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-top: 2rem; text-align: left; }
         .testimonial-card { background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem 1.2rem; }
         .testimonial-text { font-style: italic; color: var(--text-muted); margin-bottom: 1rem; font-size: .88rem; line-height: 1.5; }
         .stars { color: #d4a853; letter-spacing: 2px; margin-bottom: .3rem; font-size: .9rem; }
         .testimonial-author { font-weight: 600; font-size: .85rem; }
         
-        .contact-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; margin-top: 2rem; align-items: start; }
+        .contact-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; margin-top: 2rem; align-items: start; text-align: left; }
         .contact-detail { display: flex; align-items: center; gap: .6rem; margin-bottom: .9rem; color: var(--text-muted); font-size: .9rem; flex-wrap: wrap; }
         .contact-detail .icon { width: 36px; height: 36px; background: var(--accent-subtle); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
         .contact-form input, .contact-form textarea, .contact-form select { padding: .85rem 1rem; border: 1.5px solid var(--border); border-radius: var(--radius); font-family: var(--fb); font-size: .9rem; background: var(--surface); width: 100%; margin-bottom: .8rem; transition: .2s; color: var(--text); -webkit-appearance: none; appearance: none; min-height: 44px; }
@@ -161,7 +166,7 @@
             background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.2);
             padding: 0.6rem 1.2rem; border-radius: 50px; cursor: pointer; backdrop-filter: blur(8px);
             font-family: var(--fb); font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; transition: 0.3s;
-            pointer-events: auto; min-height: 44px; /* Touch target */
+            pointer-events: auto; min-height: 44px;
         }
         .btn-regresar-fijo:hover { background: rgba(0,0,0,0.9); border-color: var(--c-accent); color: var(--c-accent); }
 
@@ -171,10 +176,10 @@
         .access-card-icon { font-size: 2.2rem; flex-shrink: 0; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; background: var(--c-surface2); border-radius: var(--radius); }
         .access-card-info { flex: 1; min-width: 0; }
         .access-card-info h3 { font-size: 1.05rem; margin-bottom: .2rem; font-family: var(--fh); }
-        .access-card-info p { color: var(--c-muted); font-size: .82rem; }
+        .access-card-info p { color: var(--c-muted); font-size: .82rem; margin-bottom: 0; }
         .access-card .btn { flex-shrink: 0; }
 
-        /* VISTA GALERÍA: GRID INTELIGENTE */
+        /* VISTA GALERÍA */
         #cpGalleryView { padding: 0; background: var(--c-bg); position: relative; }
         .px-header { position: relative; width: 100%; height: 60vh; min-height: 400px; background-size: cover; background-position: center; background-repeat: no-repeat; display: flex; align-items: center; justify-content: center; text-align: center; color: #fff; }
         .px-header::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%); }
@@ -195,14 +200,7 @@
         .px-set-section { margin-bottom: 4rem; scroll-margin-top: 90px; }
         .px-set-title { font-family: var(--fh); font-size: 2.2rem; text-align: center; margin-bottom: 2rem; font-weight: 400; color: var(--c-text); letter-spacing: 1px; }
         
-        /* ════ LA MAGIA DEL ACOMODO V2.0 ════ */
-        .px-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            grid-auto-rows: 200px; 
-            grid-auto-flow: dense; 
-            gap: 12px; 
-        }
+        .px-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); grid-auto-rows: 200px; grid-auto-flow: dense; gap: 12px; }
         .pc { position: relative; border-radius: 4px; overflow: hidden; background: var(--c-surface2); cursor: pointer; }
         .pc.vertical { grid-row: span 2; }
         .pc.horizontal { grid-row: span 1; }
@@ -224,7 +222,6 @@
         .gallery-print-mode .pc .dlb { display: none !important; }
         .gallery-print-mode .pc:hover img { transform: none; filter: brightness(0.85); }
         
-        /* Uso de safe-area-inset para iOS/Android modernos */
         .fab-print { position: fixed; bottom: max(2rem, env(safe-area-inset-bottom, 2rem)); right: 2rem; z-index: 150; background: var(--c-accent); color: #fff; border: none; border-radius: 50px; padding: 0.8rem 1.5rem; display: flex; align-items: center; gap: 0.6rem; box-shadow: 0 6px 20px rgba(0,0,0,0.5); cursor: pointer; font-family: var(--fb); font-size: 0.9rem; font-weight: 500; transition: transform 0.2s, background 0.2s; min-height: 48px; }
         .fab-print:hover { transform: scale(1.05); background: var(--c-accent-hover); }
         .fab-print svg { width: 20px; height: 20px; fill: #fff; }
@@ -297,16 +294,16 @@
         /* ═══ ADMIN PANEL ═══ */
         .adm-ov { position: fixed; inset: 0; z-index: 4000; background: rgba(0, 0, 0, .7); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; padding: .5rem; }
         .adm-ov.active { display: flex; }
-        .adm-box { background: var(--surface); width: 100%; max-width: 900px; max-height: 92vh; border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 32px 80px rgba(0, 0, 0, .3); }
+        .adm-box { background: var(--surface); width: 100%; max-width: 900px; max-height: 92vh; border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 32px 80px rgba(0, 0, 0, .3); text-align: left; }
         .adm-hdr { padding: 1rem 1.2rem; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-        .adm-hdr h2 { font-size: 1.15rem; font-family: var(--fh); }
+        .adm-hdr h2 { font-size: 1.15rem; font-family: var(--fh); margin: 0; }
         .adm-x { background: none; border: none; font-size: 1.6rem; cursor: pointer; color: var(--text-muted); padding: .3rem .6rem; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
         .adm-tabs { display: flex; overflow-x: auto; border-bottom: 1px solid var(--border-light); flex-shrink: 0; -webkit-overflow-scrolling: touch; }
         .adm-tabs button { padding: .7rem 1rem; border: none; background: none; font-size: .82rem; cursor: pointer; white-space: nowrap; border-bottom: 2.5px solid transparent; color: var(--text-muted); font-family: var(--fb); font-weight: 500; transition: .2s; min-height: 44px; }
         .adm-tabs button.active { border-bottom-color: var(--accent); color: var(--accent); font-weight: 600; }
         .adm-body { padding: 1.2rem; overflow-y: auto; flex: 1; }
         .adm-empty { text-align: center; padding: 2rem; color: var(--text-light); font-size: .9rem; }
-        .af-l { display: block; font-size: .8rem; font-weight: 600; margin-bottom: .3rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+        .af-l { display: block; font-size: .8rem; font-weight: 600; margin-bottom: .3rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; text-align: left; }
         .af-i { width: 100%; padding: .65rem .8rem; border: 1.5px solid var(--border); border-radius: var(--radius); font-size: .88rem; font-family: var(--fb); margin-bottom: .8rem; color: var(--text); -webkit-appearance: none; transition: .2s; min-height: 44px; }
         .af-i:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(184, 147, 90, .1); }
         .af-ta { min-height: 90px; resize: vertical; line-height: 1.5; }
@@ -330,7 +327,7 @@
         .af-btn-d:hover { background: #fdd; }
         .adm-add-btn { display: inline-flex; align-items: center; gap: .3rem; background: none; border: 1.5px dashed var(--border); color: var(--text-muted); border-radius: var(--radius); padding: .6rem 1.2rem; font-size: .85rem; cursor: pointer; font-family: var(--fb); margin-bottom: 1rem; transition: .2s; min-height: 44px; }
         .adm-add-btn:hover { border-color: var(--accent); color: var(--accent); }
-        .adm-hint { font-size: .78rem; color: var(--text-light); line-height: 1.5; margin-bottom: .8rem; }
+        .adm-hint { font-size: .78rem; color: var(--text-light); line-height: 1.5; margin-bottom: .8rem; text-align: left; }
         
         .toggle-row { display: flex; align-items: center; gap: .7rem; margin-bottom: .7rem; padding: .5rem 0; }
         .toggle-row label { font-size: .85rem; color: var(--text); cursor: pointer; display: flex; align-items: center; gap: .5rem; }
@@ -359,12 +356,14 @@
         .pb-slot .rm-slot { position: absolute; top: 3px; right: 3px; background: rgba(192, 57, 43, .1); color: #c0392b; border: 1px solid rgba(192, 57, 43, .2); border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; }
         .pb-slot .rm-slot:hover { background: #c0392b; color: #fff; }
 
-        /* ═══ FOTOLIBRO AISLADO (Prefijos pb-) ═══ */
+        /* ═══ FOTOLIBRO AISLADO ═══ */
         #cpPhotobookView { position: fixed; inset: 0; background: #060608; z-index: 9999; display: none; flex-direction: column; overflow: hidden; }
         .pb-wrapper { display: flex; flex-direction: column; justify-content: center; align-items: center; perspective: 3500px; width: 100%; position: relative; z-index: 2; flex: 1 1 auto; min-height: 0; padding-bottom: 20px; }
         .pb-ambient { position: absolute; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%); filter: blur(60px); pointer-events: none; transition: opacity 0.8s; z-index: -1; }
-        .pb-book { width: min(100%, 420px); max-width: 90vw; aspect-ratio: 1 / 1; position: relative; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); filter: drop-shadow(0 30px 60px rgba(0,0,0,0.7)) drop-shadow(0 5px 15px rgba(0,0,0,0.5)); touch-action: none; cursor: pointer; margin-top: 2rem; z-index: 10; }
-        .pb-paper { position: absolute; width: 100%; height: 100%; top: 0; left: 0; transform-style: preserve-3d; transform-origin: left center; transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); border-radius: 2px 5px 5px 2px; cursor: pointer; }
+        /* Animaciones más fluidas */
+        .pb-book { width: min(100%, 420px); max-width: 90vw; aspect-ratio: 1 / 1; position: relative; transform-style: preserve-3d; transition: transform 1.2s cubic-bezier(0.2, 0.9, 0.3, 1); filter: drop-shadow(0 30px 60px rgba(0,0,0,0.7)) drop-shadow(0 5px 15px rgba(0,0,0,0.5)); touch-action: none; cursor: pointer; margin-top: 2rem; z-index: 10; }
+        .pb-paper { position: absolute; width: 100%; height: 100%; top: 0; left: 0; transform-style: preserve-3d; transform-origin: left center; transition: transform 1.2s cubic-bezier(0.2, 0.9, 0.3, 1); border-radius: 2px 5px 5px 2px; cursor: pointer; }
+        
         .pb-front, .pb-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; background: #0a0a0e; overflow: hidden; border-radius: 2px 5px 5px 2px; }
         .pb-back { transform: rotateY(180deg); border-radius: 5px 2px 2px 5px; }
         .pb-img-fit { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -403,9 +402,11 @@
         .pb-landscape-arrow.pb-arrow-left { left: 10px; }
         .pb-landscape-arrow.pb-arrow-right { right: 10px; }
         
-        .pb-rotate-hint { position: fixed; top: 60px; left: 50%; transform: translateX(-50%) translateY(-20px); background: rgba(17,17,17,0.92); border: 1px solid rgba(201,168,76,0.2); padding: 10px 20px; border-radius: 30px; display: none; align-items: center; gap: 10px; z-index: 110; font-size: 0.75rem; color: var(--c-muted); backdrop-filter: blur(16px); opacity: 0; transition: opacity 0.5s, transform 0.5s; pointer-events: none; white-space: nowrap; }
-        .pb-rotate-hint.visible { display: flex; opacity: 1; transform: translateX(-50%) translateY(0); }
-        .pb-rotate-hint svg { width: 20px; height: 20px; fill: none; stroke: var(--c-accent); stroke-width: 1.5; stroke-linecap: round; animation: rotateHintAnim 2s ease-in-out infinite; }
+        /* Overlay Rotate */
+        .pb-rotate-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200000; display: none; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; padding: 2rem; backdrop-filter: blur(10px); }
+        .pb-rotate-overlay.active { display: flex; animation: fadeIn 0.5s ease; }
+        .pb-rotate-icon { width: 64px; height: 64px; margin-bottom: 1rem; animation: rotatePhone 2s ease-in-out infinite; }
+        @keyframes rotatePhone { 0% { transform: rotate(0deg); } 50% { transform: rotate(-90deg); } 100% { transform: rotate(-90deg); } }
 
         /* Fullscreen overrides */
         body.fullscreen-mode { background: #060608; overflow: hidden; }
@@ -424,9 +425,11 @@
 
         /* RESPONSIVE GENERAL */
         @media(max-width:1024px) {
-            .hero-inner { grid-template-columns: 1fr; gap: 2rem; text-align: center; }
-            .hero-visual { order: -1; max-width: 400px; margin: 0 auto; }
+            .hero-content { text-align: center; align-items: center; }
+            .hero-desc { margin-left: auto; margin-right: auto; }
             .hero-buttons { justify-content: center; }
+            .hero-inner { grid-template-columns: 1fr; gap: 2rem; }
+            .hero-visual { order: -1; max-width: 400px; margin: 0 auto; }
             .services-grid, .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
             .contact-wrapper { grid-template-columns: 1fr; gap: 2rem; }
             .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
@@ -441,7 +444,9 @@
             .section { padding: 4rem 1.2rem; }
             .hero-inner { padding: 3rem 1.2rem 1.5rem; }
             .portfolio-grid { grid-template-columns: repeat(2, 1fr); gap: .5rem; }
+            .video-grid { grid-template-columns: 1fr; }
             .services-grid, .testimonials-grid { grid-template-columns: 1fr; gap: .8rem; }
+            .port-filters { justify-content: flex-start; }
             
             .cp-sec { padding: 1.5rem .8rem; }
             .access-card { flex-direction: column; text-align: center; gap: .8rem; }
@@ -464,7 +469,6 @@
             #cpVideoView { padding-top: 60px; }
             .vid-sec { padding: 1rem; }
 
-            /* Grid Móvil Ajustado */
             .px-grid { grid-template-columns: repeat(2, 1fr) !important; grid-auto-rows: 130px !important; gap: 8px !important; display: grid !important; }
             .pc { margin-bottom: 0 !important; display: block; }
         }
@@ -501,6 +505,7 @@
             <a class="nav-logo" id="logoBtn">Foto<span>&</span>Video Montenegro</a>
             <ul class="nav-links" id="navLinks">
                 <li><a href="#portafolio" onclick="navTo('portafolio', event)">Portafolio</a></li>
+                <li><a href="#videos" onclick="navTo('videos', event)">Videos</a></li>
                 <li><a href="#servicios" onclick="navTo('servicios', event)">Servicios</a></li>
                 <li><a href="#testimonios" onclick="navTo('testimonios', event)">Testimonios</a></li>
                 <li><a href="#contacto" onclick="navTo('contacto', event)">Contacto</a></li>
@@ -526,13 +531,21 @@
         <section class="section" id="portafolio">
             <p class="section-label">Portafolio</p>
             <h2>Trabajos recientes</h2>
-            <p class="section-desc">Una muestra de nuestro trabajo en eventos, retratos y producciones.</p>
+            <p class="section-desc">Una muestra de nuestro trabajo en eventos y retratos.</p>
             
             <div id="portFilters" class="port-filters"></div>
             <div class="portfolio-grid" id="portGrid"></div>
             <!-- Contenedor para el botón "Ver más" -->
             <div id="portMoreBtn" style="text-align: center; margin-top: 2rem;"></div>
         </section>
+        
+        <section class="section" id="videos" style="display:none; background: #0a0a0a; color: #fff;">
+            <p class="section-label" style="color:var(--accent)">Videografía</p>
+            <h2>Videos de muestra</h2>
+            <p class="section-desc" style="color:#aaa;">Explora algunas de nuestras producciones en video.</p>
+            <div class="video-grid" id="vidGridPublic"></div>
+        </section>
+
         <section class="section" id="servicios">
             <p class="section-label">Servicios</p>
             <h2>Paquetes y precios</h2>
@@ -659,6 +672,13 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
                 </button>
             </div>
+
+            <!-- Overlay Gira tu dispositivo -->
+            <div class="pb-rotate-overlay" id="pb-rotate-overlay">
+                <svg class="pb-rotate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                <h3 style="font-family:var(--fh); font-size:1.5rem; margin-bottom:0.5rem">Gira tu dispositivo</h3>
+                <p style="font-size:0.9rem; color:var(--c-muted); max-width: 300px;">Para una mejor visualización en pantalla completa, coloca tu dispositivo en posición horizontal.</p>
+            </div>
         </div>
 
         <footer class="cp-ft" id="cp-ft-main">
@@ -706,7 +726,7 @@
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
-                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.5rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.2</span></h2>
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.5rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.3</span></h2>
                 <button class="adm-x" onclick="closeAdm()">×</button>
             </div>
             <div class="adm-tabs" id="admTabs">
@@ -752,7 +772,8 @@
                     waNumber: '527296990786',
                     heroDesc: 'Desde Capulhuac de Mirafuentes, ofrecemos servicios de fotografía y video con calidad profesional. Bodas, eventos sociales, retratos, producción corporativa e impresión digital de alta calidad.',
                     driveApiKey: '',
-                    heroImage: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&h=800&fit=crop&auto=format'
+                    heroImage: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&h=800&fit=crop&auto=format',
+                    logoImage: ''
                 },
                 printPrices: [
                     { size: '10x15', label: '10 x 15 cm', measure: '10 x 15 cm', price: 10 },
@@ -768,8 +789,12 @@
                 ],
                 portfolio: [
                     { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=500&h=650&fit=crop&auto=format', label: 'Bodas', type: 'image' },
-                    { src: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=500&h=650&fit=crop&auto=format', label: 'Corporativo', type: 'image' },
-                    { src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=650&fit=crop&auto=format', label: 'Retratos', type: 'image' }
+                    { src: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=500&h=650&fit=crop&auto=format', label: 'Bodas', type: 'image' },
+                    { src: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=500&h=650&fit=crop&auto=format', label: 'XV Años', type: 'image' },
+                    { src: 'https://images.unsplash.com/photo-1518599904199-0ca897819ddb?w=500&h=650&fit=crop&auto=format', label: 'XV Años', type: 'image' },
+                    { src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=650&fit=crop&auto=format', label: 'Infantil', type: 'image' },
+                    { src: 'https://images.unsplash.com/photo-1519238263530-99ad15516ea0?w=500&h=650&fit=crop&auto=format', label: 'Infantil', type: 'image' },
+                    { src: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&h=650&fit=crop&auto=format', label: 'Video Demo', type: 'video', videoUrl: 'https://www.youtube.com/watch?v=ScMzIvxBSi4' }
                 ],
                 testimonials: [
                     { text: '"Excelente trabajo. Excelente servicio. Muy recomendado para cualquier evento."', author: 'Yessica Santana' }
@@ -872,7 +897,7 @@
         var isPrintMode = false;
         var draggedPhotoIdx = -1; 
         
-        window.portfolioLimit = 6; // Límite de items a mostrar inicialmente en el portafolio
+        window.portfolioLimit = 6; 
 
         function pSrc(p, s) { s = s || 800; if (p.driveId) return 'https://lh3.googleusercontent.com/d/' + p.driveId + '=s' + s; return (p.src || '').replace(/w=\d+/, 'w=' + s); }
         function pDl(p) { if (p.driveId) return 'https://drive.google.com/uc?export=download&id=' + p.driveId; return (p.src || '').replace('w=800', 'w=1600'); }
@@ -885,20 +910,18 @@
         function toDisplayDate(ms) { if (!ms) return ''; let d = new Date(ms); let m = ('0' + (d.getMonth() + 1)).slice(-2); let day = ('0' + d.getDate()).slice(-2); return `${day}/${m}/${d.getFullYear()}`; }
         function addOneYear() { let el = document.getElementById('ce_expire'); if(!el.value) return; let d = new Date(el.value + 'T12:00:00'); d.setFullYear(d.getFullYear() + 1); el.value = toDateInput(d.getTime()); }
 
-        /* Convertir links a Embed (V2.2) */
         function getEmbedUrl(url) {
             if (!url) return '';
             if (url.includes('drive.google.com/file/d/')) {
                 var m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
                 if (m) return 'https://drive.google.com/file/d/' + m[1] + '/preview';
-            } else if (url.includes('youtu.be/') || (url.includes('youtube.com/'))) {
+            } else if (url.includes('youtu.be/') || (url.includes('youtube.com/') && !url.includes('<iframe'))) {
                 var ytM = url.match(/(?:youtu\.be\/|v=|\/v\/|\/embed\/)([^&?\s]+)/);
                 if (ytM) return 'https://www.youtube.com/embed/' + ytM[1];
             }
             return url;
         }
 
-        /* ══════ FUNCIÓN DE CARGA GENERAL (BASE64) V2.1 ══════ */
         function uploadGeneralImg(input, targetId) {
             var file = input.files[0]; if (!file) return; var reader = new FileReader();
             reader.onload = function(e) { 
@@ -914,7 +937,6 @@
             reader.readAsDataURL(file); input.value = '';
         }
 
-        /* ══════ GESTIÓN DE URL Y BOTON ATRÁS (POPSTATE) ══════ */
         function pushUrlState(client, view) {
             var cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
             if (!client) {
@@ -942,7 +964,6 @@
             }
         }
 
-        /* ══════ DESCARGA DIRECTA FORZADA ══════ */
         function downloadPhoto(src, name, e) {
             if(e) { e.preventDefault(); e.stopPropagation(); }
             var dId = null;
@@ -969,19 +990,27 @@
             }
         }
 
-        /* ══════ RENDERIZADO PÚBLICO Y FILTROS MÓVILES ══════ */
         function renderPublic() {
             var s = D.settings;
             document.getElementById('heroDesc').textContent = s.heroDesc; document.getElementById('ftAddr').textContent = s.address;
+            
+            var logoBtn = document.getElementById('logoBtn');
+            if (s.logoImage) {
+                logoBtn.innerHTML = '<img src="' + esc(s.logoImage) + '" alt="Logotipo">';
+            } else {
+                logoBtn.innerHTML = 'Foto<span>&</span>Video Montenegro';
+            }
             
             if (document.getElementById('heroImgMain')) {
                 document.getElementById('heroImgMain').src = s.heroImage || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&h=800&fit=crop&auto=format';
             }
             
+            var photosOnly = D.portfolio.filter(function(p) { return p.type !== 'video'; });
+            var videosOnly = D.portfolio.filter(function(p) { return p.type === 'video'; });
+
             var pf = document.getElementById('portFilters'); 
-            
             var labels = ['Todos'];
-            D.portfolio.forEach(function(img) { var l = img.label || 'General'; if (!labels.includes(l)) labels.push(l); });
+            photosOnly.forEach(function(img) { var l = img.label || 'General'; if (!labels.includes(l)) labels.push(l); });
             
             window.currentPortFilter = window.currentPortFilter || 'Todos';
             if (!labels.includes(window.currentPortFilter)) window.currentPortFilter = 'Todos';
@@ -994,7 +1023,18 @@
                 });
             }
             pf.innerHTML = pfHtml;
-            filterPortfolio(window.currentPortFilter); // Llamamos con el límite por defecto
+            filterPortfolio(window.currentPortFilter); 
+
+            var vg = document.getElementById('vidGridPublic');
+            var vgHtml = '';
+            videosOnly.forEach(function(vid) {
+                var embedUrl = getEmbedUrl(vid.videoUrl);
+                if(embedUrl) {
+                    vgHtml += '<div class="video-item"><iframe src="' + embedUrl + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>';
+                }
+            });
+            vg.innerHTML = vgHtml;
+            document.getElementById('videos').style.display = vgHtml ? 'block' : 'none';
 
             var sg = document.getElementById('servGrid');
             var sgHtml = '';
@@ -1016,7 +1056,7 @@
                 '<div class="contact-detail"><span class="icon">📞</span> <a href="tel:' + s.phoneRaw + '" style="color:var(--text-muted);text-decoration:none">' + esc(s.phone) + '</a></div>' +
                 '<div class="contact-detail"><span class="icon">📍</span> ' + esc(s.address) + '</div>' +
                 '<div class="contact-detail"><span class="icon">🕒</span> ' + esc(s.hours) + '</div>' +
-                '<div class="contact-detail"><span class="icon">🔗</span> <a href="' + esc(s.facebook) + '" target="_blank" rel="noopener" style="color:var(--accent)">facebook.com</a></div>' +
+                '<div class="contact-detail"><span class="icon">🔗</span> <a href="' + esc(s.facebook) + '" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">facebook.com</a></div>' +
                 '<div class="map-container"><iframe src="' + esc(s.mapEmbed) + '" title="Ubicación" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>';
             
             var sel = document.getElementById('servSelect'); 
@@ -1035,42 +1075,48 @@
             document.getElementById('cpWaLink').href = 'https://wa.me/' + s.waNumber; document.getElementById('cpWaLink').textContent = s.phone;
         }
 
-        /* ══════ PORTAFOLIO COMPACTO Y VIDEO (V2.2) ══════ */
+        /* ══════ OPTIMIZACIÓN: DocumentFragment en Portafolio ══════ */
         function filterPortfolio(filter, showAll = false) {
             window.currentPortFilter = filter;
             var grid = document.getElementById('portGrid'); grid.innerHTML = '';
             
-            var filtered = D.portfolio.filter(function(item) {
-                var l = item.label || 'General';
-                return filter === 'Todos' || l === filter;
-            });
+            var photosOnly = D.portfolio.filter(function(p) { return p.type !== 'video'; });
+            var filtered = [];
+            
+            if (filter === 'Todos' && !showAll) {
+                var countMap = {};
+                photosOnly.forEach(function(item) {
+                    var l = item.label || 'General';
+                    if (!countMap[l]) countMap[l] = 0;
+                    if (countMap[l] < 2) {
+                        filtered.push(item);
+                        countMap[l]++;
+                    }
+                });
+            } else {
+                filtered = photosOnly.filter(function(item) {
+                    var l = item.label || 'General';
+                    return filter === 'Todos' || l === filter;
+                });
+            }
 
-            var limit = showAll ? filtered.length : window.portfolioLimit;
+            var limit = showAll ? filtered.length : (filter === 'Todos' ? filtered.length : window.portfolioLimit);
             var toShow = filtered.slice(0, limit);
+            var frag = document.createDocumentFragment();
 
             toShow.forEach(function(item) {
                 var d = document.createElement('div'); d.className = 'portfolio-item';
-                var isVid = item.type === 'video';
-                var playIcon = isVid ? '<div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>' : '';
-                
-                d.innerHTML = '<img src="' + esc(item.src) + '" alt="' + esc(item.label || '') + '" loading="lazy">' + playIcon + '<span class="il">' + esc(item.label || '') + '</span>';
+                d.innerHTML = '<img src="' + esc(item.src) + '" alt="' + esc(item.label || '') + '" loading="lazy"><span class="il">' + esc(item.label || '') + '</span>';
                 
                 d.addEventListener('click', function() { 
                     isPublicPortfolioView = true;
-                    // Abrimos para visualización
-                    portalPhotos = [{ 
-                        src: item.src.replace(/s\d+/, 's1600').replace(/w=\d+/, 'w=1600'), 
-                        name: item.label || '',
-                        type: item.type || 'image',
-                        videoUrl: item.videoUrl || ''
-                    }];
-                    lbIdx = 0;
-                    showLB();
+                    portalPhotos = [{ src: pFull(item), name: item.label || '', type: item.type || 'image', videoUrl: item.videoUrl || '' }];
+                    lbIdx = 0; showLB();
                 });
-                grid.appendChild(d);
+                frag.appendChild(d);
             });
+            grid.appendChild(frag);
 
-            // Botón Ver Más
             var btnContainer = document.getElementById('portMoreBtn');
             if (!btnContainer) {
                 btnContainer = document.createElement('div');
@@ -1080,14 +1126,16 @@
                 grid.parentNode.insertBefore(btnContainer, grid.nextSibling);
             }
             
-            if (filtered.length > limit) {
+            if (filter === 'Todos' && !showAll && photosOnly.length > filtered.length) {
+                btnContainer.innerHTML = '<button class="btn btn-outline" onclick="filterPortfolio(\'Todos\', true)">Ver portafolio completo</button>';
+            } 
+            else if (filter !== 'Todos' && !showAll && filtered.length > limit) {
                 btnContainer.innerHTML = '<button class="btn btn-outline" onclick="filterPortfolio(\'' + esc(filter) + '\', true)">Ver más de ' + esc(filter) + ' (' + (filtered.length - limit) + ' restantes)</button>';
             } else {
                 btnContainer.innerHTML = '';
             }
         }
 
-        /* ══════ NAVEGACIÓN OPTIMIZADA ══════ */
         function navTo(id, e) {
             if(e) e.preventDefault();
             closeMenu();
@@ -1118,7 +1166,6 @@
             }
         }, { passive: true });
 
-        /* ══════ LOGO 3 CLICKS → ADMIN ══════ */
         document.getElementById('logoBtn').addEventListener('click', function(e) {
             e.preventDefault(); logoClicks++; clearTimeout(logoTimer); logoTimer = setTimeout(function() { logoClicks = 0; }, 800);
             if (logoClicks >= 3) { logoClicks = 0; openAdmLogin(); }
@@ -1140,7 +1187,6 @@
         }
         document.getElementById('admPassIn').addEventListener('keydown', function(e) { if (e.key === 'Enter') doAdmLogin(); });
 
-        /* ══════ LOGIN CLIENTE ══════ */
         function openLogin() { document.getElementById('codeIn').value = ''; document.getElementById('loginErr').classList.remove('show'); document.getElementById('loginModal').classList.add('active'); document.body.style.overflow = 'hidden'; setTimeout(function() { document.getElementById('codeIn').focus(); }, 100); }
         function closeLogin() { document.getElementById('loginModal').classList.remove('active'); document.body.style.overflow = ''; }
         function doLogin() {
@@ -1150,7 +1196,6 @@
         }
         document.getElementById('codeIn').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
 
-        /* ══════ PORTAL CLIENTE Y AUTO-ROUTING ══════ */
         function getActiveItemsCount(c) {
             var count = 0;
             if (c.hasVideo && c.video && c.video.youtubeId) count++;
@@ -1268,7 +1313,6 @@
             cards.innerHTML = cardsHtml;
         }
 
-        /* ══════ VISTAS ESPECÍFICAS Y BOTONES "REGRESAR" ══════ */
         function openVideoView() {
             var c = D.clients[curClient];
             document.getElementById('cpMainView').style.display = 'none'; document.getElementById('cpVideoView').style.display = 'block';
@@ -1289,7 +1333,7 @@
         }
         function closeVideoView() { document.getElementById('vidWrap').innerHTML = ''; document.getElementById('cpVideoView').style.display = 'none'; showMainView(); }
 
-        /* ══════ GALERÍA ESTILO PIXIESET Y MODO IMPRESIÓN ══════ */
+        /* ══════ OPTIMIZACIÓN: Render Pixieset Gallery Batching ══════ */
         function openGalleryView() {
             var c = D.clients[curClient];
             document.getElementById('cpHdrMain').style.display = 'none'; 
@@ -1297,7 +1341,6 @@
             document.getElementById('cpPhotobookView').style.display = 'none'; document.getElementById('cpGalleryView').style.display = 'block';
             
             portalPhotos = c.photos || [];
-            
             var coverImg = c.galleryCover ? c.galleryCover : (portalPhotos.length > 0 ? pSrc(portalPhotos[0], 1600) : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&fit=crop');
             
             if (coverImg.includes('/d/')) {
@@ -1372,13 +1415,15 @@
 
             var navInner = document.getElementById('pxNavInner');
             var content = document.getElementById('pxContent');
-            navInner.innerHTML = ''; content.innerHTML = '';
-
             var setNames = Object.keys(sets).sort((a,b) => a === 'General' ? -1 : a.localeCompare(b));
+
+            var navHtml = '';
+            var contentFrag = document.createDocumentFragment();
 
             setNames.forEach((setName, idx) => {
                 var safeId = 'set-' + setName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-                navInner.innerHTML += `<div class="px-nav-item ${idx===0?'active':''}" onclick="scrollToSet('${safeId}', this)">${esc(setName)}</div>`;
+                navHtml += `<div class="px-nav-item ${idx===0?'active':''}" onclick="scrollToSet('${safeId}', this)">${esc(setName)}</div>`;
+                
                 var section = document.createElement('div');
                 section.className = 'px-set-section';
                 section.id = safeId;
@@ -1386,6 +1431,7 @@
                 
                 var grid = document.createElement('div');
                 grid.className = 'px-grid';
+                var gridFrag = document.createDocumentFragment();
 
                 sets[setName].forEach(item => {
                     var i = item.index; var p = item.photo; var isSel = selected[i];
@@ -1404,11 +1450,17 @@
                     d.addEventListener('click', function(e) {
                         if (isPrintMode) { toggleSel(i); } else { openLB(i); }
                     });
-                    grid.appendChild(d);
+                    gridFrag.appendChild(d);
                 });
                 
-                section.appendChild(grid); content.appendChild(section);
+                grid.appendChild(gridFrag);
+                section.appendChild(grid); 
+                contentFrag.appendChild(section);
             });
+            
+            navInner.innerHTML = navHtml;
+            content.innerHTML = '';
+            content.appendChild(contentFrag);
         }
         
         function triggerDownload(i, e) {
@@ -1423,7 +1475,6 @@
             el.classList.add('active');
         }
 
-        /* MODAL ADVERTENCIA DESCARGA COMPLETA */
         function openDownloadModal() {
             var c = D.clients[curClient];
             if (!c.driveFolderUrl) { toast("El enlace de descarga completa no está configurado."); return; }
@@ -1452,6 +1503,7 @@
         }
         function toggleSelAll() { if (allSel) { selected = {}; allSel = false; } else { selected = {}; portalPhotos.forEach(function(_, i) { selected[i] = true; }); allSel = true; } renderPixiesetGallery(); updateOrderBar(); }
         function clearSel() { selected = {}; allSel = false; renderPixiesetGallery(); updateOrderBar(); closeOrder(); }
+        
         function updateOrderBar() {
             var cnt = Object.keys(selected).length, bar = document.getElementById('orderBar');
             if (cnt > 0 && isPrintMode) { 
@@ -1460,6 +1512,7 @@
                 document.getElementById('obTot').textContent = '$' + total; 
             } else { bar.classList.remove('vis'); }
         }
+        
         function openOrder() {
             var items = document.getElementById('omItems'); 
             var itemsHtml = ''; 
@@ -1487,7 +1540,6 @@
             togglePrintMode(); 
         }
 
-        /* ══════ LIGHTBOX CON VIDEO (V2.2) ══════ */
         function openLB(idx) { 
             isPublicPortfolioView = false; 
             lbIdx = idx; showLB(); 
@@ -1509,7 +1561,7 @@
                 imgEl.style.display = 'none';
                 vidEl.style.display = 'block';
                 vidEl.src = getEmbedUrl(p.videoUrl) + '?autoplay=1';
-                dlBtn.style.display = 'none'; // No descargamos video directo desde aquí
+                dlBtn.style.display = 'none';
             } else {
                 vidEl.style.display = 'none';
                 vidEl.src = '';
@@ -1532,12 +1584,11 @@
         function closeLB() { 
             document.getElementById('lb').classList.remove('active'); 
             document.body.style.overflow = ''; 
-            document.getElementById('lbVid').src = ''; // Corta el audio del video al cerrar
+            document.getElementById('lbVid').src = ''; 
         }
         function navLB(d) { lbIdx += d; if (lbIdx < 0) lbIdx = portalPhotos.length - 1; if (lbIdx >= portalPhotos.length) lbIdx = 0; showLB(); }
         document.getElementById('lb').addEventListener('click', function(e) { if (e.target === this) closeLB(); });
 
-        /* ══════ CONTACTO A WHATSAPP ══════ */
         function handleContact(e) { 
             e.preventDefault(); 
             var f = e.target;
@@ -1552,10 +1603,6 @@
             toast('Abriendo WhatsApp...'); 
             f.reset(); 
         }
-
-        /* ═══════════════════════════════════════════════
-           ══════ VISOR DE FOTOLIBRO (AISLADO .pb-) ══════
-           ═══════════════════════════════════════════════ */
         
         function openPhotobookView() {
             document.getElementById('cpHdrMain').style.display = 'none';
@@ -1588,21 +1635,23 @@
 
         function getPBData() { return (D.clients[curClient] && D.clients[curClient].photobook) ? D.clients[curClient].photobook : { cover: null, spreads: [null], hasBackCover: false, back: null }; }
         function getMaxState() { const pb = getPBData(); return pb.hasBackCover ? pb.spreads.length + 1 : pb.spreads.length; }
-        function getImgTag(src, isPano, side) { if (!src) return ''; if (!isPano) return `<img src="${src}" class="pb-img-fit" alt="">`; return `<img src="${src}" class="pb-pano pb-pano-${side}" alt="">`; }
+        function getImgTag(src, isPano, side) { if (!src) return ''; if (!isPano) return `<img src="${src}" class="pb-img-fit" alt="" loading="lazy">`; return `<img src="${src}" class="pb-pano pb-pano-${side}" alt="" loading="lazy">`; }
         function getPlaceholder(text) { return `<div class="pb-placeholder-text">${text}</div>`; }
 
         function renderBook() {
             const pb = getPBData(); if (!pb.spreads || pb.spreads.length === 0) pb.spreads = [null];
-            const book = document.getElementById('book'); book.innerHTML = '';
+            const book = document.getElementById('book');
             const numSpreads = pb.spreads.length, totalPapers = numSpreads + 1;
+            let bookHTML = '';
             for (let i = 0; i < totalPapers; i++) {
                 let frontContent = '', backContent = '', effectLayer = '';
                 if (i === 0) { frontContent = getImgTag(pb.cover, false) || getPlaceholder("Portada"); effectLayer = '<div class="pb-acrylic-led"></div><div class="pb-beveled"></div>'; } 
                 else { const s = pb.spreads[i - 1]; frontContent = getImgTag(s, true, 'right') || getPlaceholder(`Lienzo ${i}<br>Derecha`); }
                 if (i === totalPapers - 1) { backContent = pb.hasBackCover ? (getImgTag(pb.back, false) || getPlaceholder("Final")) : ''; } 
                 else { const s = pb.spreads[i]; backContent = getImgTag(s, true, 'left') || getPlaceholder(`Lienzo ${i + 1}<br>Izquierda`); }
-                book.innerHTML += `<div class="pb-paper" id="pb-paper-${i}"><div class="pb-front">${frontContent}${effectLayer}</div><div class="pb-back">${backContent}</div></div>`;
+                bookHTML += `<div class="pb-paper" id="pb-paper-${i}"><div class="pb-front">${frontContent}${effectLayer}</div><div class="pb-back">${backContent}</div></div>`;
             }
+            book.innerHTML = bookHTML;
             currentBookState = 0; updateBookTransform();
         }
 
@@ -1629,7 +1678,6 @@
         function prevPage() { if (currentBookState > 0) { currentBookState--; updateBookTransform(); } }
         function goToCover() { currentBookState = 0; updateBookTransform(); }
 
-        /* Gestos Simples (Sin Zoom) */
         function initSimpleBookGestures() {
             const bookEl = document.getElementById('book');
             let startX = 0, startY = 0, tracking = false;
@@ -1677,26 +1725,42 @@
 
         function toggleFullscreen() {
             const isFS = document.body.classList.contains('fullscreen-mode');
-            if (!isFS) { document.body.classList.add('fullscreen-mode'); if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {}); else if (document.documentElement.webkitRequestFullscreen) document.documentElement.webkitRequestFullscreen(); showRotateHint(); } 
+            if (!isFS) { 
+                document.body.classList.add('fullscreen-mode'); 
+                if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {}); 
+                else if (document.documentElement.webkitRequestFullscreen) document.documentElement.webkitRequestFullscreen(); 
+                showRotateHint(); 
+            } 
             else { exitFullscreenMode(); }
         }
         function exitFullscreenMode() { document.body.classList.remove('fullscreen-mode'); hideRotateHint(); if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); else if (document.webkitFullscreenElement) document.webkitExitFullscreen(); }
         document.addEventListener('fullscreenchange', handleFullscreenChange); document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
         function handleFullscreenChange() { const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement); if (!isFS && document.body.classList.contains('fullscreen-mode')) { document.body.classList.remove('fullscreen-mode'); hideRotateHint(); } }
-        function showRotateHint() { if (!isTouchDevice || window.innerWidth > window.innerHeight) return; const hint = document.getElementById('pb-rotate-hint'); hint.classList.add('visible'); clearTimeout(rotateHintTimer); rotateHintTimer = setTimeout(hideRotateHint, 4000); }
-        function hideRotateHint() { const hint = document.getElementById('pb-rotate-hint'); hint.classList.remove('visible'); clearTimeout(rotateHintTimer); }
+        function showRotateHint() { 
+            if (!isTouchDevice) return; 
+            if (window.innerWidth < window.innerHeight) { 
+                var overlay = document.getElementById('pb-rotate-overlay');
+                overlay.classList.add('active');
+                clearTimeout(rotateHintTimer);
+                rotateHintTimer = setTimeout(function() { overlay.classList.remove('active'); }, 4000);
+            } 
+        }
+        function hideRotateHint() { 
+            const hint = document.getElementById('pb-rotate-overlay'); 
+            hint.classList.remove('active'); 
+            clearTimeout(rotateHintTimer); 
+        }
         if (screen.orientation) screen.orientation.addEventListener('change', () => { if (screen.orientation.type.includes('landscape')) hideRotateHint(); }); window.addEventListener('orientationchange', () => { if (window.innerWidth > window.innerHeight) hideRotateHint(); });
 
         /* ═══════════════════════════════
            ══════ ADMIN PANEL Y EXPORT ═══
            ═══════════════════════════════ */
-        function openAdm() { admState = { tab: 'services', view: 'list', editId: null }; document.getElementById('admPanel').classList.add('active'); document.body.style.overflow = 'hidden'; renderAdmTabs(); renderAdmBody(); }
+        function openAdm() { admState = { tab: 'settings', view: 'list', editId: null }; document.getElementById('admPanel').classList.add('active'); document.body.style.overflow = 'hidden'; renderAdmTabs(); renderAdmBody(); }
         function closeAdm() { document.getElementById('admPanel').classList.remove('active'); document.body.style.overflow = ''; }
         document.getElementById('admTabs').addEventListener('click', function(e) { var btn = e.target.closest('button[data-t]'); if (!btn) return; admState.tab = btn.dataset.t; admState.view = 'list'; admState.editId = null; renderAdmTabs(); renderAdmBody(); });
         function renderAdmTabs() { document.querySelectorAll('#admTabs button').forEach(function(b) { b.classList.toggle('active', b.dataset.t === admState.tab); }); }
         function renderAdmBody() { var body = document.getElementById('admBody'); switch (admState.tab) { case 'services': renderAdmServices(body); break; case 'clients': renderAdmClients(body); break; case 'portfolio': renderAdmPortfolio(body); break; case 'testimonials': renderAdmTestimonials(body); break; case 'settings': renderAdmSettings(body); break; } }
 
-        /* ════ ADMIN: SERVICIOS ════ */
         function renderAdmServices(body) {
             if (admState.view === 'edit') {
                 var svc = admState.editId ? D.services.find(function(s) { return s.id === admState.editId; }) : null; var isEdit = !!svc;
@@ -1711,7 +1775,6 @@
         function saveService(oldId) { var icon = document.getElementById('ae_icon').value.trim(), title = document.getElementById('ae_title').value.trim(), desc = document.getElementById('ae_desc').value.trim(), price = document.getElementById('ae_price').value.trim(), feats = document.getElementById('ae_feats').value.trim().split('\n').filter(function(f) { return f.trim(); }); if (!title) { toast('El título es obligatorio'); return; } if (oldId) { var svc = D.services.find(function(s) { return s.id === oldId; }); if (svc) { svc.icon = icon; svc.title = title; svc.desc = desc; svc.price = price; svc.features = feats; } } else { D.services.push({ id: uid(), icon: icon, title: title, desc: desc, price: price, features: feats, order: D.services.length }); } saveData(); admState.view = 'list'; renderAdmBody(); renderPublic(); }
         function delService(id) { if (!confirm('¿Eliminar este paquete?')) return; D.services = D.services.filter(function(s) { return s.id !== id; }); saveData(); renderAdmBody(); renderPublic(); toast('Paquete eliminado'); }
 
-        /* ════ ADMIN: CLIENTES Y GALERÍA PIXIESET ════ */
         function renderAdmClients(body) {
             if (admState.view === 'edit') { renderClientForm(body); return; }
             if (admState.view === 'photobook') { renderPhotobookAdmin(body); return; }
@@ -1756,7 +1819,6 @@
                 '<p class="adm-hint" style="margin-top:-.5rem">Si YouTube bloquea el video por copyright, sube tu video a Google Drive, asegúrate de que el acceso sea "Cualquier persona con el enlace", y pega el link normal aquí.</p>' +
                 '<label class="af-l">Título del video</label><input class="af-i" id="ce_vidTitle" value="' + esc((c.video || {}).title || '') + '" placeholder="Video Resumen"></div>' +
                 
-                /* VISTA FOTOS CON PIXIESET API */
                 '<div id="ce_photosSec" style="display:' + (c.hasPhotos ? 'block' : 'none') + ';margin-bottom:1rem;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)">' +
                 '<label class="af-l" style="color:var(--accent)">Extraer Galería (Soporta Subcarpetas / Sets)</label>' +
                 '<p class="adm-hint">Pega la URL de la carpeta principal de Google Drive.</p>' +
@@ -1794,7 +1856,6 @@
         }
         function toggleClientSection(sec) { document.getElementById('ce_' + sec + 'Sec').style.display = document.getElementById('ce_has' + sec.charAt(0).toUpperCase() + sec.slice(1)).checked ? 'block' : 'none'; }
         
-        /* ════ ORDEN AUTOMÁTICO CON AUTO-GUARDADO ════ */
         function sortClientPhotosAsc() {
             if (!tempClientPhotos || tempClientPhotos.length === 0) {
                 toast('No hay fotos para ordenar.');
@@ -1810,7 +1871,6 @@
             toast('✅ Ordenado y guardado. Refresca la galería de tu cliente.');
         }
 
-        /* ════ DRAG & DROP FOTOS ════ */
         function dragPhotoStart(e, i) {
             draggedPhotoIdx = i;
             e.dataTransfer.effectAllowed = 'move';
@@ -1830,13 +1890,14 @@
             draggedPhotoIdx = -1;
         }
 
+        /* ══════ OPTIMIZACIÓN: Lazy Loading en Admin List ══════ */
         function renderClientPhotosList(photos) {
             var list = document.getElementById('ce_photosList'); if (!list) return; 
             var h = '';
             (photos || []).forEach(function(p, i) { 
                 h += `<div class="adm-photo-item" draggable="true" ondragstart="dragPhotoStart(event, ${i})" ondragover="dragPhotoOver(event)" ondrop="dropPhoto(event, ${i})" style="cursor:grab; flex-wrap:wrap">
                     <span style="color:#999; margin-right:5px; font-size:1.2rem;" title="Arrastrar para ordenar">↕</span>
-                    <img src="${esc(p.src)}" alt="">
+                    <img src="${esc(p.src)}" alt="" loading="lazy">
                     <input type="text" value="${esc(p.name || '')}" placeholder="Nombre / Etiqueta" onchange="updateClientPhotoName(${i},this.value)" style="flex:1; min-width:80px;">
                     <input type="text" value="${esc(p.set || 'General')}" placeholder="Categoría / Set" onchange="updateClientPhotoSet(${i},this.value)" style="flex:1; min-width:80px;">
                     <button type="button" onclick="removeClientPhoto(${i})" title="Quitar">×</button>
@@ -1845,7 +1906,6 @@
             list.innerHTML = h;
         }
         
-        /* EXTRACCIÓN CON SUBCARPETAS Y PAGINACIÓN TOTAL */
         async function fetchDriveGalleryForClient() {
             var apiKey = D.settings.driveApiKey;
             if (!apiKey) { toast('Configura tu Clave API en la pestaña General.'); return; }
@@ -1910,7 +1970,7 @@
 
         function addClientPhoto() {
             var list = document.getElementById('ce_photosList'); if (!list) return; var idx = list.children.length; var div = document.createElement('div'); div.className = 'adm-photo-item';
-            div.innerHTML = `<img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="" style="opacity:.3">
+            div.innerHTML = `<img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="" loading="lazy" style="opacity:.3">
                 <input type="text" value="" placeholder="URL de la imagen" onchange="updateClientPhotoSrc(${idx},this.value)" style="flex:1.5;">
                 <input type="text" value="" placeholder="Nombre" onchange="updateClientPhotoName(${idx},this.value)" style="flex:1;">
                 <input type="text" value="General" placeholder="Set" onchange="updateClientPhotoSet(${idx},this.value)" style="flex:1;">
@@ -1945,7 +2005,6 @@
         }
         function delClient(code) { if (!confirm('¿Eliminar el evento "' + D.clients[code].name + '"?')) return; delete D.clients[code]; saveData(); renderAdmBody(); toast('Evento eliminado'); }
 
-        /* ════ ADMIN: FOTOLIBRO (con Google Drive API + Drag & Drop + AutoBook) ════ */
         function editPhotobook(code) { admState.view = 'photobook'; admState.editId = code; renderAdmBody(); }
         function renderPhotobookAdmin(body) {
             var code = admState.editId; var c = D.clients[code]; if (!c) { admState.view = 'list'; renderAdmBody(); return; }
@@ -1984,7 +2043,6 @@
             container.innerHTML = h;
         }
         
-        /* Drag & Drop Lógica */
         function allowDropPB(e) { e.preventDefault(); e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.background = 'var(--accent-subtle)'; }
         function leaveDropPB(e) { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = '#fafafa'; }
         function dropOnPBSlot(e, type, idx) {
@@ -2005,7 +2063,6 @@
         }
         function savePBData() { saveData(); toast('Fotolibro guardado correctamente'); }
 
-        /* API Drive y Autollenado */
         async function fetchDriveFolderForPB() {
             var apiKey = D.settings.driveApiKey; if (!apiKey) { toast('Por favor configura tu Clave API en la pestaña General primero.'); return; }
             var folderInput = document.getElementById('pb_driveFolderId').value.trim(); var folderId = folderInput;
@@ -2019,18 +2076,24 @@
                 renderDriveGalleryForPB(files);
             }).catch(function(err) { toast('Error: ' + err.message); document.getElementById('pbDriveGallery').innerHTML = '<p class="adm-hint" style="color:#c0392b">Error al cargar. Verifica tu API Key y asegúrate de que la carpeta de Drive sea "Pública".</p>'; });
         }
+
+        /* ══════ OPTIMIZACIÓN: Lazy Loading Drive PB Admin Batching ══════ */
         function renderDriveGalleryForPB(files) {
-            currentDriveFiles = files; // Guardamos globalmente
+            currentDriveFiles = files; 
             var gal = document.getElementById('pbDriveGallery'); gal.innerHTML = '';
+            var frag = document.createDocumentFragment();
             files.forEach(function(f) {
                 var srcThumb = 'https://lh3.googleusercontent.com/d/' + f.id + '=s300', fullSrc = 'https://lh3.googleusercontent.com/d/' + f.id + '=s1600', img = document.createElement('img');
                 img.src = srcThumb; img.title = f.name + ' (Arrastra o haz clic para usar)'; img.style.height = '70px'; img.style.cursor = 'grab'; img.style.borderRadius = '4px'; img.style.border = '2px solid transparent'; img.style.transition = 'border-color 0.2s';
+                img.loading = "lazy";
                 img.draggable = true;
                 img.ondragstart = function(e) { e.dataTransfer.setData('text/plain', fullSrc); };
                 img.onmouseover = function() { this.style.borderColor = 'var(--accent)'; }; img.onmouseout = function() { this.style.borderColor = 'transparent'; };
-                img.onclick = function() { autoFillNextPBSlot(fullSrc); }; gal.appendChild(img);
+                img.onclick = function() { autoFillNextPBSlot(fullSrc); }; frag.appendChild(img);
             });
+            gal.appendChild(frag);
         }
+
         function autoFillNextPBSlot(src) {
             var code = admState.editId, pb = D.clients[code].photobook;
             if (!pb.cover) { updatePB('cover', src); toast('Foto asignada a la portada'); renderPhotobookAdmin(document.getElementById('admBody')); return; }
@@ -2039,7 +2102,6 @@
             toast('Todos los espacios están llenos. Añade más páginas para agregar más fotos.');
         }
 
-        /* Lógica de Autollenado Numérico */
         function autoFillDriveFiles() {
             if (!currentDriveFiles || currentDriveFiles.length === 0) { toast('Primero extrae las fotos de la carpeta.'); return; }
             if (!confirm('¿Autollenar fotolibro completo? Esto reemplazará las fotos actuales. Tus fotos en Drive deben estar enumeradas (1, 2, 3...) para acomodarse correctamente.')) return;
@@ -2055,20 +2117,17 @@
             if(totalFiles === 0) return;
             
             var fileIdx = 0;
-            // 1. Asignar Portada
             pb.cover = 'https://lh3.googleusercontent.com/d/' + sortedFiles[fileIdx++].id + '=s1600';
             
             var reserveForBack = pb.hasBackCover && fileIdx < totalFiles;
             var spreadLimit = reserveForBack ? totalFiles - 1 : totalFiles;
             
-            // 2. Asignar Spreads dinámicamente
             pb.spreads = [];
             while (fileIdx < spreadLimit) { 
                 pb.spreads.push('https://lh3.googleusercontent.com/d/' + sortedFiles[fileIdx++].id + '=s1600'); 
             }
             if (pb.spreads.length === 0) pb.spreads = [null]; 
             
-            // 3. Asignar Contraportada
             if (reserveForBack) {
                 pb.back = 'https://lh3.googleusercontent.com/d/' + sortedFiles[fileIdx].id + '=s1600';
             }
@@ -2078,7 +2137,6 @@
             toast('Fotolibro autollenado por orden numérico');
         }
 
-        /* ════ ADMIN: PORTAFOLIO PÚBLICO (V2.2 - SOPORTE DE VIDEO) ════ */
         function renderAdmPortfolio(body) {
             body.innerHTML = `
                 <div style="margin-bottom:1.5rem;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)">
@@ -2189,7 +2247,6 @@
         
         function delPortfolioImg(i) { D.portfolio.splice(i, 1); saveData(); renderAdmBody(); renderPublic(); }
 
-        /* ════ ADMIN: TESTIMONIOS ════ */
         function renderAdmTestimonials(body) {
             var h = '<button class="adm-add-btn" onclick="addTestimonial()">+ Agregar testimonio</button>';
             D.testimonials.forEach(function(t, i) { h += ('<div class="al-item" style="flex-wrap:wrap"><div class="al-item-info" style="flex-basis:100%"><div class="al-item-t" style="white-space:normal;font-weight:400;font-style:italic">' + esc(t.text) + '</div><div class="al-item-s" style="margin-top:.3rem">— ' + esc(t.author) + '</div></div><div class="al-acts"><button class="al-btn" onclick="editTestimonial(' + i + ')">Editar</button><button class="al-btn del" onclick="delTestimonial(' + i + ')">Eliminar</button></div></div>'); });
@@ -2199,7 +2256,6 @@
         function editTestimonial(i) { var t = D.testimonials[i]; var newText = prompt('Testimonio:', t.text.replace(/"/g, '')); if (newText === null) return; var newAuthor = prompt('Autor:', t.author); if (newAuthor === null) return; D.testimonials[i].text = newText; D.testimonials[i].author = newAuthor; saveData(); renderAdmBody(); renderPublic(); }
         function delTestimonial(i) { D.testimonials.splice(i, 1); saveData(); renderAdmBody(); renderPublic(); }
 
-        /* ════ ADMIN: GENERAL ════ */
         function renderAdmSettings(body) {
             var s = D.settings;
             body.innerHTML = '<h3 style="margin-bottom:1rem">Datos generales del sitio</h3>' +
@@ -2210,7 +2266,12 @@
                 '<label class="af-l">WhatsApp Number</label><input class="af-i" id="se_wa" value="' + esc(s.waNumber) + '">' +
                 '<label class="af-l">Texto del hero</label><textarea class="af-i af-ta" id="se_hero">' + esc(s.heroDesc) + '</textarea>' +
                 
-                /* ════ IMAGEN PRINCIPAL ════ */
+                '<label class="af-l">Logotipo del sitio (URL de imagen)</label>' +
+                '<div style="display:flex;gap:10px;margin-bottom:1rem;">' +
+                    '<input class="af-i" id="se_logoImg" placeholder="Si está vacío, mostrará el texto" value="' + esc(s.logoImage || '') + '" style="margin-bottom:0;flex:1;">' +
+                    '<input type="file" accept="image/*" onchange="uploadGeneralImg(this, \'se_logoImg\')" style="width:100px;font-size:0.7rem;padding-top:10px;">' +
+                '</div>' +
+                
                 '<label class="af-l">Imagen Principal (Inicio)</label>' +
                 '<div style="display:flex;gap:10px;margin-bottom:1rem;">' +
                     '<input class="af-i" id="se_heroImg" placeholder="Pega URL o usa el botón de lado ->" value="' + esc(s.heroImage || '') + '" style="margin-bottom:0;flex:1;">' +
@@ -2232,12 +2293,11 @@
                 '<button class="af-btn" style="background:#2b5797; color:#fff; width:100%; margin-top:10px;" onclick="downloadJSON()">📥 Descargar Respaldo JSON (Manual)</button>';
         }
         function saveSettings() {
-            var s = D.settings; s.phone = document.getElementById('se_phone').value.trim(); s.phoneRaw = document.getElementById('se_phoneRaw').value.trim(); s.address = document.getElementById('se_addr').value.trim(); s.hours = document.getElementById('se_hours').value.trim(); s.facebook = document.getElementById('se_fb').value.trim(); s.waNumber = document.getElementById('se_wa').value.trim(); s.heroDesc = document.getElementById('se_hero').value.trim(); s.heroImage = document.getElementById('se_heroImg').value.trim(); s.mapEmbed = document.getElementById('se_map').value.trim(); s.driveApiKey = document.getElementById('se_driveApi').value.trim();
+            var s = D.settings; s.phone = document.getElementById('se_phone').value.trim(); s.phoneRaw = document.getElementById('se_phoneRaw').value.trim(); s.address = document.getElementById('se_addr').value.trim(); s.hours = document.getElementById('se_hours').value.trim(); s.facebook = document.getElementById('se_fb').value.trim(); s.waNumber = document.getElementById('se_wa').value.trim(); s.heroDesc = document.getElementById('se_hero').value.trim(); s.heroImage = document.getElementById('se_heroImg').value.trim(); s.logoImage = document.getElementById('se_logoImg').value.trim(); s.mapEmbed = document.getElementById('se_map').value.trim(); s.driveApiKey = document.getElementById('se_driveApi').value.trim();
             var newPass = document.getElementById('se_pass').value; if (newPass && newPass.length >= 4) { D.adminPass = newPass; toast('Contraseña actualizada'); }
             saveData(); renderPublic(); toast('Configuración guardada');
         }
 
-        /* ══════ INICIALIZACIÓN Y AUTO ROUTING DE LINKS ══════ */
         function checkUrlForClient() {
             var params = new URLSearchParams(window.location.search);
             var clientCodeParam = params.get('c') || params.get('cliente');
@@ -2249,7 +2309,7 @@
             
             if (!clientCodeParam && window.location.hash && window.location.hash.length > 1) {
                 var possibleCode = window.location.hash.substring(1).split('?')[0].replace(/\/+$/, '');
-                if(!['portafolio', 'servicios', 'testimonios', 'contacto'].includes(possibleCode)) {
+                if(!['portafolio', 'videos', 'servicios', 'testimonios', 'contacto'].includes(possibleCode)) {
                     clientCodeParam = possibleCode;
                 }
             }
