@@ -29,7 +29,6 @@
         img { display: block; max-width: 100%; }
         a { color: inherit; }
         
-        /* PANTALLA DE CARGA */
         #loader { position: fixed; inset: 0; background: var(--bg); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease; will-change: opacity; }
         .spinner { width: 50px; height: 50px; border: 4px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -40,7 +39,7 @@
         .nav-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 1.2rem; display: flex; align-items: center; justify-content: space-between; height: 100%; }
         .nav-logo { font-family: var(--fh); font-size: 1.3rem; font-weight: 600; text-decoration: none; letter-spacing: -.03em; white-space: nowrap; cursor: default; user-select: none; display: flex; align-items: center; }
         .nav-logo span { color: var(--accent); }
-        .nav-logo img { max-height: 40px; width: auto; display: block; }
+        .nav-logo img { max-height: 65px; width: auto; display: block; object-fit: contain; }
         .nav-links { display: flex; gap: 1.4rem; list-style: none; align-items: center; }
         .nav-links a { text-decoration: none; color: var(--text-muted); font-size: .85rem; font-weight: 450; transition: var(--tr); position: relative; padding-bottom: 3px; white-space: nowrap; }
         .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1.5px; background: var(--accent); transition: var(--tr); border-radius: 1px; }
@@ -57,7 +56,6 @@
         .mob-ov { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .4); z-index: 998; opacity: 0; transition: opacity .3s; will-change: opacity; }
         .mob-ov.active { display: block; opacity: 1; }
         
-        /* Ajuste elegante y centrado */
         .section { padding: 5rem 1.2rem; max-width: var(--max-w); margin: 0 auto; }
         .section-label, .section h2, .section-desc { text-align: center; margin-left: auto; margin-right: auto; }
         .section-label { font-size: .75rem; text-transform: uppercase; letter-spacing: .13em; color: var(--accent); margin-bottom: .8rem; font-weight: 500; display: block; }
@@ -85,7 +83,6 @@
         .btn-accent:active { background: var(--accent-hover); transform: scale(.97); }
         .btn-sm { padding: .45rem 1rem; font-size: .78rem; min-height: 44px; }
         
-        /* FILTROS PORTAFOLIO */
         .port-filters { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.8rem; margin-top: 1.5rem; justify-content: center; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
         .port-filters::-webkit-scrollbar { display: none; }
         .port-filter-btn { padding: 0.4rem 1.2rem; border-radius: 50px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-family: var(--fb); font-size: 0.85rem; font-weight: 500; cursor: pointer; white-space: nowrap; transition: var(--tr); min-height: 44px; touch-action: manipulation;}
@@ -97,7 +94,6 @@
         .portfolio-item:hover img { transform: scale(1.03); }
         .portfolio-item .il { position: absolute; bottom: .8rem; left: .8rem; color: #fff; font-family: var(--fh); font-size: .85rem; z-index: 2; opacity: .9; font-weight: 500; text-shadow: 0 1px 3px rgba(0, 0, 0, .5); }
         
-        /* VIDEOS DE MUESTRA */
         .video-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 2rem; }
         .video-item { position: relative; width: 100%; padding-bottom: 56.25%; border-radius: var(--radius-lg); overflow: hidden; background: #000; box-shadow: var(--shadow-md); }
         .video-item iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
@@ -111,6 +107,9 @@
         .service-features { list-style: none; margin-top: .8rem; text-align: left; padding: 0; }
         .service-features li { font-size: .82rem; color: var(--text-muted); padding: .25rem 0; display: flex; align-items: center; gap: .4rem; }
         .service-features li::before { content: '✓'; color: var(--accent); font-weight: 700; font-size: .75rem; flex-shrink: 0; }
+        
+        .service-card.featured { border: 2px solid var(--accent); box-shadow: var(--shadow-md); position: relative; }
+        .service-card.featured::before { content: 'MÁS CONTRATADO'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; padding: 3px 12px; border-radius: 50px; font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; white-space: nowrap; box-shadow: 0 2px 8px rgba(184, 147, 90, 0.3); }
         
         .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-top: 2rem; text-align: left; }
         .testimonial-card { background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem 1.2rem; }
@@ -130,7 +129,6 @@
         .footer { border-top: 1px solid var(--border-light); padding: 2rem 1.2rem; text-align: center; background: var(--surface); color: var(--text-muted); font-size: .8rem; line-height: 1.6; }
         .footer a { color: var(--accent); text-decoration: none; font-weight: 500; }
 
-        /* MODALES */
         .modal-ov { position: fixed; inset: 0; background: rgba(0, 0, 0, .6); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 1rem; opacity: 0; pointer-events: none; transition: .3s; backdrop-filter: blur(4px); will-change: opacity;}
         .modal-ov.active { opacity: 1; pointer-events: auto; }
         .modal { background: var(--surface); border-radius: var(--radius-lg); padding: 2rem 1.5rem; width: 100%; max-width: 400px; text-align: center; box-shadow: var(--shadow-lg); position: relative; will-change: transform; }
@@ -147,7 +145,6 @@
         .modal-err { color: #c0392b; font-size: .8rem; display: none; margin-top: .3rem; }
         .modal-err.show { display: block; }
 
-        /* PORTAL CLIENTE GENERAL */
         .cp { display: none; min-height: 100vh; background: var(--c-bg); color: var(--c-text); }
         .cp.active { display: block; animation: fadeIn .4s ease; }
         .cp-hdr { position: sticky; top: 0; z-index: 100; background: rgba(10, 10, 10, .94); backdrop-filter: blur(16px); border-bottom: 1px solid var(--c-border); padding: .6rem 1rem; }
@@ -179,7 +176,6 @@
         .access-card-info p { color: var(--c-muted); font-size: .82rem; margin-bottom: 0; }
         .access-card .btn { flex-shrink: 0; }
 
-        /* VISTA GALERÍA */
         #cpGalleryView { padding: 0; background: var(--c-bg); position: relative; }
         .px-header { position: relative; width: 100%; height: 60vh; min-height: 400px; background-size: cover; background-position: center; background-repeat: no-repeat; display: flex; align-items: center; justify-content: center; text-align: center; color: #fff; }
         .px-header::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%); }
@@ -291,7 +287,6 @@
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         .cp-ft { border-top: 1px solid var(--c-border); padding: 2rem 1rem; padding-bottom: max(2rem, env(safe-area-inset-bottom)); text-align: center; color: var(--c-muted); font-size: .75rem; margin-top: 0; background: var(--c-bg); }
 
-        /* ═══ ADMIN PANEL ═══ */
         .adm-ov { position: fixed; inset: 0; z-index: 4000; background: rgba(0, 0, 0, .7); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; padding: .5rem; }
         .adm-ov.active { display: flex; }
         .adm-box { background: var(--surface); width: 100%; max-width: 900px; max-height: 92vh; border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 32px 80px rgba(0, 0, 0, .3); text-align: left; }
@@ -356,14 +351,11 @@
         .pb-slot .rm-slot { position: absolute; top: 3px; right: 3px; background: rgba(192, 57, 43, .1); color: #c0392b; border: 1px solid rgba(192, 57, 43, .2); border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; }
         .pb-slot .rm-slot:hover { background: #c0392b; color: #fff; }
 
-        /* ═══ FOTOLIBRO AISLADO ═══ */
         #cpPhotobookView { position: fixed; inset: 0; background: #060608; z-index: 9999; display: none; flex-direction: column; overflow: hidden; }
         .pb-wrapper { display: flex; flex-direction: column; justify-content: center; align-items: center; perspective: 3500px; width: 100%; position: relative; z-index: 2; flex: 1 1 auto; min-height: 0; padding-bottom: 20px; }
         .pb-ambient { position: absolute; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%); filter: blur(60px); pointer-events: none; transition: opacity 0.8s; z-index: -1; }
-        /* Animaciones más fluidas */
         .pb-book { width: min(100%, 420px); max-width: 90vw; aspect-ratio: 1 / 1; position: relative; transform-style: preserve-3d; transition: transform 1.2s cubic-bezier(0.2, 0.9, 0.3, 1); filter: drop-shadow(0 30px 60px rgba(0,0,0,0.7)) drop-shadow(0 5px 15px rgba(0,0,0,0.5)); touch-action: none; cursor: pointer; margin-top: 2rem; z-index: 10; }
         .pb-paper { position: absolute; width: 100%; height: 100%; top: 0; left: 0; transform-style: preserve-3d; transform-origin: left center; transition: transform 1.2s cubic-bezier(0.2, 0.9, 0.3, 1); border-radius: 2px 5px 5px 2px; cursor: pointer; }
-        
         .pb-front, .pb-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; background: #0a0a0e; overflow: hidden; border-radius: 2px 5px 5px 2px; }
         .pb-back { transform: rotateY(180deg); border-radius: 5px 2px 2px 5px; }
         .pb-img-fit { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -402,13 +394,11 @@
         .pb-landscape-arrow.pb-arrow-left { left: 10px; }
         .pb-landscape-arrow.pb-arrow-right { right: 10px; }
         
-        /* Overlay Rotate */
         .pb-rotate-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200000; display: none; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; padding: 2rem; backdrop-filter: blur(10px); }
         .pb-rotate-overlay.active { display: flex; animation: fadeIn 0.5s ease; }
         .pb-rotate-icon { width: 64px; height: 64px; margin-bottom: 1rem; animation: rotatePhone 2s ease-in-out infinite; }
         @keyframes rotatePhone { 0% { transform: rotate(0deg); } 50% { transform: rotate(-90deg); } 100% { transform: rotate(-90deg); } }
 
-        /* Fullscreen overrides */
         body.fullscreen-mode { background: #060608; overflow: hidden; }
         body.fullscreen-mode .btn-regresar-fijo, body.fullscreen-mode .pb-fullscreen-btn { display: none !important; }
         body.fullscreen-mode .pb-book { width: min(420px, 65vh); margin-top:0; }
@@ -423,7 +413,6 @@
             body.fullscreen-mode .pb-mobile-toolbar { display: none; }
         }
 
-        /* RESPONSIVE GENERAL */
         @media(max-width:1024px) {
             .hero-content { text-align: center; align-items: center; }
             .hero-desc { margin-left: auto; margin-right: auto; }
@@ -492,7 +481,6 @@
 </head>
 <body>
 
-    <!-- OVERLAY DE CARGA -->
     <div id="loader">
         <div class="spinner"></div>
         <div class="loader-text">Cargando contenido...</div>
@@ -515,7 +503,6 @@
         </div>
     </nav>
 
-    <!-- ═══ SITIO PÚBLICO ═══ -->
     <div id="mainSite">
         <section class="hero">
             <div class="hero-inner">
@@ -535,7 +522,6 @@
             
             <div id="portFilters" class="port-filters"></div>
             <div class="portfolio-grid" id="portGrid"></div>
-            <!-- Contenedor para el botón "Ver más" -->
             <div id="portMoreBtn" style="text-align: center; margin-top: 2rem;"></div>
         </section>
         
@@ -549,8 +535,14 @@
         <section class="section" id="servicios">
             <p class="section-label">Servicios</p>
             <h2>Paquetes y precios</h2>
-            <div class="services-grid" id="servGrid"></div>
+            
+            <div class="services-grid" id="servGridDestacados"></div>
+            <div id="servMoreBtn" style="text-align: center; margin-top: 1.5rem; display: none;">
+                <button class="btn btn-outline" onclick="toggleAllServices()">Ver más paquetes</button>
+            </div>
+            <div class="services-grid" id="servGridAll" style="display: none; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-light);"></div>
         </section>
+        
         <section class="section" id="testimonios">
             <p class="section-label">Testimonios</p>
             <h2>Clientes satisfechos</h2>
@@ -571,7 +563,6 @@
         </footer>
     </div>
 
-    <!-- ═══ PORTAL CLIENTE ═══ -->
     <div class="cp" id="cpPortal">
         <header class="cp-hdr" id="cpHdrMain">
             <div class="cp-hdr-in">
@@ -673,7 +664,6 @@
                 </button>
             </div>
 
-            <!-- Overlay Gira tu dispositivo -->
             <div class="pb-rotate-overlay" id="pb-rotate-overlay">
                 <svg class="pb-rotate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
                 <h3 style="font-family:var(--fh); font-size:1.5rem; margin-bottom:0.5rem">Gira tu dispositivo</h3>
@@ -688,27 +678,22 @@
         </footer>
     </div>
 
-    <!-- Barra pedido -->
     <div class="order-bar" id="orderBar"><div class="ob-in"><div class="ob-info"><span class="ob-cnt" id="obCnt">0</span><span>seleccionadas</span><span class="ob-tot" id="obTot">$0</span></div><button class="btn btn-accent" onclick="openOrder()">Ver pedido de Impresión</button></div></div>
 
-    <!-- Modal login cliente -->
     <div class="modal-ov" id="loginModal" onclick="if(event.target===this)closeLogin()">
         <div class="modal"><button class="modal-x" onclick="closeLogin()">×</button><h3>Acceso a clientes</h3><p>Ingresa el código que se te proporcionó.</p><input type="text" id="codeIn" placeholder="Ejemplo: boda2024" autocomplete="off" autocapitalize="off" spellcheck="false"><p class="modal-err" id="loginErr">Código no válido.</p><button class="btn btn-primary" onclick="doLogin()">Acceder</button></div>
     </div>
 
-    <!-- Modal login admin -->
     <div class="modal-ov" id="admLoginModal" onclick="if(event.target===this)closeAdmLogin()">
         <div class="modal"><button class="modal-x" onclick="closeAdmLogin()">×</button><h3 id="admLoginTitle">Administración</h3><p id="admLoginDesc">Ingresa tu contraseña de administrador.</p><input type="password" id="admPassIn" placeholder="Contraseña" autocomplete="off"><p class="modal-err" id="admLoginErr">Contraseña incorrecta.</p><button class="btn btn-primary" onclick="doAdmLogin()">Entrar</button></div>
     </div>
 
-    <!-- Modal pedido -->
     <div class="om-ov" id="orderModal" onclick="if(event.target===this)closeOrder()">
         <div class="om-pn"><div class="om-hd"></div><div class="om-ttl">Pedido de impresión</div><div class="om-sub" id="omSub"></div><div id="omItems"></div><div class="om-tot"><span class="om-tot-l">Total</span><span class="om-tot-v" id="omTotV">$0</span></div>
             <div class="om-acts"><button class="btn btn-wa" onclick="sendWA()">Enviar pedido por WhatsApp</button><button class="btn btn-gh" onclick="clearSel()">Limpiar selección</button></div>
         </div>
     </div>
     
-    <!-- Modal Advertencia Descarga Completa -->
     <div class="modal-ov" id="downloadModal" onclick="if(event.target===this)closeDownloadModal()">
         <div class="modal-c">
             <button class="modal-x-c" onclick="closeDownloadModal()">×</button>
@@ -722,7 +707,6 @@
         </div>
     </div>
 
-    <!-- Admin panel -->
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
@@ -740,7 +724,6 @@
         </div>
     </div>
 
-    <!-- Lightbox con soporte para VIDEO -->
     <div class="lb" id="lb">
         <button class="lb-x" onclick="closeLB()">×</button>
         <button class="lb-n lb-p" onclick="navLB(-1)">&#8249;</button>
@@ -755,12 +738,10 @@
 
     <div class="toast" id="toast"></div>
 
-    <!-- Librerías de Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <script>
-        /* ═══════ DATOS POR DEFECTO ═══════ */
         function getDefaults() {
             var defaultExpire = Date.now() + 31536000000; 
             return {
@@ -783,9 +764,9 @@
                     { size: '33x48', label: 'Póster', measure: '33 x 48 cm', price: 80 }
                 ],
                 services: [
-                    { id: 's1', icon: '💍', title: 'Boda Básico', desc: 'Cobertura de 4 horas en tu boda.', price: 'Desde $3,500', features: ['100 fotos editadas digitales', 'Video resumen de 3 minutos', 'Entrega en USB', 'Galería online para ver y descargar'], order: 0 },
-                    { id: 's2', icon: '💍', title: 'Boda Premium', desc: 'Cobertura completa de tu día especial.', price: 'Desde $6,000', features: ['200+ fotos editadas digitales', 'Video completo + resumen', 'Drone (si aplica)', 'Galería online privada', '10 impresiones de regalo'], order: 1 },
-                    { id: 's3', icon: '🎬', title: 'Video Profesional', desc: 'Producción de video para cualquier proyecto.', price: 'Desde $2,000', features: ['Grabación con equipo profesional', 'Edición completa', 'Subtítulos si se requiere', 'Entrega en formato digital'], order: 2 }
+                    { id: 's1', icon: '💍', title: 'Boda Premium', desc: 'Cobertura completa de tu día especial.', price: 'Desde $6,000', features: ['200+ fotos editadas digitales', 'Video completo + resumen', 'Drone (si aplica)', 'Galería online privada', '10 impresiones de regalo'], order: 1, isFeatured: true },
+                    { id: 's2', icon: '📷', title: 'Boda Básico', desc: 'Cobertura de 4 horas en tu boda.', price: 'Desde $3,500', features: ['100 fotos editadas digitales', 'Video resumen de 3 minutos', 'Entrega en USB', 'Galería online para ver y descargar'], order: 2, isFeatured: false },
+                    { id: 's3', icon: '🎬', title: 'Video Profesional', desc: 'Producción de video para cualquier proyecto.', price: 'Desde $2,000', features: ['Grabación con equipo profesional', 'Edición completa', 'Subtítulos si se requiere', 'Entrega en formato digital'], order: 3, isFeatured: false }
                 ],
                 portfolio: [
                     { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=500&h=650&fit=crop&auto=format', label: 'Bodas', type: 'image' },
@@ -797,13 +778,16 @@
                     { src: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&h=650&fit=crop&auto=format', label: 'Video Demo', type: 'video', videoUrl: 'https://www.youtube.com/watch?v=ScMzIvxBSi4' }
                 ],
                 testimonials: [
-                    { text: '"Excelente trabajo. Excelente servicio. Muy recomendado para cualquier evento."', author: 'Yessica Santana' }
+                    { text: '"Hola, la verdad me gusta ir a ese lugar para imprimir mis fotos, el chico es eficiente y da buen trato a la gente, además que no cobra caro, que más puede uno pedir!!!! La verdad lo recomiendo mucho 😊😚, gracias."', author: 'Roberto Alvarado' },
+                    { text: '"Muy buena calidad de las fotos, buen servicio y todo en tiempo y forma"', author: 'Hannia Neri' },
+                    { text: '"Excelente trabajo. Excelente servicio."', author: 'Yessica Marlen Santana Arellano' },
+                    { text: '"Exelente servicio"', author: 'Maritza Corona' },
+                    { text: '"El servicio es excelente."', author: 'Abril' }
                 ],
                 clients: {}
             };
         }
 
-        /* ══════ GESTIÓN DE DATOS Y FIREBASE ══════ */
         const firebaseConfig = {
             apiKey: "AIzaSyAJSdiQtL0m7xFjlEyosh3Rfbt2JpMrTzs",
             authDomain: "monte-eb262.firebaseapp.com",
@@ -846,6 +830,8 @@
                 D = s ? JSON.parse(s) : getDefaults();
             } finally {
                 if (!D || !D.settings || !D.services || !D.portfolio) { D = getDefaults(); }
+                if (!D.testimonials) { D.testimonials = getDefaults().testimonials; }
+                if (!D.printPrices) { D.printPrices = getDefaults().printPrices; }
                 try {
                     renderPublic();
                     checkUrlForClient();
@@ -887,7 +873,6 @@
             toast('✅ Archivo JSON descargado', 3000);
         }
 
-        /* ══════ ESTADO GLOBAL ══════ */
         var curClient = null, selected = {}, allSel = false, lbIdx = 0, portalPhotos = [];
         var admState = { tab: 'services', view: 'list', editId: null };
         var logoClicks = 0, logoTimer = null;
@@ -929,7 +914,9 @@
                     var canvas = document.createElement('canvas'); var w = img.width, h = img.height; 
                     if (w > 1800) { h = Math.floor(h * (1800 / w)); w = 1800; } 
                     canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h); 
-                    document.getElementById(targetId).value = canvas.toDataURL('image/jpeg', .82); 
+                    var mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+                    var q = mimeType === 'image/jpeg' ? 0.82 : undefined;
+                    document.getElementById(targetId).value = canvas.toDataURL(mimeType, q); 
                     toast('Imagen cargada. Haz clic en Guardar.'); 
                 }; 
                 img.src = e.target.result; 
@@ -990,6 +977,18 @@
             }
         }
 
+        window.toggleAllServices = function() {
+            var all = document.getElementById('servGridAll');
+            var btn = document.querySelector('#servMoreBtn button');
+            if (all.style.display === 'none') {
+                all.style.display = 'grid';
+                btn.textContent = 'Ocultar paquetes';
+            } else {
+                all.style.display = 'none';
+                btn.textContent = 'Ver más paquetes';
+            }
+        };
+
         function renderPublic() {
             var s = D.settings;
             document.getElementById('heroDesc').textContent = s.heroDesc; document.getElementById('ftAddr').textContent = s.address;
@@ -1036,13 +1035,40 @@
             vg.innerHTML = vgHtml;
             document.getElementById('videos').style.display = vgHtml ? 'block' : 'none';
 
-            var sg = document.getElementById('servGrid');
-            var sgHtml = '';
-            D.services.sort(function(a, b) { return (a.order || 0) - (b.order || 0); }).forEach(function(svc) {
+            var sgDest = document.getElementById('servGridDestacados');
+            var sgAll = document.getElementById('servGridAll');
+            var sgDestHtml = '';
+            var sgAllHtml = '';
+            var hasHidden = false;
+
+            var sortedServices = D.services.sort(function(a, b) { return (a.order || 0) - (b.order || 0); });
+            var featuredCount = sortedServices.filter(function(s) { return s.isFeatured; }).length;
+
+            if (featuredCount === 0 && sortedServices.length > 0) {
+                sortedServices[0].isFeatured = true;
+            }
+
+            sortedServices.forEach(function(svc) {
                 var feat = svc.features ? svc.features.map(function(f) { return '<li>' + esc(f) + '</li>'; }).join('') : '';
-                sgHtml += '<div class="service-card"><span class="service-icon">' + esc(svc.icon) + '</span><h3>' + esc(svc.title) + '</h3><p>' + esc(svc.desc) + '</p>' + (feat ? '<ul class="service-features">' + feat + '</ul>' : '') + '<span class="service-price">' + esc(svc.price) + '</span></div>';
+                var cardHtml = '<div class="service-card' + (svc.isFeatured ? ' featured' : '') + '"><span class="service-icon">' + esc(svc.icon) + '</span><h3>' + esc(svc.title) + '</h3><p>' + esc(svc.desc) + '</p>' + (feat ? '<ul class="service-features">' + feat + '</ul>' : '') + '<span class="service-price">' + esc(svc.price) + '</span></div>';
+                
+                if (svc.isFeatured) {
+                    sgDestHtml += cardHtml;
+                } else {
+                    sgAllHtml += cardHtml;
+                    hasHidden = true;
+                }
             });
-            sg.innerHTML = sgHtml;
+
+            sgDest.innerHTML = sgDestHtml;
+            sgAll.innerHTML = sgAllHtml;
+
+            var moreBtn = document.getElementById('servMoreBtn');
+            if (hasHidden) {
+                moreBtn.style.display = 'block';
+            } else {
+                moreBtn.style.display = 'none';
+            }
 
             var tg = document.getElementById('testGrid');
             var tgHtml = '';
@@ -1075,7 +1101,6 @@
             document.getElementById('cpWaLink').href = 'https://wa.me/' + s.waNumber; document.getElementById('cpWaLink').textContent = s.phone;
         }
 
-        /* ══════ OPTIMIZACIÓN: DocumentFragment en Portafolio ══════ */
         function filterPortfolio(filter, showAll = false) {
             window.currentPortFilter = filter;
             var grid = document.getElementById('portGrid'); grid.innerHTML = '';
@@ -1333,7 +1358,6 @@
         }
         function closeVideoView() { document.getElementById('vidWrap').innerHTML = ''; document.getElementById('cpVideoView').style.display = 'none'; showMainView(); }
 
-        /* ══════ OPTIMIZACIÓN: Render Pixieset Gallery Batching ══════ */
         function openGalleryView() {
             var c = D.clients[curClient];
             document.getElementById('cpHdrMain').style.display = 'none'; 
@@ -1544,11 +1568,6 @@
             isPublicPortfolioView = false; 
             lbIdx = idx; showLB(); 
         }
-        function openLBSingle(src, label) { 
-            isPublicPortfolioView = true;  
-            portalPhotos = [{ src: src, name: label || '', type: 'image' }]; 
-            lbIdx = 0; showLB(); 
-        }
         function showLB() {
             var p = portalPhotos[lbIdx]; if (!p) return; 
             document.getElementById('lbC').textContent = p.name || ''; 
@@ -1752,10 +1771,7 @@
         }
         if (screen.orientation) screen.orientation.addEventListener('change', () => { if (screen.orientation.type.includes('landscape')) hideRotateHint(); }); window.addEventListener('orientationchange', () => { if (window.innerWidth > window.innerHeight) hideRotateHint(); });
 
-        /* ═══════════════════════════════
-           ══════ ADMIN PANEL Y EXPORT ═══
-           ═══════════════════════════════ */
-        function openAdm() { admState = { tab: 'settings', view: 'list', editId: null }; document.getElementById('admPanel').classList.add('active'); document.body.style.overflow = 'hidden'; renderAdmTabs(); renderAdmBody(); }
+        function openAdm() { admState = { tab: 'services', view: 'list', editId: null }; document.getElementById('admPanel').classList.add('active'); document.body.style.overflow = 'hidden'; renderAdmTabs(); renderAdmBody(); }
         function closeAdm() { document.getElementById('admPanel').classList.remove('active'); document.body.style.overflow = ''; }
         document.getElementById('admTabs').addEventListener('click', function(e) { var btn = e.target.closest('button[data-t]'); if (!btn) return; admState.tab = btn.dataset.t; admState.view = 'list'; admState.editId = null; renderAdmTabs(); renderAdmBody(); });
         function renderAdmTabs() { document.querySelectorAll('#admTabs button').forEach(function(b) { b.classList.toggle('active', b.dataset.t === admState.tab); }); }
@@ -1764,15 +1780,23 @@
         function renderAdmServices(body) {
             if (admState.view === 'edit') {
                 var svc = admState.editId ? D.services.find(function(s) { return s.id === admState.editId; }) : null; var isEdit = !!svc;
-                body.innerHTML = '<h3 style="margin-bottom:1rem">' + (isEdit ? 'Editar' : 'Nuevo') + ' paquete</h3><label class="af-l">Icono (emoji)</label><input class="af-i" id="ae_icon" value="' + esc(svc ? svc.icon : '') + '" placeholder="💍"><label class="af-l">Título</label><input class="af-i" id="ae_title" value="' + esc(svc ? svc.title : '') + '" placeholder="Boda Básico"><label class="af-l">Descripción</label><input class="af-i" id="ae_desc" value="' + esc(svc ? svc.desc : '') + '" placeholder="Cobertura de..."><label class="af-l">Precio</label><input class="af-i" id="ae_price" value="' + esc(svc ? svc.price : '') + '" placeholder="Desde $3,500"><label class="af-l">Características (una por línea)</label><textarea class="af-i af-ta" id="ae_feats" placeholder="100 fotos editadas\nVideo resumen">' + esc((svc && svc.features) ? svc.features.join('\n') : '') + '</textarea><div class="af-btns"><button class="af-btn af-btn-p" onclick="saveService(\'' + (svc ? svc.id : '') + '\')">Guardar</button><button class="af-btn af-btn-s" onclick="admState.view=\'list\';renderAdmBody()">Cancelar</button></div>';
+                body.innerHTML = '<h3 style="margin-bottom:1rem">' + (isEdit ? 'Editar' : 'Nuevo') + ' paquete</h3>' +
+                    '<div class="toggle-row" style="background:#f4ede4; padding:0.5rem 1rem; border-radius:8px; margin-bottom:1rem;">' +
+                    '<label><div class="toggle-sw"><input type="checkbox" id="ae_featured" ' + (svc && svc.isFeatured ? 'checked' : '') + '><div class="toggle-track"></div><div class="toggle-thumb"></div></div>Destacar como "Más contratado"</label></div>' +
+                    '<label class="af-l">Icono (emoji)</label><input class="af-i" id="ae_icon" value="' + esc(svc ? svc.icon : '') + '" placeholder="💍">' +
+                    '<label class="af-l">Título</label><input class="af-i" id="ae_title" value="' + esc(svc ? svc.title : '') + '" placeholder="Boda Básico">' +
+                    '<label class="af-l">Descripción</label><input class="af-i" id="ae_desc" value="' + esc(svc ? svc.desc : '') + '" placeholder="Cobertura de...">' +
+                    '<label class="af-l">Precio</label><input class="af-i" id="ae_price" value="' + esc(svc ? svc.price : '') + '" placeholder="Desde $3,500">' +
+                    '<label class="af-l">Características (una por línea)</label><textarea class="af-i af-ta" id="ae_feats" placeholder="100 fotos editadas\nVideo resumen">' + esc((svc && svc.features) ? svc.features.join('\n') : '') + '</textarea>' +
+                    '<div class="af-btns"><button class="af-btn af-btn-p" onclick="saveService(\'' + (svc ? svc.id : '') + '\')">Guardar</button><button class="af-btn af-btn-s" onclick="admState.view=\'list\';renderAdmBody()">Cancelar</button></div>';
                 return;
             }
             var h = '<button class="adm-add-btn" onclick="admState.view=\'edit\';admState.editId=null;renderAdmBody()">+ Nuevo paquete</button>';
-            D.services.sort(function(a, b) { return (a.order || 0) - (b.order || 0); }).forEach(function(svc) { h += ('<div class="al-item"><div class="al-item-info"><div class="al-item-t">' + esc(svc.icon) + ' ' + esc(svc.title) + '</div><div class="al-item-s">' + esc(svc.price) + '</div></div><div class="al-acts"><button class="al-btn" onclick="editService(\'' + svc.id + '\')">Editar</button><button class="al-btn del" onclick="delService(\'' + svc.id + '\')">Eliminar</button></div></div>'); });
+            D.services.sort(function(a, b) { return (a.order || 0) - (b.order || 0); }).forEach(function(svc) { h += ('<div class="al-item"><div class="al-item-info"><div class="al-item-t">' + esc(svc.icon) + ' ' + esc(svc.title) + (svc.isFeatured ? ' <span style="font-size:0.6rem; background:var(--accent); color:#fff; padding:2px 6px; border-radius:4px; margin-left:4px;">DESTACADO</span>' : '') + '</div><div class="al-item-s">' + esc(svc.price) + '</div></div><div class="al-acts"><button class="al-btn" onclick="editService(\'' + svc.id + '\')">Editar</button><button class="al-btn del" onclick="delService(\'' + svc.id + '\')">Eliminar</button></div></div>'); });
             body.innerHTML = h;
         }
         function editService(id) { admState.view = 'edit'; admState.editId = id; renderAdmBody(); }
-        function saveService(oldId) { var icon = document.getElementById('ae_icon').value.trim(), title = document.getElementById('ae_title').value.trim(), desc = document.getElementById('ae_desc').value.trim(), price = document.getElementById('ae_price').value.trim(), feats = document.getElementById('ae_feats').value.trim().split('\n').filter(function(f) { return f.trim(); }); if (!title) { toast('El título es obligatorio'); return; } if (oldId) { var svc = D.services.find(function(s) { return s.id === oldId; }); if (svc) { svc.icon = icon; svc.title = title; svc.desc = desc; svc.price = price; svc.features = feats; } } else { D.services.push({ id: uid(), icon: icon, title: title, desc: desc, price: price, features: feats, order: D.services.length }); } saveData(); admState.view = 'list'; renderAdmBody(); renderPublic(); }
+        function saveService(oldId) { var icon = document.getElementById('ae_icon').value.trim(), title = document.getElementById('ae_title').value.trim(), desc = document.getElementById('ae_desc').value.trim(), price = document.getElementById('ae_price').value.trim(), feats = document.getElementById('ae_feats').value.trim().split('\n').filter(function(f) { return f.trim(); }); var isFeatured = document.getElementById('ae_featured').checked; if (!title) { toast('El título es obligatorio'); return; } if (oldId) { var svc = D.services.find(function(s) { return s.id === oldId; }); if (svc) { svc.icon = icon; svc.title = title; svc.desc = desc; svc.price = price; svc.features = feats; svc.isFeatured = isFeatured; } } else { D.services.push({ id: uid(), icon: icon, title: title, desc: desc, price: price, features: feats, order: D.services.length, isFeatured: isFeatured }); } saveData(); admState.view = 'list'; renderAdmBody(); renderPublic(); }
         function delService(id) { if (!confirm('¿Eliminar este paquete?')) return; D.services = D.services.filter(function(s) { return s.id !== id; }); saveData(); renderAdmBody(); renderPublic(); toast('Paquete eliminado'); }
 
         function renderAdmClients(body) {
@@ -1805,7 +1829,6 @@
             
             body.innerHTML = '<h3 style="margin-bottom:1rem">' + (isNew ? 'Nuevo evento' : 'Editar evento') + '</h3>' +
                 '<label class="af-l">Código de acceso (sin espacios)</label><input class="af-i" id="ce_code" value="' + esc(isNew ? '' : admState.editId) + '" placeholder="boda2024" ' + (isNew ? '' : 'readonly style="opacity:.6;cursor:not-allowed"') + '>' +
-                '<p class="adm-hint" style="margin-top:-.5rem">Este código se lo darás al cliente para que acceda. No se puede cambiar después.</p>' +
                 '<div class="af-row"><div><label class="af-l">Nombre del cliente</label><input class="af-i" id="ce_name" value="' + esc(c.name) + '" placeholder="María & Carlos"></div><div><label class="af-l">Evento</label><input class="af-i" id="ce_event" value="' + esc(c.event) + '" placeholder="Boda — 15 de marzo, 2024"></div></div>' +
                 '<label class="af-l">Vencimiento del Acceso (1 año por defecto)</label><div style="display:flex; gap:.5rem; margin-bottom:.8rem;"><input type="date" class="af-i" id="ce_expire" value="' + expireStr + '" style="margin:0;"><button type="button" class="af-btn af-btn-s" style="margin:0;" onclick="addOneYear()">+ 1 Año</button></div>' +
                 '<div style="margin:1rem 0;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)"><label class="af-l" style="margin-bottom:.6rem">Contenido del evento</label>' +
@@ -1816,12 +1839,10 @@
                 '<div id="ce_videoSec" style="display:' + (c.hasVideo ? 'block' : 'none') + ';margin-bottom:1rem;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)">' +
                 '<label class="af-l">Enlace de Google Drive, YouTube o Iframe</label>' +
                 '<textarea class="af-i af-ta" id="ce_ytId" placeholder="Pega el enlace de Google Drive, YouTube o el código iframe...">' + esc((c.video || {}).youtubeId || '') + '</textarea>' +
-                '<p class="adm-hint" style="margin-top:-.5rem">Si YouTube bloquea el video por copyright, sube tu video a Google Drive, asegúrate de que el acceso sea "Cualquier persona con el enlace", y pega el link normal aquí.</p>' +
                 '<label class="af-l">Título del video</label><input class="af-i" id="ce_vidTitle" value="' + esc((c.video || {}).title || '') + '" placeholder="Video Resumen"></div>' +
                 
                 '<div id="ce_photosSec" style="display:' + (c.hasPhotos ? 'block' : 'none') + ';margin-bottom:1rem;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)">' +
                 '<label class="af-l" style="color:var(--accent)">Extraer Galería (Soporta Subcarpetas / Sets)</label>' +
-                '<p class="adm-hint">Pega la URL de la carpeta principal de Google Drive.</p>' +
                 
                 '<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">' +
                     '<input class="af-i" id="ce_driveFolderInput" placeholder="URL o ID de la carpeta principal" style="margin-bottom:0;flex:1;min-width:200px;">' +
@@ -1829,11 +1850,11 @@
                 '</div>' +
                 
                 '<div id="ce_driveGalleryStatus" style="font-size:0.8rem; color:var(--accent); margin-bottom:1rem; font-weight:500;"></div>' +
-                '<label class="af-l">URL de carpeta para descargar todo (Botón "Descargar Galería Completa")</label><input class="af-i" id="ce_driveUrl" value="' + esc(c.driveFolderUrl || '') + '">' +
+                '<label class="af-l">URL de carpeta para descargar todo</label><input class="af-i" id="ce_driveUrl" value="' + esc(c.driveFolderUrl || '') + '">' +
                 
                 '<label class="af-l" style="margin-top:.5rem">Foto de Portada de la Galería (Opcional)</label>' +
                 '<div style="display:flex;gap:10px;margin-bottom:0.5rem;">' +
-                    '<input class="af-i" id="ce_galleryCover" placeholder="Si está vacío, usará la 1ra foto de la galería" value="' + esc(c.galleryCover || '') + '" style="margin-bottom:0;flex:1;">' +
+                    '<input class="af-i" id="ce_galleryCover" placeholder="Si está vacío, usará la 1ra foto" value="' + esc(c.galleryCover || '') + '" style="margin-bottom:0;flex:1;">' +
                     '<input type="file" accept="image/*" onchange="uploadGeneralImg(this, \'ce_galleryCover\')" style="width:100px;font-size:0.7rem;padding-top:10px;">' +
                 '</div>' +
                 
@@ -1868,7 +1889,7 @@
             renderClientPhotosList(tempClientPhotos);
             
             saveClient(admState.editId);
-            toast('✅ Ordenado y guardado. Refresca la galería de tu cliente.');
+            toast('✅ Ordenado y guardado.');
         }
 
         function dragPhotoStart(e, i) {
@@ -1886,11 +1907,10 @@
             var item = tempClientPhotos.splice(draggedPhotoIdx, 1)[0];
             tempClientPhotos.splice(targetIdx, 0, item);
             renderClientPhotosList(tempClientPhotos);
-            toast('Orden actualizado temporalmente (Haz clic en Guardar)');
+            toast('Orden actualizado (Haz clic en Guardar)');
             draggedPhotoIdx = -1;
         }
 
-        /* ══════ OPTIMIZACIÓN: Lazy Loading en Admin List ══════ */
         function renderClientPhotosList(photos) {
             var list = document.getElementById('ce_photosList'); if (!list) return; 
             var h = '';
@@ -1898,8 +1918,8 @@
                 h += `<div class="adm-photo-item" draggable="true" ondragstart="dragPhotoStart(event, ${i})" ondragover="dragPhotoOver(event)" ondrop="dropPhoto(event, ${i})" style="cursor:grab; flex-wrap:wrap">
                     <span style="color:#999; margin-right:5px; font-size:1.2rem;" title="Arrastrar para ordenar">↕</span>
                     <img src="${esc(p.src)}" alt="" loading="lazy">
-                    <input type="text" value="${esc(p.name || '')}" placeholder="Nombre / Etiqueta" onchange="updateClientPhotoName(${i},this.value)" style="flex:1; min-width:80px;">
-                    <input type="text" value="${esc(p.set || 'General')}" placeholder="Categoría / Set" onchange="updateClientPhotoSet(${i},this.value)" style="flex:1; min-width:80px;">
+                    <input type="text" value="${esc(p.name || '')}" placeholder="Nombre" onchange="updateClientPhotoName(${i},this.value)" style="flex:1; min-width:80px;">
+                    <input type="text" value="${esc(p.set || 'General')}" placeholder="Set" onchange="updateClientPhotoSet(${i},this.value)" style="flex:1; min-width:80px;">
                     <button type="button" onclick="removeClientPhoto(${i})" title="Quitar">×</button>
                 </div>`; 
             });
@@ -2013,13 +2033,11 @@
                 '<div class="gallery-header" style="margin-bottom:1rem"><button class="cp-back" style="background:var(--border-light);color:var(--text-muted);border-color:var(--border)" onclick="admState.view=\'list\';renderAdmBody()">← Volver a clientes</button><div><h3 style="font-family:var(--fh);margin-bottom:0">Fotolibro: ' + esc(c.name) + '</h3></div></div>' +
                 '<div style="margin-bottom:1.5rem;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)">' +
                 '<label class="af-l" style="color:var(--accent)">Galería Rápida desde Google Drive</label>' +
-                '<p class="adm-hint" style="margin-bottom:.5rem">Pega la URL de la carpeta. Una vez cargadas, puedes <b>arrastrar</b> las fotos hacia los cuadros de abajo, o usar el botón <b>Autollenar</b> para que se acomoden por orden numérico (1.jpg, 2.jpg...)</p>' +
                 '<div style="display:flex;gap:.5rem;flex-wrap:wrap">' +
                 '<input class="af-i" id="pb_driveFolderId" placeholder="URL o ID de la carpeta" style="margin-bottom:0;flex:1;min-width:200px">' +
                 '<button class="af-btn af-btn-p" style="margin:0" onclick="fetchDriveFolderForPB()">Extraer Fotos</button>' +
                 '<button class="af-btn af-btn-s" style="margin:0" onclick="autoFillDriveFiles()">Autollenar Fotolibro</button>' +
                 '</div><div id="pbDriveGallery" style="display:flex;gap:.5rem;overflow-x:auto;margin-top:.8rem;padding-bottom:.5rem;"></div></div>' +
-                '<p class="adm-hint">Edición manual de páginas. Puedes <b>arrastrar</b> fotos aquí, pegar URLs manualmente o subir archivos.</p>' +
                 '<div style="margin-bottom:1rem"><label class="af-l">Portada</label>' +
                 '<div class="pb-slot" style="max-width:200px;display:inline-block;vertical-align:top;margin-right:.5rem" ondragover="allowDropPB(event)" ondragleave="leaveDropPB(event)" ondrop="leaveDropPB(event); dropOnPBSlot(event, \'cover\')"><label>Portada 12×12</label>' +
                 '<input type="text" value="' + esc(pb.cover || '') + '" placeholder="URL de la imagen" onchange="updatePB(\'cover\',this.value)" style="margin-bottom:3px">' +
@@ -2039,7 +2057,7 @@
         function renderPBSlotsAdmin(pb) {
             var container = document.getElementById('pbSlotsAdmin'); if (!container) return; 
             var h = '';
-            pb.spreads.forEach(function(src, i) { h += ('<div class="pb-slot" id="pbSlot_' + i + '" ondragover="allowDropPB(event)" ondragleave="leaveDropPB(event)" ondrop="leaveDropPB(event); dropOnPBSlot(event, \'spread\', ' + i + ')"><label>Lienzo ' + (i + 1) + '</label><input type="text" value="' + esc(src || '') + '" placeholder="URL de imagen panorámica" onchange="updatePBSpread(' + i + ',this.value)"><input type="file" accept="image/*" onchange="uploadPBImg(this,\'spread\',' + i + ')" style="font-size:.55rem;color:#999">' + (src ? '<img src="' + esc(src) + '">' : '') + '<button type="button" class="rm-slot" onclick="removePBSpread(' + i + ')">×</button></div>'); });
+            pb.spreads.forEach(function(src, i) { h += ('<div class="pb-slot" id="pbSlot_' + i + '" ondragover="allowDropPB(event)" ondragleave="leaveDropPB(event)" ondrop="leaveDropPB(event); dropOnPBSlot(event, \'spread\', ' + i + ')"><label>Lienzo ' + (i + 1) + '</label><input type="text" value="' + esc(src || '') + '" placeholder="URL de imagen" onchange="updatePBSpread(' + i + ',this.value)"><input type="file" accept="image/*" onchange="uploadPBImg(this,\'spread\',' + i + ')" style="font-size:.55rem;color:#999">' + (src ? '<img src="' + esc(src) + '">' : '') + '<button type="button" class="rm-slot" onclick="removePBSpread(' + i + ')">×</button></div>'); });
             container.innerHTML = h;
         }
         
@@ -2064,31 +2082,27 @@
         function savePBData() { saveData(); toast('Fotolibro guardado correctamente'); }
 
         async function fetchDriveFolderForPB() {
-            var apiKey = D.settings.driveApiKey; if (!apiKey) { toast('Por favor configura tu Clave API en la pestaña General primero.'); return; }
+            var apiKey = D.settings.driveApiKey; if (!apiKey) { toast('Configura tu Clave API en General.'); return; }
             var folderInput = document.getElementById('pb_driveFolderId').value.trim(); var folderId = folderInput;
             var match = folderInput.match(/\/folders\/([a-zA-Z0-9_-]+)/) || folderInput.match(/id=([a-zA-Z0-9_-]+)/); if (match) folderId = match[1];
             if (!folderId) { toast('ID o URL de carpeta inválido.'); return; }
             var url = 'https://www.googleapis.com/drive/v3/files?q=%27' + folderId + '%27+in+parents+and+mimeType+contains+%27image/%27&fields=files(id,name)&key=' + apiKey;
-            document.getElementById('pbDriveGallery').innerHTML = '<p class="adm-hint">Cargando imágenes de la carpeta...</p>';
+            document.getElementById('pbDriveGallery').innerHTML = '<p class="adm-hint">Cargando...</p>';
             fetch(url).then(function(res) { return res.json(); }).then(function(data) {
                 if (data.error) throw new Error(data.error.message); var files = data.files || [];
-                if (!files.length) { document.getElementById('pbDriveGallery').innerHTML = '<p class="adm-hint">La carpeta está vacía o no tiene permisos de lectura pública.</p>'; return; }
+                if (!files.length) { document.getElementById('pbDriveGallery').innerHTML = '<p class="adm-hint">Carpeta vacía.</p>'; return; }
                 renderDriveGalleryForPB(files);
-            }).catch(function(err) { toast('Error: ' + err.message); document.getElementById('pbDriveGallery').innerHTML = '<p class="adm-hint" style="color:#c0392b">Error al cargar. Verifica tu API Key y asegúrate de que la carpeta de Drive sea "Pública".</p>'; });
+            }).catch(function(err) { toast('Error: ' + err.message); document.getElementById('pbDriveGallery').innerHTML = '<p class="adm-hint" style="color:#c0392b">Error al cargar.</p>'; });
         }
 
-        /* ══════ OPTIMIZACIÓN: Lazy Loading Drive PB Admin Batching ══════ */
         function renderDriveGalleryForPB(files) {
             currentDriveFiles = files; 
             var gal = document.getElementById('pbDriveGallery'); gal.innerHTML = '';
             var frag = document.createDocumentFragment();
             files.forEach(function(f) {
                 var srcThumb = 'https://lh3.googleusercontent.com/d/' + f.id + '=s300', fullSrc = 'https://lh3.googleusercontent.com/d/' + f.id + '=s1600', img = document.createElement('img');
-                img.src = srcThumb; img.title = f.name + ' (Arrastra o haz clic para usar)'; img.style.height = '70px'; img.style.cursor = 'grab'; img.style.borderRadius = '4px'; img.style.border = '2px solid transparent'; img.style.transition = 'border-color 0.2s';
-                img.loading = "lazy";
-                img.draggable = true;
-                img.ondragstart = function(e) { e.dataTransfer.setData('text/plain', fullSrc); };
-                img.onmouseover = function() { this.style.borderColor = 'var(--accent)'; }; img.onmouseout = function() { this.style.borderColor = 'transparent'; };
+                img.src = srcThumb; img.title = f.name; img.style.height = '70px'; img.style.cursor = 'grab'; img.style.borderRadius = '4px'; img.style.border = '2px solid transparent'; img.style.transition = 'border-color 0.2s';
+                img.loading = "lazy"; img.draggable = true; img.ondragstart = function(e) { e.dataTransfer.setData('text/plain', fullSrc); };
                 img.onclick = function() { autoFillNextPBSlot(fullSrc); }; frag.appendChild(img);
             });
             gal.appendChild(frag);
@@ -2103,57 +2117,34 @@
         }
 
         function autoFillDriveFiles() {
-            if (!currentDriveFiles || currentDriveFiles.length === 0) { toast('Primero extrae las fotos de la carpeta.'); return; }
-            if (!confirm('¿Autollenar fotolibro completo? Esto reemplazará las fotos actuales. Tus fotos en Drive deben estar enumeradas (1, 2, 3...) para acomodarse correctamente.')) return;
-            
+            if (!currentDriveFiles || currentDriveFiles.length === 0) { toast('Primero extrae las fotos.'); return; }
+            if (!confirm('¿Autollenar fotolibro completo? Esto reemplazará las fotos actuales. Tus fotos en Drive deben estar enumeradas (1, 2, 3...).')) return;
             var code = admState.editId, pb = D.clients[code].photobook;
-            
             var collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
-            var sortedFiles = currentDriveFiles.slice().sort(function(a, b) {
-                return collator.compare(a.name, b.name);
-            });
-            
-            var totalFiles = sortedFiles.length; 
-            if(totalFiles === 0) return;
-            
-            var fileIdx = 0;
-            pb.cover = 'https://lh3.googleusercontent.com/d/' + sortedFiles[fileIdx++].id + '=s1600';
-            
-            var reserveForBack = pb.hasBackCover && fileIdx < totalFiles;
-            var spreadLimit = reserveForBack ? totalFiles - 1 : totalFiles;
-            
-            pb.spreads = [];
-            while (fileIdx < spreadLimit) { 
-                pb.spreads.push('https://lh3.googleusercontent.com/d/' + sortedFiles[fileIdx++].id + '=s1600'); 
-            }
+            var sortedFiles = currentDriveFiles.slice().sort(function(a, b) { return collator.compare(a.name, b.name); });
+            var totalFiles = sortedFiles.length; if(totalFiles === 0) return;
+            var fileIdx = 0; pb.cover = 'https://lh3.googleusercontent.com/d/' + sortedFiles[fileIdx++].id + '=s1600';
+            var reserveForBack = pb.hasBackCover && fileIdx < totalFiles; var spreadLimit = reserveForBack ? totalFiles - 1 : totalFiles;
+            pb.spreads = []; while (fileIdx < spreadLimit) { pb.spreads.push('https://lh3.googleusercontent.com/d/' + sortedFiles[fileIdx++].id + '=s1600'); }
             if (pb.spreads.length === 0) pb.spreads = [null]; 
-            
-            if (reserveForBack) {
-                pb.back = 'https://lh3.googleusercontent.com/d/' + sortedFiles[fileIdx].id + '=s1600';
-            }
-            
-            saveData(); 
-            renderPhotobookAdmin(document.getElementById('admBody')); 
-            toast('Fotolibro autollenado por orden numérico');
+            if (reserveForBack) { pb.back = 'https://lh3.googleusercontent.com/d/' + sortedFiles[fileIdx].id + '=s1600'; }
+            saveData(); renderPhotobookAdmin(document.getElementById('admBody')); toast('Fotolibro autollenado por orden numérico');
         }
 
         function renderAdmPortfolio(body) {
             body.innerHTML = `
                 <div style="margin-bottom:1.5rem;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)">
                     <label class="af-l" style="color:var(--accent)">Importar Portafolio desde Google Drive</label>
-                    <p class="adm-hint">Pega el link de la carpeta principal. Las subcarpetas (ej. "Bodas", "15 Años") se usarán como <b>categorías</b> para mostrar los filtros en tu sitio web.</p>
                     <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
                         <input class="af-i" id="port_driveFolderId" placeholder="URL o ID de la carpeta" style="margin-bottom:0;flex:1;min-width:200px;">
                         <button class="af-btn af-btn-p" style="margin:0" onclick="fetchDrivePortfolio()">Extraer Portafolio</button>
                     </div>
                     <div id="port_driveStatus" style="font-size:0.8rem; color:var(--accent); font-weight:500;"></div>
                 </div>
-                
                 <div style="display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;">
                     <button class="adm-add-btn" style="margin-bottom:0;" onclick="addPortfolioImg()">+ Agregar Imagen</button>
                     <button class="adm-add-btn" style="margin-bottom:0;" onclick="addPortfolioVid()">+ Agregar Video</button>
                 </div>
-                
                 <div id="admPortList"></div>
             `;
             var list = document.getElementById('admPortList');
@@ -2162,89 +2153,38 @@
                 var isVid = item.type === 'video';
                 h += '<div class="adm-photo-item" style="flex-wrap:wrap;">';
                 h += '<img src="' + esc(item.src) + '" alt="" style="width:60px; height:60px;">';
-                
-                if (isVid) {
-                    h += '<input type="text" value="' + esc(item.videoUrl || '') + '" placeholder="Enlace del Video (YouTube o Drive)" onchange="updPortVid(' + i + ',this.value)" style="flex:1; min-width:150px; background:#f4ede4;">';
-                }
-                
+                if (isVid) h += '<input type="text" value="' + esc(item.videoUrl || '') + '" placeholder="Enlace del Video" onchange="updPortVid(' + i + ',this.value)" style="flex:1; min-width:150px; background:#f4ede4;">';
                 h += '<input type="text" value="' + esc(item.src) + '" placeholder="URL de la ' + (isVid ? 'Miniatura' : 'Imagen') + '" onchange="updPortSrc(' + i + ',this.value)" style="flex:1; min-width:150px;">';
                 h += '<input type="text" value="' + esc(item.label) + '" placeholder="Categoría (Ej. Bodas)" onchange="updPortLabel(' + i + ',this.value)" style="flex:1; min-width:100px;">';
-                h += '<button type="button" onclick="delPortfolioImg(' + i + ')" title="Quitar">×</button>';
-                h += '</div>';
+                h += '<button type="button" onclick="delPortfolioImg(' + i + ')" title="Quitar">×</button></div>';
             });
             list.innerHTML = h;
         }
         
         async function fetchDrivePortfolio() {
-            var apiKey = D.settings.driveApiKey;
-            if (!apiKey) { toast('Configura tu Clave API en la pestaña General.'); return; }
-            var input = document.getElementById('port_driveFolderId').value.trim();
-            var folderId = input; var match = input.match(/\/folders\/([a-zA-Z0-9_-]+)/) || input.match(/id=([a-zA-Z0-9_-]+)/); if (match) folderId = match[1];
+            var apiKey = D.settings.driveApiKey; if (!apiKey) { toast('Configura tu Clave API en General.'); return; }
+            var input = document.getElementById('port_driveFolderId').value.trim(); var folderId = input; var match = input.match(/\/folders\/([a-zA-Z0-9_-]+)/) || input.match(/id=([a-zA-Z0-9_-]+)/); if (match) folderId = match[1];
             if (!folderId) { toast('URL o ID de carpeta inválido.'); return; }
-
-            var status = document.getElementById('port_driveStatus');
-            status.textContent = 'Analizando carpeta principal y paginando...';
-
+            var status = document.getElementById('port_driveStatus'); status.textContent = 'Analizando carpeta principal y paginando...';
             try {
                 async function getAllFiles(fId, onlyImages) {
-                    let all = []; let pToken = '';
-                    let q = `'${fId}' in parents and trashed=false`;
-                    if (onlyImages) q += " and mimeType contains 'image/'";
-                    do {
-                        let url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=nextPageToken,files(id,name,mimeType)&key=${apiKey}&pageSize=1000`;
-                        if (pToken) url += `&pageToken=${pToken}`;
-                        let res = await fetch(url);
-                        let data = await res.json();
-                        if (data.error) throw new Error(data.error.message);
-                        if (data.files) all = all.concat(data.files);
-                        pToken = data.nextPageToken;
-                    } while (pToken);
-                    return all;
+                    let all = []; let pToken = ''; let q = `'${fId}' in parents and trashed=false`; if (onlyImages) q += " and mimeType contains 'image/'";
+                    do { let url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=nextPageToken,files(id,name,mimeType)&key=${apiKey}&pageSize=1000`; if (pToken) url += `&pageToken=${pToken}`; let res = await fetch(url); let data = await res.json(); if (data.error) throw new Error(data.error.message); if (data.files) all = all.concat(data.files); pToken = data.nextPageToken; } while (pToken); return all;
                 }
-
                 let rootFiles = await getAllFiles(folderId, false);
-                let folders = rootFiles.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
-                let looseImages = rootFiles.filter(f => f.mimeType.includes('image/'));
-
-                var collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
-                folders.sort((a, b) => collator.compare(a.name, b.name));
-                looseImages.sort((a, b) => collator.compare(a.name, b.name));
-
-                let newPhotos = [];
-
-                looseImages.forEach(img => {
-                    newPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s800`, label: 'General', type: 'image' });
-                });
-
-                for (let folder of folders) {
-                    status.textContent = `Extrayendo categoría: ${folder.name}...`;
-                    let subFiles = await getAllFiles(folder.id, true);
-                    subFiles.sort((a, b) => collator.compare(a.name, b.name));
-                    subFiles.forEach(img => {
-                        newPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s800`, label: folder.name, type: 'image' });
-                    });
-                }
-
-                D.portfolio = D.portfolio.concat(newPhotos);
-                saveData();
-                renderAdmBody();
-                renderPublic();
-                status.textContent = `¡Éxito! Se añadieron ${newPhotos.length} fotos al portafolio.`;
-                toast('Portafolio actualizado correctamente.');
-
-            } catch(e) {
-                status.textContent = 'Error: ' + e.message;
-                toast('Error de extracción.');
-            }
+                let folders = rootFiles.filter(f => f.mimeType === 'application/vnd.google-apps.folder'); let looseImages = rootFiles.filter(f => f.mimeType.includes('image/'));
+                var collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'}); folders.sort((a, b) => collator.compare(a.name, b.name)); looseImages.sort((a, b) => collator.compare(a.name, b.name));
+                let newPhotos = []; looseImages.forEach(img => { newPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s800`, label: 'General', type: 'image' }); });
+                for (let folder of folders) { status.textContent = `Extrayendo categoría: ${folder.name}...`; let subFiles = await getAllFiles(folder.id, true); subFiles.sort((a, b) => collator.compare(a.name, b.name)); subFiles.forEach(img => { newPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s800`, label: folder.name, type: 'image' }); }); }
+                D.portfolio = D.portfolio.concat(newPhotos); saveData(); renderAdmBody(); renderPublic(); status.textContent = `¡Éxito! Se añadieron ${newPhotos.length} fotos al portafolio.`; toast('Portafolio actualizado.');
+            } catch(e) { status.textContent = 'Error: ' + e.message; toast('Error de extracción.'); }
         }
 
         function addPortfolioImg() { D.portfolio.push({ type: 'image', src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=500&h=650&fit=crop&auto=format', label: 'Nuevo' }); saveData(); renderAdmBody(); }
         function addPortfolioVid() { D.portfolio.push({ type: 'video', src: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&h=650&fit=crop&auto=format', videoUrl: '', label: 'Nuevo Video' }); saveData(); renderAdmBody(); }
-        
         function updPortSrc(i, val) { D.portfolio[i].src = val.trim(); saveData(); renderPublic(); renderAdmBody(); }
         function updPortVid(i, val) { D.portfolio[i].videoUrl = val.trim(); saveData(); renderPublic(); renderAdmBody(); }
         function updPortLabel(i, val) { D.portfolio[i].label = val.trim(); saveData(); renderPublic(); }
-        
         function delPortfolioImg(i) { D.portfolio.splice(i, 1); saveData(); renderAdmBody(); renderPublic(); }
 
         function renderAdmTestimonials(body) {
@@ -2265,93 +2205,38 @@
                 '<label class="af-l">Facebook URL</label><input class="af-i" id="se_fb" value="' + esc(s.facebook) + '">' +
                 '<label class="af-l">WhatsApp Number</label><input class="af-i" id="se_wa" value="' + esc(s.waNumber) + '">' +
                 '<label class="af-l">Texto del hero</label><textarea class="af-i af-ta" id="se_hero">' + esc(s.heroDesc) + '</textarea>' +
-                
                 '<label class="af-l">Logotipo del sitio (URL de imagen)</label>' +
-                '<div style="display:flex;gap:10px;margin-bottom:1rem;">' +
-                    '<input class="af-i" id="se_logoImg" placeholder="Si está vacío, mostrará el texto" value="' + esc(s.logoImage || '') + '" style="margin-bottom:0;flex:1;">' +
-                    '<input type="file" accept="image/*" onchange="uploadGeneralImg(this, \'se_logoImg\')" style="width:100px;font-size:0.7rem;padding-top:10px;">' +
-                '</div>' +
-                
+                '<div style="display:flex;gap:10px;margin-bottom:1rem;"><input class="af-i" id="se_logoImg" placeholder="Si está vacío, mostrará el texto" value="' + esc(s.logoImage || '') + '" style="margin-bottom:0;flex:1;"><input type="file" accept="image/*" onchange="uploadGeneralImg(this, \'se_logoImg\')" style="width:100px;font-size:0.7rem;padding-top:10px;"></div>' +
                 '<label class="af-l">Imagen Principal (Inicio)</label>' +
-                '<div style="display:flex;gap:10px;margin-bottom:1rem;">' +
-                    '<input class="af-i" id="se_heroImg" placeholder="Pega URL o usa el botón de lado ->" value="' + esc(s.heroImage || '') + '" style="margin-bottom:0;flex:1;">' +
-                    '<input type="file" accept="image/*" onchange="uploadGeneralImg(this, \'se_heroImg\')" style="width:100px;font-size:0.7rem;padding-top:10px;">' +
-                '</div>' +
-                
+                '<div style="display:flex;gap:10px;margin-bottom:1rem;"><input class="af-i" id="se_heroImg" value="' + esc(s.heroImage || '') + '" style="margin-bottom:0;flex:1;"><input type="file" accept="image/*" onchange="uploadGeneralImg(this, \'se_heroImg\')" style="width:100px;font-size:0.7rem;padding-top:10px;"></div>' +
                 '<label class="af-l">Google Maps Embed URL</label><input class="af-i" id="se_map" value="' + esc(s.mapEmbed) + '">' +
-                '<label class="af-l" style="margin-top:1rem; color:var(--accent)">Clave API de Google Drive</label><input class="af-i" id="se_driveApi" placeholder="AIzaSy..." value="' + esc(s.driveApiKey || '') + '">' +
+                '<label class="af-l" style="margin-top:1rem; color:var(--accent)">Clave API de Google Drive</label><input class="af-i" id="se_driveApi" value="' + esc(s.driveApiKey || '') + '">' +
                 '<label class="af-l" style="margin-top:1rem">Cambiar contraseña admin</label><input class="af-i" type="password" id="se_pass" placeholder="Dejar vacío para no cambiar">' +
                 '<div class="af-btns"><button class="af-btn af-btn-p" onclick="saveSettings()">Guardar cambios locales</button></div>' +
-                
                 '<hr style="border:none; border-top:1px solid var(--border-light); margin: 2rem 0;">' +
                 '<h3 style="margin-bottom:1rem; color:var(--accent);">Sincronización de la Página</h3>' +
-                '<p class="adm-hint">Tus datos se guardan en Firebase de forma automática. Si la página no está reflejando lo último, utiliza estos controles.</p>' +
                 '<div style="display:flex; gap:10px; flex-wrap:wrap;">' +
-                '<button class="af-btn" style="background:#111; color:#fff;" onclick="saveData()">Subir (Guardar) a Firebase</button>' +
-                '<button class="af-btn af-btn-s" onclick="loadData(true)">Forzar Carga desde Firebase</button>' +
-                '</div>' +
-                '<button class="af-btn" style="background:#2b5797; color:#fff; width:100%; margin-top:10px;" onclick="downloadJSON()">📥 Descargar Respaldo JSON (Manual)</button>';
+                '<button class="af-btn" style="background:#2b5797;color:#fff;" onclick="loadData(true)">Forzar Descarga de la Nube</button>' +
+                '<button class="af-btn af-btn-d" onclick="downloadJSON()">Descargar Respaldo JSON</button>' +
+                '</div>';
         }
         function saveSettings() {
-            var s = D.settings; s.phone = document.getElementById('se_phone').value.trim(); s.phoneRaw = document.getElementById('se_phoneRaw').value.trim(); s.address = document.getElementById('se_addr').value.trim(); s.hours = document.getElementById('se_hours').value.trim(); s.facebook = document.getElementById('se_fb').value.trim(); s.waNumber = document.getElementById('se_wa').value.trim(); s.heroDesc = document.getElementById('se_hero').value.trim(); s.heroImage = document.getElementById('se_heroImg').value.trim(); s.logoImage = document.getElementById('se_logoImg').value.trim(); s.mapEmbed = document.getElementById('se_map').value.trim(); s.driveApiKey = document.getElementById('se_driveApi').value.trim();
-            var newPass = document.getElementById('se_pass').value; if (newPass && newPass.length >= 4) { D.adminPass = newPass; toast('Contraseña actualizada'); }
+            var s = D.settings; s.phone = document.getElementById('se_phone').value.trim(); s.phoneRaw = document.getElementById('se_phoneRaw').value.trim(); s.address = document.getElementById('se_addr').value.trim(); s.hours = document.getElementById('se_hours').value.trim(); s.facebook = document.getElementById('se_fb').value.trim(); s.waNumber = document.getElementById('se_wa').value.trim(); s.heroDesc = document.getElementById('se_hero').value.trim(); s.mapEmbed = document.getElementById('se_map').value.trim(); s.driveApiKey = document.getElementById('se_driveApi').value.trim(); s.heroImage = document.getElementById('se_heroImg').value.trim(); s.logoImage = document.getElementById('se_logoImg').value.trim();
+            var p = document.getElementById('se_pass').value; if (p.length > 3) D.adminPass = p;
             saveData(); renderPublic(); toast('Configuración guardada');
         }
 
         function checkUrlForClient() {
             var params = new URLSearchParams(window.location.search);
-            var clientCodeParam = params.get('c') || params.get('cliente');
-
-            if (!clientCodeParam && window.location.hash.includes('?')) {
-                var hashParams = new URLSearchParams(window.location.hash.substring(window.location.hash.indexOf('?')));
-                clientCodeParam = hashParams.get('c') || hashParams.get('cliente');
-            }
-            
-            if (!clientCodeParam && window.location.hash && window.location.hash.length > 1) {
-                var possibleCode = window.location.hash.substring(1).split('?')[0].replace(/\/+$/, '');
-                if(!['portafolio', 'videos', 'servicios', 'testimonios', 'contacto'].includes(possibleCode)) {
-                    clientCodeParam = possibleCode;
-                }
-            }
-            
-            if (clientCodeParam) {
-                clientCodeParam = decodeURIComponent(clientCodeParam).toLowerCase().replace(/\/+$/, '').replace(/\s+/g, '');
-                var targetView = null;
-                
-                if (clientCodeParam.endsWith('-galeria')) { 
-                    targetView = 'galeria'; 
-                    clientCodeParam = clientCodeParam.replace(/-galeria$/, ''); 
-                } else if (clientCodeParam.endsWith('-video')) { 
-                    targetView = 'video'; 
-                    clientCodeParam = clientCodeParam.replace(/-video$/, ''); 
-                } else if (clientCodeParam.endsWith('-fotolibro')) { 
-                    targetView = 'fotolibro'; 
-                    clientCodeParam = clientCodeParam.replace(/-fotolibro$/, ''); 
-                }
-                
-                if (D && D.clients && D.clients[clientCodeParam]) {
-                    document.getElementById('codeIn').value = clientCodeParam;
-                    curClient = clientCodeParam;
-                    selected = {}; allSel = false; isPrintMode = false;
-                    
-                    document.getElementById('cpVideoView').style.display = 'none';
-                    document.getElementById('cpGalleryView').style.display = 'none';
-                    document.getElementById('cpPhotobookView').style.display = 'none';
-                    
-                    enterPortal(targetView);
-                } else {
-                    console.warn("Enlace inválido o expirado:", clientCodeParam);
-                    toast("El enlace del evento no es válido o ha expirado.", 4000);
-                    forceExitPortal();
-                    pushUrlState(null);
-                }
-            } else {
-                forceExitPortal();
+            var clientCode = params.get('c');
+            if (clientCode && D && D.clients && D.clients[clientCode]) {
+                var curUrl = window.location.href; curClient = clientCode; var viewParam = null;
+                if(curUrl.includes('-galeria')) viewParam = 'galeria'; else if(curUrl.includes('-video')) viewParam = 'video'; else if(curUrl.includes('-fotolibro')) viewParam = 'fotolibro';
+                enterPortal(viewParam);
             }
         }
-        
-        loadData(); 
-        
+
+        window.onload = function() { loadData(); };
     </script>
 </body>
 </html>
