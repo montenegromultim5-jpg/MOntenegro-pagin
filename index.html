@@ -844,6 +844,7 @@
             }
         }
 
+        // Función saveData optimizada con registro de errores detallado
         function saveData() {
             const loader = document.getElementById('loader');
             const loaderText = document.querySelector('.loader-text');
@@ -853,7 +854,10 @@
             
             db.collection("web_data").doc("fvm_data").set(D)
                 .then(() => { toast('✅ Datos guardados correctamente', 2500); })
-                .catch((error) => { toast('❌ Error al subir datos. Se guardó localmente.', 4000); })
+                .catch((error) => {
+                    console.error("Error detallado de Firebase:", error);
+                    toast('❌ Error: ' + (error.message || "Fallo al guardar en la nube"), 5000);
+                })
                 .finally(() => {
                     if (loader && loaderText) {
                         loader.style.opacity = '0';
