@@ -223,12 +223,25 @@
         .px-set-title { font-family: var(--fh); font-size: 2rem; text-align: center; margin-bottom: 1.8rem; font-weight: 400; color: var(--c-text); letter-spacing: 0.5px; }
         
         .px-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); grid-auto-rows: 210px; grid-auto-flow: dense; gap: 12px; }
+        .px-grid.layout-masonry { display: block; column-count: 3; column-gap: 12px; }
+        .px-grid.layout-masonry .pc { margin-bottom: 12px; break-inside: avoid; -webkit-column-break-inside: avoid; height: auto !important; grid-row: auto !important; }
+        .px-grid.layout-masonry .pc img { height: auto !important; object-fit: contain; }
+        .px-grid.layout-vertical { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); grid-auto-rows: auto; }
+        .px-grid.layout-vertical .pc { aspect-ratio: 4 / 5; grid-row: span 1 !important; height: auto; }
+        .px-grid.layout-horizontal { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); grid-auto-rows: auto; }
+        .px-grid.layout-horizontal .pc { aspect-ratio: 4 / 3; grid-row: span 1 !important; height: auto; }
         .pc { position: relative; border-radius: 6px; overflow: hidden; background: var(--c-surface2); cursor: pointer; }
         .pc.vertical { grid-row: span 2; }
         .pc.horizontal { grid-row: span 1; }
-        .pc img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s, filter .4s, opacity .4s; pointer-events: none; display: block; opacity: 0; }
+        .pc img { width: 100%; height: 100%; object-fit: cover; image-orientation: from-image; transition: transform .4s, filter .4s, opacity .4s; pointer-events: none; display: block; opacity: 0; }
         .pc img.loaded { opacity: 1; }
         .pc:hover img { transform: scale(1.03); }
+        .pc img.rot-90 { transform: rotate(90deg) scale(1.38); }
+        .pc img.rot-180 { transform: rotate(180deg); }
+        .pc img.rot-270 { transform: rotate(270deg) scale(1.38); }
+        .pc:hover img.rot-90 { transform: rotate(90deg) scale(1.42); }
+        .pc:hover img.rot-180 { transform: rotate(180deg) scale(1.03); }
+        .pc:hover img.rot-270 { transform: rotate(270deg) scale(1.42); }
         
         .pc .chk { display: none; position: absolute; top: .65rem; right: .65rem; width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .75); background: rgba(0, 0, 0, .45); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); cursor: pointer; align-items: center; justify-content: center; transition: .2s; z-index: 3; padding: 0; }
         .pc .chk svg { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transition: .2s; }
@@ -295,7 +308,7 @@
         /* Lightbox */
         .lb { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, .96); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .3s; }
         .lb.active { opacity: 1; pointer-events: auto; }
-        .lb img { max-width: 94vw; max-height: 82vh; max-height: 82dvh; object-fit: contain; border-radius: 4px; user-select: none; -webkit-user-select: none; }
+        .lb img { max-width: 94vw; max-height: 82vh; max-height: 82dvh; object-fit: contain; image-orientation: from-image; border-radius: 4px; user-select: none; -webkit-user-select: none; transition: transform 0.25s ease; }
         .lb-x { position: absolute; top: calc(1rem + var(--safe-top)); right: 1rem; background: rgba(255, 255, 255, .12); border: 1px solid rgba(255,255,255,0.15); color: #fff; width: 46px; height: 46px; border-radius: 50%; font-size: 1.6rem; cursor: pointer; z-index: 3001; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
         .lb-n { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, .12); border: 1px solid rgba(255,255,255,0.15); color: #fff; width: 48px; height: 48px; border-radius: 50%; font-size: 1.4rem; cursor: pointer; z-index: 3001; display: flex; align-items: center; justify-content: center; transition: .2s; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
         .lb-n:hover { background: rgba(255, 255, 255, .28); }
@@ -480,8 +493,11 @@
             #cpVideoView { padding-top: calc(4.2rem + var(--safe-top)); }
             .vid-sec { padding: 1rem; }
 
-            .px-grid { grid-template-columns: repeat(2, 1fr) !important; grid-auto-rows: 135px !important; gap: 8px !important; display: grid !important; }
-            .pc { margin-bottom: 0 !important; display: block; }
+            .px-grid:not(.layout-masonry) { grid-template-columns: repeat(2, 1fr) !important; grid-auto-rows: 145px !important; gap: 8px !important; display: grid !important; }
+            .px-grid.layout-vertical, .px-grid.layout-horizontal { grid-auto-rows: auto !important; }
+            .px-grid.layout-masonry { column-count: 2 !important; column-gap: 8px !important; display: block !important; }
+            .px-grid.layout-masonry .pc { margin-bottom: 8px !important; display: block; }
+            .px-grid:not(.layout-masonry) .pc { margin-bottom: 0 !important; display: block; }
         }
         @media(max-width:480px) {
             html { font-size: 14px; }
@@ -653,6 +669,7 @@
             <div class="px-nav-wrapper" id="pxNav">
                 <div class="px-nav-inner" id="pxNavInner"></div>
                 <div class="px-actions">
+                    <button class="gal-btn port-filter-btn" id="btnLayoutSwitch" onclick="cycleGalleryLayout()" style="background:var(--c-surface2); color:var(--c-text); border-color:var(--c-border); padding:0.45rem 0.95rem;" title="Cambiar acomodo de las fotos">📐 Vista: Auto</button>
                     <button class="gal-btn port-filter-btn" id="btnSelAll" onclick="toggleSelAll()" style="display:none; background:var(--c-surface2); color:var(--c-text); border-color:var(--c-border);">Seleccionar todo</button>
                     <button class="gal-btn port-filter-btn active" style="background:var(--c-accent); color:#fff; border:none;" onclick="openDownloadModal()">Descargar Galería</button>
                 </div>
@@ -800,6 +817,7 @@
         <iframe id="lbVid" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="display:none; width:90%; height:80vh; max-width:1000px; border-radius:8px;"></iframe>
         <div class="lb-bot">
             <span class="lb-c" id="lbC"></span>
+            <button type="button" class="lb-dl" id="lbRotBtn" onclick="rotateCurrentLB()" style="padding:.55rem 1.1rem;" title="Girar foto 90°">↻ Girar</button>
             <a class="lb-dl" id="lbDl" style="cursor:pointer;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Descargar Foto</a>
         </div>
     </div>
@@ -1563,6 +1581,7 @@
 
             isPrintMode = false;
             isPublicPortfolioView = false; 
+            currentGalleryLayout = c.defaultLayout || 'auto';
             document.getElementById('cpGalleryView').classList.remove('gallery-print-mode');
             updateFabIcon();
 
@@ -1606,9 +1625,60 @@
             }
         }
 
+        var currentGalleryLayout = 'auto'; // 'auto', 'masonry', 'vertical', 'horizontal'
+
+        function cycleGalleryLayout() {
+            var modes = ['auto', 'masonry', 'vertical', 'horizontal'];
+            var labels = {
+                'auto': '📐 Vista: Auto',
+                'masonry': '📐 Vista: Completa',
+                'vertical': '📐 Vista: Vertical',
+                'horizontal': '📐 Vista: Horizontal'
+            };
+            var idx = modes.indexOf(currentGalleryLayout);
+            currentGalleryLayout = modes[(idx + 1) % modes.length];
+            var btn = document.getElementById('btnLayoutSwitch');
+            if (btn) btn.textContent = labels[currentGalleryLayout];
+            document.querySelectorAll('#pxContent .px-grid').forEach(function(g) {
+                g.classList.remove('layout-masonry', 'layout-vertical', 'layout-horizontal');
+                if (currentGalleryLayout !== 'auto') {
+                    g.classList.add('layout-' + currentGalleryLayout);
+                }
+            });
+            if (currentGalleryLayout === 'masonry') {
+                toast('Vista Completa: Fotos sin recorte en su proporción original', 2200);
+            }
+        }
+
+        function handleGridImgLoad(img, idx) {
+            var card = img.parentElement;
+            if (!card) return;
+            var p = portalPhotos[idx];
+            var rot = (p && p.rot) ? parseInt(p.rot) : 0;
+            var isTurned = (rot === 90 || rot === 270);
+            var w = isTurned ? img.naturalHeight : img.naturalWidth;
+            var h = isTurned ? img.naturalWidth : img.naturalHeight;
+            var orient = (p && p.orient) ? p.orient : (h > w ? 'vertical' : 'horizontal');
+            card.classList.remove('vertical', 'horizontal');
+            card.classList.add(orient);
+            img.classList.add('loaded');
+        }
+
         function renderPixiesetGallery() {
             var photos = portalPhotos;
             var sets = {};
+            var c = D.clients[curClient];
+            if (c && c.defaultLayout && currentGalleryLayout === 'auto') {
+                currentGalleryLayout = c.defaultLayout;
+            }
+            var labels = {
+                'auto': '📐 Vista: Auto',
+                'masonry': '📐 Vista: Completa',
+                'vertical': '📐 Vista: Vertical',
+                'horizontal': '📐 Vista: Horizontal'
+            };
+            var btnL = document.getElementById('btnLayoutSwitch');
+            if (btnL) btnL.textContent = labels[currentGalleryLayout] || '📐 Vista: Auto';
             
             photos.forEach((p, i) => {
                 var setName = p.set || 'General';
@@ -1635,16 +1705,19 @@
                 }
                 
                 var grid = document.createElement('div');
-                grid.className = 'px-grid';
+                grid.className = 'px-grid' + (currentGalleryLayout !== 'auto' ? ' layout-' + currentGalleryLayout : '');
                 var gridFrag = document.createDocumentFragment();
 
                 sets[setName].forEach(item => {
                     var i = item.index; var p = item.photo; var isSel = selected[i];
                     var d = document.createElement('div');
-                    d.className = 'pc';
+                    var initOrient = p.orient ? ' ' + p.orient : '';
+                    var rotClass = p.rot ? ' rot-' + p.rot : '';
+                    d.className = 'pc' + initOrient;
+                    d.id = 'pc-' + i;
                     
                     d.innerHTML = `
-                        <img src="${pSrc(p, 600)}" alt="${esc(p.name || '')}" loading="lazy" onload="this.parentElement.classList.add(this.naturalHeight > this.naturalWidth ? 'vertical' : 'horizontal'); this.classList.add('loaded');">
+                        <img id="gimg-${i}" class="${rotClass.trim()}" src="${pSrc(p, 800)}" alt="${esc(p.name || '')}" loading="lazy" onload="handleGridImgLoad(this, ${i})">
                         <div class="chk${isSel ? ' on' : ''}" id="chk-${i}">
                             <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                         </div>
@@ -1788,24 +1861,50 @@
             isPublicPortfolioView = false; 
             lbIdx = idx; showLB(); 
         }
+        var lbTempRot = 0;
+
+        function rotateCurrentLB() {
+            var p = portalPhotos[lbIdx];
+            if (!p) return;
+            var cur = (p.rot !== undefined ? parseInt(p.rot) : lbTempRot) || 0;
+            var next = (cur + 90) % 360;
+            p.rot = next;
+            lbTempRot = next;
+            var imgEl = document.getElementById('lbImg');
+            if (imgEl) {
+                imgEl.style.transform = next ? 'rotate(' + next + 'deg)' : '';
+            }
+            var gImg = document.getElementById('gimg-' + lbIdx);
+            if (gImg) {
+                gImg.classList.remove('rot-90', 'rot-180', 'rot-270');
+                if (next) gImg.classList.add('rot-' + next);
+                handleGridImgLoad(gImg, lbIdx);
+            }
+        }
+
         function showLB() {
             var p = portalPhotos[lbIdx]; if (!p) return; 
             document.getElementById('lbC').textContent = p.name || ''; 
+            lbTempRot = p.rot ? parseInt(p.rot) : 0;
             
             var imgEl = document.getElementById('lbImg');
             var vidEl = document.getElementById('lbVid');
             var dlBtn = document.getElementById('lbDl');
+            var rotBtn = document.getElementById('lbRotBtn');
 
             if (p.type === 'video') {
                 imgEl.style.display = 'none';
                 vidEl.style.display = 'block';
                 vidEl.src = getEmbedUrl(p.videoUrl) + '?autoplay=1';
                 dlBtn.style.display = 'none';
+                if (rotBtn) rotBtn.style.display = 'none';
             } else {
                 vidEl.style.display = 'none';
                 vidEl.src = '';
                 imgEl.style.display = 'block';
+                imgEl.style.transform = lbTempRot ? 'rotate(' + lbTempRot + 'deg)' : '';
                 imgEl.src = pFull(p);
+                if (rotBtn) rotBtn.style.display = '';
                 
                 if (isPublicPortfolioView) {
                     dlBtn.style.display = 'none'; 
@@ -2060,14 +2159,26 @@
         function newClient() { admState.view = 'edit'; admState.editId = null; renderAdmBody(); }
         function editClient(code) { admState.view = 'edit'; admState.editId = code; renderAdmBody(); }
 
-        function initTempPhotos(photos) { tempClientPhotos = (photos || []).map(function(p) { return { src: p.src, name: p.name, set: p.set || 'General', driveId: p.driveId || null }; }); }
+        function initTempPhotos(photos) {
+            tempClientPhotos = (photos || []).map(function(p) {
+                return {
+                    src: p.src,
+                    name: p.name,
+                    set: p.set || 'General',
+                    driveId: p.driveId || null,
+                    orient: p.orient || '',
+                    rot: p.rot || 0
+                };
+            });
+        }
         
         function renderClientForm(body) {
             var isNew = !admState.editId;
-            var c = isNew ? { name: '', event: '', hasVideo: true, hasPhotos: true, hasPhotobook: false, video: { youtubeId: '', title: '' }, photos: [], driveFolderUrl: '', galleryCover: '', photobook: { cover: null, spreads: [null], hasBackCover: false, back: null }, expireAt: Date.now() + 31536000000 } : D.clients[admState.editId];
+            var c = isNew ? { name: '', event: '', hasVideo: true, hasPhotos: true, hasPhotobook: false, video: { youtubeId: '', title: '' }, photos: [], driveFolderUrl: '', galleryCover: '', defaultLayout: 'auto', photobook: { cover: null, spreads: [null], hasBackCover: false, back: null }, expireAt: Date.now() + 31536000000 } : D.clients[admState.editId];
             initTempPhotos(c.photos || []);
             
             var expireStr = toDateInput(c.expireAt || (Date.now() + 31536000000));
+            var defLay = c.defaultLayout || 'auto';
             
             body.innerHTML = '<h3 style="margin-bottom:1rem">' + (isNew ? 'Nuevo evento' : 'Editar evento') + '</h3>' +
                 '<label class="af-l">Código de acceso (sin espacios, ej. boda2026)</label><input class="af-i" id="ce_code" value="' + esc(isNew ? '' : admState.editId) + '" placeholder="boda2026" ' + (isNew ? '' : 'readonly style="opacity:.6;cursor:not-allowed"') + '>' +
@@ -2084,7 +2195,7 @@
                 '<label class="af-l">Título del video</label><input class="af-i" id="ce_vidTitle" value="' + esc((c.video || {}).title || '') + '" placeholder="Película Completa / Resumen"></div>' +
                 
                 '<div id="ce_photosSec" style="display:' + (c.hasPhotos ? 'block' : 'none') + ';margin-bottom:1rem;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)">' +
-                '<label class="af-l" style="color:var(--accent)">Extraer Galería desde Google Drive (Soporta Subcarpetas / Sets)</label>' +
+                '<label class="af-l" style="color:var(--accent)">Extraer Galería desde Google Drive (Detecta Orientación y Sets)</label>' +
                 
                 '<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">' +
                     '<input class="af-i" id="ce_driveFolderInput" placeholder="Pega aquí el link de la carpeta de Google Drive" style="margin-bottom:0;flex:1;min-width:200px;">' +
@@ -2094,10 +2205,19 @@
                 '<div id="ce_driveGalleryStatus" style="font-size:0.82rem; color:var(--accent); margin-bottom:1rem; font-weight:500;"></div>' +
                 '<label class="af-l">URL de carpeta para descargar todo (Se llena en automático al extraer)</label><input class="af-i" id="ce_driveUrl" value="' + esc(c.driveFolderUrl || '') + '">' +
                 
-                '<label class="af-l" style="margin-top:.5rem">Foto de Portada de la Galería (Opcional)</label>' +
-                '<div style="display:flex;gap:10px;margin-bottom:0.5rem;">' +
-                    '<input class="af-i" id="ce_galleryCover" placeholder="Si está vacío, usará la 1ra foto de la galería" value="' + esc(c.galleryCover || '') + '" style="margin-bottom:0;flex:1;">' +
-                    '<input type="file" accept="image/*" onchange="uploadGeneralImg(this, \'ce_galleryCover\')" style="width:105px;font-size:0.7rem;padding-top:10px;">' +
+                '<div class="af-row">' +
+                    '<div><label class="af-l" style="margin-top:.5rem">Foto de Portada (Opcional)</label>' +
+                    '<div style="display:flex;gap:8px;margin-bottom:0.5rem;">' +
+                        '<input class="af-i" id="ce_galleryCover" placeholder="Vacío = 1ra foto" value="' + esc(c.galleryCover || '') + '" style="margin-bottom:0;flex:1;">' +
+                        '<input type="file" accept="image/*" onchange="uploadGeneralImg(this, \'ce_galleryCover\')" style="width:95px;font-size:0.7rem;padding-top:10px;">' +
+                    '</div></div>' +
+                    '<div><label class="af-l" style="margin-top:.5rem">Acomodo inicial de la Galería</label>' +
+                    '<select class="af-i" id="ce_defaultLayout" style="margin-bottom:0.5rem;">' +
+                        '<option value="auto"' + (defLay === 'auto' ? ' selected' : '') + '>Cuadrícula Inteligente (Detecta Vertical/Horizontal)</option>' +
+                        '<option value="masonry"' + (defLay === 'masonry' ? ' selected' : '') + '>Mosaico Completo (Sin ningún recorte)</option>' +
+                        '<option value="vertical"' + (defLay === 'vertical' ? ' selected' : '') + '>Todas en formato Vertical (4:5)</option>' +
+                        '<option value="horizontal"' + (defLay === 'horizontal' ? ' selected' : '') + '>Todas en formato Horizontal (4:3)</option>' +
+                    '</select></div>' +
                 '</div>' +
                 
                 '<label class="af-l" style="margin-top:.5rem">Fotos en la galería</label>' +
@@ -2106,7 +2226,8 @@
                 
                 '<div style="display:flex; gap:0.5rem; margin-top:0.5rem; flex-wrap:wrap;">' +
                     '<button type="button" class="af-btn af-btn-p" style="flex:1; background:#1da851;" onclick="sortClientPhotosAsc()">2. Ordenar de Menor a Mayor y Guardar</button>' +
-                    '<button type="button" class="af-btn af-btn-s" style="flex:1;" onclick="document.getElementById(\'ce_photosList\').style.display=\'block\'; this.style.display=\'none\';">Ver y Ordenar Fotos Manualmente</button>' +
+                    '<button type="button" class="af-btn af-btn-s" style="flex:1;" onclick="autoDetectAllPhotosOrientation()">🔄 Auto-detectar Vertical/Horizontal</button>' +
+                    '<button type="button" class="af-btn af-btn-s" style="flex:1;" onclick="document.getElementById(\'ce_photosList\').style.display=\'block\'; this.style.display=\'none\';">Ver / Girar Fotos Manualmente</button>' +
                 '</div>' +
                 
                 '<div id="ce_photosList" style="display:none; margin-top:1rem;"></div>' +
@@ -2132,6 +2253,58 @@
             saveClient(admState.editId);
         }
 
+        function autoDetectAllPhotosOrientation() {
+            if (!tempClientPhotos || !tempClientPhotos.length) {
+                toast('No hay fotos cargadas para analizar.');
+                return;
+            }
+            var status = document.getElementById('ce_driveGalleryStatus');
+            if (status) status.textContent = 'Analizando dimensiones reales de cada foto...';
+            var total = tempClientPhotos.length;
+            var done = 0, vCount = 0, hCount = 0;
+
+            tempClientPhotos.forEach(function(p, idx) {
+                var img = new Image();
+                img.onload = function() {
+                    var rot = p.rot ? parseInt(p.rot) : 0;
+                    var turned = (rot === 90 || rot === 270);
+                    var w = turned ? img.naturalHeight : img.naturalWidth;
+                    var h = turned ? img.naturalWidth : img.naturalHeight;
+                    p.orient = (h > w) ? 'vertical' : 'horizontal';
+                    if (p.orient === 'vertical') vCount++; else hCount++;
+                    done++;
+                    if (done === total) {
+                        renderClientPhotosList(tempClientPhotos);
+                        if (status) status.textContent = '✅ Orientación detectada: ' + vCount + ' verticales y ' + hCount + ' horizontales. Haz clic en "Guardar Evento".';
+                        toast('✅ ' + vCount + ' verticales y ' + hCount + ' horizontales detectadas');
+                    }
+                };
+                img.onerror = function() {
+                    done++;
+                    if (done === total) {
+                        renderClientPhotosList(tempClientPhotos);
+                        toast('Análisis completado. Haz clic en Guardar Evento.');
+                    }
+                };
+                img.src = pSrc(p, 400);
+            });
+        }
+
+        function toggleAdminPhotoOrient(i) {
+            if (!tempClientPhotos[i]) return;
+            tempClientPhotos[i].orient = (tempClientPhotos[i].orient === 'vertical') ? 'horizontal' : 'vertical';
+            renderClientPhotosList(tempClientPhotos);
+        }
+
+        function rotateAdminPhoto(i) {
+            if (!tempClientPhotos[i]) return;
+            var cur = parseInt(tempClientPhotos[i].rot || 0);
+            var next = (cur + 90) % 360;
+            tempClientPhotos[i].rot = next;
+            tempClientPhotos[i].orient = (tempClientPhotos[i].orient === 'vertical') ? 'horizontal' : 'vertical';
+            renderClientPhotosList(tempClientPhotos);
+        }
+
         function dragPhotoStart(e, i) {
             draggedPhotoIdx = i;
             e.dataTransfer.effectAllowed = 'move';
@@ -2155,15 +2328,30 @@
             var list = document.getElementById('ce_photosList'); if (!list) return; 
             var h = '';
             (photos || []).forEach(function(p, i) { 
+                var oLabel = p.orient === 'vertical' ? '↕ Vert' : (p.orient === 'horizontal' ? '↔ Horiz' : 'Auto');
+                var rotDeg = p.rot || 0;
                 h += `<div class="adm-photo-item" draggable="true" ondragstart="dragPhotoStart(event, ${i})" ondragover="dragPhotoOver(event)" ondrop="dropPhoto(event, ${i})" style="cursor:grab; flex-wrap:wrap">
                     <span style="color:#999; margin-right:5px; font-size:1.2rem;" title="Arrastrar para ordenar">↕</span>
-                    <img src="${esc(p.src)}" alt="" loading="lazy">
+                    <img src="${esc(pSrc(p, 200))}" alt="" loading="lazy" style="transform:rotate(${rotDeg}deg)">
                     <input type="text" value="${esc(p.name || '')}" placeholder="Nombre" onchange="updateClientPhotoName(${i},this.value)" style="flex:1; min-width:80px;">
                     <input type="text" value="${esc(p.set || 'General')}" placeholder="Set" onchange="updateClientPhotoSet(${i},this.value)" style="flex:1; min-width:80px;">
+                    <button type="button" class="al-btn" onclick="toggleAdminPhotoOrient(${i})" style="color:var(--text); font-size:0.74rem; padding:0.25rem 0.5rem; min-height:34px; min-width:62px;" title="Cambiar entre Vertical y Horizontal">${oLabel}</button>
+                    <button type="button" class="al-btn" onclick="rotateAdminPhoto(${i})" style="color:var(--text); font-size:0.74rem; padding:0.25rem 0.5rem; min-height:34px; min-width:52px;" title="Girar 90°">↻ ${rotDeg}°</button>
                     <button type="button" onclick="removeClientPhoto(${i})" title="Quitar">×</button>
                 </div>`; 
             });
             list.innerHTML = h;
+        }
+
+        function inferDrivePhotoOrient(f) {
+            if (!f || !f.imageMediaMetadata) return '';
+            var m = f.imageMediaMetadata;
+            var w = m.width || 0, h = m.height || 0, r = m.rotation || 0;
+            if (!w || !h) return '';
+            var isRotated = (r === 1 || r === 3 || r === 90 || r === 270);
+            var realW = isRotated ? h : w;
+            var realH = isRotated ? w : h;
+            return realH > realW ? 'vertical' : 'horizontal';
         }
         
         async function fetchDriveGalleryForClient() {
@@ -2179,7 +2367,7 @@
             }
 
             var status = document.getElementById('ce_driveGalleryStatus');
-            status.textContent = 'Analizando carpeta y extrayendo fotografías... Por favor, espera.';
+            status.textContent = 'Analizando carpeta y orientación de fotografías... Por favor, espera.';
 
             try {
                 async function getAllFiles(fId, onlyImages) {
@@ -2187,7 +2375,7 @@
                     let q = `'${fId}' in parents and trashed=false`;
                     if (onlyImages) q += " and mimeType contains 'image/'";
                     do {
-                        let url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=nextPageToken,files(id,name,mimeType)&key=${apiKey}&pageSize=1000`;
+                        let url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=nextPageToken,files(id,name,mimeType,imageMediaMetadata(width,height,rotation))&key=${apiKey}&pageSize=1000`;
                         if (pToken) url += `&pageToken=${pToken}`;
                         let res = await fetch(url);
                         let data = await res.json();
@@ -2209,7 +2397,7 @@
                 let allPhotos = [];
 
                 looseImages.forEach(img => {
-                    allPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s1600`, name: img.name, set: 'General', driveId: img.id });
+                    allPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s1600`, name: img.name, set: 'General', driveId: img.id, orient: inferDrivePhotoOrient(img), rot: 0 });
                 });
 
                 for (let folder of folders) {
@@ -2217,15 +2405,15 @@
                     let subFiles = await getAllFiles(folder.id, true);
                     subFiles.sort((a, b) => collator.compare(a.name, b.name));
                     subFiles.forEach(img => {
-                        allPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s1600`, name: img.name, set: folder.name, driveId: img.id });
+                        allPhotos.push({ src: `https://lh3.googleusercontent.com/d/${img.id}=s1600`, name: img.name, set: folder.name, driveId: img.id, orient: inferDrivePhotoOrient(img), rot: 0 });
                     });
                 }
 
                 tempClientPhotos = allPhotos;
-                document.getElementById('ce_photosSummary').innerHTML = '✅ ' + allPhotos.length + ' fotos extraídas con éxito. Ahora presiona "Guardar Evento".';
+                document.getElementById('ce_photosSummary').innerHTML = '✅ ' + allPhotos.length + ' fotos extraídas con orientación detectada. Ahora presiona "Guardar Evento".';
                 renderClientPhotosList(tempClientPhotos);
-                status.textContent = `¡Éxito! Se importaron ${allPhotos.length} fotos organizadas en ${folders.length + (looseImages.length?1:0)} sets.`;
-                toast('Galería extraída. Recuerda guardar el evento.');
+                status.textContent = `¡Éxito! Se importaron ${allPhotos.length} fotos organizadas en ${folders.length + (looseImages.length?1:0)} sets con su orientación real.`;
+                toast('Galería extraída con orientación. Recuerda guardar el evento.');
 
             } catch(e) {
                 status.textContent = 'Error al extraer: ' + e.message;
@@ -2266,6 +2454,8 @@
             var vidTitle = document.getElementById('ce_vidTitle').value.trim();
             var driveUrl = document.getElementById('ce_driveUrl').value.trim();
             var galleryCover = document.getElementById('ce_galleryCover').value.trim();
+            var defaultLayoutEl = document.getElementById('ce_defaultLayout');
+            var defaultLayout = defaultLayoutEl ? defaultLayoutEl.value : 'auto';
             
             var finalIframe = ytRaw;
             if (ytRaw.includes('drive.google.com/file/d/')) {
@@ -2291,6 +2481,7 @@
                 photos: hasPhotos ? photos : [], 
                 driveFolderUrl: driveUrl, 
                 galleryCover: galleryCover, 
+                defaultLayout: defaultLayout, 
                 photobook: D.clients[code] && D.clients[code].photobook ? D.clients[code].photobook : { cover: null, spreads: [null], hasBackCover: false, back: null }, 
                 expireAt: expireTime 
             };
