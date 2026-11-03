@@ -196,26 +196,24 @@
         body.lb-open .order-bar,
         body.lb-open .wa-float { display: none !important; opacity: 0 !important; pointer-events: none !important; }
 
-        /* Dynamic Expiration Card & Progress */
-        .exp-card { background: linear-gradient(145deg, rgba(24,24,30,0.95), rgba(16,16,20,0.98)); border: 1px solid rgba(201,164,108,0.28); border-radius: var(--radius-lg); padding: 1.15rem 1.35rem; margin-bottom: 1.6rem; box-shadow: 0 10px 30px rgba(0,0,0,0.35); position: relative; overflow: hidden; }
-        .exp-card.warn { border-color: rgba(230,126,34,0.45); }
-        .exp-card.urgent { border-color: rgba(231,76,60,0.55); }
-        .exp-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem; }
-        .exp-status-badge { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.76rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; padding: 0.3rem 0.8rem; border-radius: 50px; background: rgba(46,204,113,0.12); color: #2ecc71; border: 1px solid rgba(46,204,113,0.28); }
-        .exp-card.warn .exp-status-badge { background: rgba(243,156,18,0.14); color: #f39c12; border-color: rgba(243,156,18,0.3); }
-        .exp-card.urgent .exp-status-badge { background: rgba(231,76,60,0.15); color: #ff6b6b; border-color: rgba(231,76,60,0.35); }
-        .exp-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; animation: expPulse 2s infinite; }
-        @keyframes expPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.45; transform: scale(0.85); } }
-        .exp-timer-boxes { display: flex; gap: 0.5rem; align-items: center; margin: 0.85rem 0; flex-wrap: wrap; }
-        .exp-tbox { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.4rem 0.75rem; text-align: center; min-width: 62px; }
-        .exp-tbox b { display: block; font-family: var(--fh); font-size: 1.25rem; color: var(--c-accent); line-height: 1.1; }
-        .exp-tbox span { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--c-muted); }
-        .exp-bar-wrap { width: 100%; height: 6px; background: rgba(255,255,255,0.07); border-radius: 10px; overflow: hidden; margin: 0.65rem 0 0.5rem; }
-        .exp-bar-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, var(--c-accent), #2ecc71); transition: width 0.6s ease; }
-        .exp-card.warn .exp-bar-fill { background: linear-gradient(90deg, #e67e22, #f1c40f); }
-        .exp-card.urgent .exp-bar-fill { background: linear-gradient(90deg, #c0392b, #e74c3c); }
-        .exp-foot { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; font-size: 0.78rem; color: var(--c-muted); }
-        .px-exp-pill { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(12,12,15,0.72); border: 1px solid rgba(255,255,255,0.22); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 0.4rem 1rem; border-radius: 50px; font-size: 0.78rem; color: #f5f5f7; margin-top: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        /* Barra de Vigencia Minimalista y Discreta */
+        .exp-card { background: rgba(20,20,25,0.85); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 0.65rem 1rem; margin-bottom: 1.2rem; position: relative; overflow: hidden; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .exp-card.warn { border-color: rgba(243,156,18,0.35); }
+        .exp-card.urgent { border-color: rgba(231,76,60,0.45); }
+        .exp-slim-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; flex-wrap: wrap; font-size: 0.8rem; color: var(--c-muted); }
+        .exp-slim-left { display: inline-flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        .exp-dot { width: 7px; height: 7px; border-radius: 50%; background: #2ecc71; box-shadow: 0 0 6px #2ecc71; flex-shrink: 0; animation: expPulse 2.2s infinite; }
+        .exp-card.warn .exp-dot { background: #f39c12; box-shadow: 0 0 6px #f39c12; }
+        .exp-card.urgent .exp-dot { background: #ff6b6b; box-shadow: 0 0 6px #ff6b6b; }
+        @keyframes expPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .exp-bar-line { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.05); }
+        .exp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--c-accent), #2ecc71); transition: width 0.6s ease; }
+        .exp-card.warn .exp-bar-fill { background: #f39c12; }
+        .exp-card.urgent .exp-bar-fill { background: #e74c3c; }
+        .exp-mini-btn { background: rgba(255,255,255,0.06); color: var(--c-text); border: 1px solid rgba(255,255,255,0.14); padding: 0.25rem 0.7rem; border-radius: 50px; cursor: pointer; font-size: 0.72rem; transition: .2s; white-space: nowrap; }
+        .exp-mini-btn:hover { border-color: var(--c-accent); color: var(--c-accent); }
+        .px-exp-strip { max-width: 1400px; margin: 0 auto; padding: 0.55rem 1.2rem 0; display: flex; align-items: center; justify-content: center; }
+        .px-exp-strip-in { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.74rem; color: var(--c-muted); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); padding: 0.3rem 0.85rem; border-radius: 50px; }
 
         /* Service CTA & Public Floating WhatsApp */
         .service-cta { margin-top: 1rem; width: 100%; padding: 0.65rem 1.2rem; font-size: 0.85rem; min-height: 42px; }
@@ -232,15 +230,17 @@
         .access-card-info p { color: var(--c-muted); font-size: .86rem; margin-bottom: 0; }
         .access-card .btn { flex-shrink: 0; }
 
-        /* Pixieset-style Gallery */
+        /* Pixieset-style Gallery (Portada limpia y botones discretos) */
         #cpGalleryView { padding: 0; background: var(--c-bg); position: relative; }
-        .px-header { position: relative; width: 100%; height: 62vh; min-height: 380px; background-size: cover; background-position: center; background-repeat: no-repeat; display: flex; align-items: center; justify-content: center; text-align: center; color: #fff; }
-        .px-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(8,8,10,0.85) 100%); }
-        .px-title-container { position: relative; z-index: 2; padding: 0 1.2rem; animation: fadeUp .8s ease forwards; max-width: 800px; }
-        .px-title-container h1 { font-family: var(--fh); font-size: clamp(2.2rem, 6vw, 4.4rem); margin-bottom: 0.6rem; font-weight: 500; letter-spacing: 1px; text-shadow: 0 4px 24px rgba(0,0,0,0.6); }
-        .px-title-container p { font-family: var(--fb); letter-spacing: 3px; text-transform: uppercase; font-size: 0.82rem; opacity: 0.9; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-        .px-scroll-btn { margin-top: 2rem; background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.45); padding: 0.65rem 1.6rem; border-radius: 50px; cursor: pointer; font-family: var(--fb); font-size: 0.8rem; letter-spacing: 1.2px; text-transform: uppercase; transition: 0.3s; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); min-height: 44px; }
-        .px-scroll-btn:hover { background: #fff; color: #000; }
+        .px-header { position: relative; width: 100%; height: 64vh; min-height: 360px; background-size: cover; background-position: center; background-repeat: no-repeat; display: flex; align-items: flex-end; justify-content: center; text-align: center; color: #fff; padding-bottom: 1.6rem; }
+        .px-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, transparent 28%, transparent 52%, rgba(8,8,10,0.88) 100%); pointer-events: none; }
+        .px-title-container { position: relative; z-index: 2; padding: 0 1rem; animation: fadeUp .7s ease forwards; max-width: 780px; width: 100%; }
+        .px-title-container h1 { font-family: var(--fh); font-size: clamp(1.8rem, 5vw, 3.8rem); margin-bottom: 0.25rem; font-weight: 500; letter-spacing: 0.5px; text-shadow: 0 2px 16px rgba(0,0,0,0.75); }
+        .px-title-container p { font-family: var(--fb); letter-spacing: 2.5px; text-transform: uppercase; font-size: 0.72rem; opacity: 0.85; text-shadow: 0 1px 8px rgba(0,0,0,0.6); }
+        .px-cover-actions { display: inline-flex; gap: 0.45rem; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 0.85rem; }
+        .px-scroll-btn { background: rgba(12,12,15,0.48); color: rgba(255,255,255,0.92); border: 1px solid rgba(255,255,255,0.24); padding: 0.38rem 0.85rem; border-radius: 50px; cursor: pointer; font-family: var(--fb); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.5px; transition: 0.25s; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); min-height: 32px; display: inline-flex; align-items: center; gap: 0.3rem; touch-action: manipulation; }
+        .px-scroll-btn:hover { background: #fff; color: #000; border-color: #fff; }
+        .px-scroll-btn.accent-pill { background: rgba(201,164,108,0.32); border-color: rgba(201,164,108,0.65); color: #fff; }
         
         .px-nav-wrapper { position: sticky; top: 0; z-index: 100; background: rgba(8,8,10,0.94); border-bottom: 1px solid var(--c-border); display: flex; justify-content: space-between; align-items: center; padding: var(--safe-top) 1.5rem 0; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); gap: 0.8rem; }
         .px-nav-inner { display: flex; gap: 1.6rem; overflow-x: auto; scrollbar-width: none; flex: 1; padding-right: 0.5rem; -webkit-overflow-scrolling: touch; }
@@ -345,7 +345,8 @@
         .lb-back:hover, .lb-x:hover { background: rgba(255, 255, 255, .28); }
         .lb-x { width: 42px; height: 42px; font-size: 1.5rem; }
         .lb-stage { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; touch-action: none; }
-        .lb img { max-width: 94vw; max-height: 80vh; max-height: 80dvh; object-fit: contain; image-orientation: from-image; border-radius: 4px; user-select: none; -webkit-user-select: none; transform-origin: center center; will-change: transform; cursor: zoom-in; }
+        .lb img { max-width: 94vw; max-height: 80vh; max-height: 80dvh; object-fit: contain; image-orientation: from-image; border-radius: 4px; user-select: none; -webkit-user-select: none; transform-origin: center center; cursor: zoom-in; }
+        .lb-dl.hd-on { background: rgba(201, 164, 108, 0.35); border-color: var(--c-accent); color: #fff; font-weight: 600; }
         .lb img.is-zoomed { cursor: grab; }
         .lb img.is-dragging { cursor: grabbing; }
         .lb-n { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, .12); border: 1px solid rgba(255,255,255,0.18); color: #fff; width: 50px; height: 50px; border-radius: 50%; font-size: 1.6rem; cursor: pointer; z-index: 3005; display: flex; align-items: center; justify-content: center; transition: .2s; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
@@ -523,8 +524,10 @@
             .adm-box { max-width: 100%; max-height: 100vh; max-height: 100dvh; border-radius: 0; }
             .af-row { grid-template-columns: 1fr; }
             .pb-slots { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
-            .px-header { height: 42vh; min-height: 290px; }
-            .px-title-container h1 { font-size: 2.1rem; }
+            .px-header { height: 44vh; min-height: 270px; padding-bottom: 1.1rem; }
+            .px-title-container h1 { font-size: 1.65rem; }
+            .px-title-container p { font-size: 0.66rem; letter-spacing: 2px; }
+            .px-scroll-btn { padding: 0.32rem 0.72rem; font-size: 0.68rem; min-height: 29px; }
             .px-set-title { font-size: 1.5rem; margin-bottom: 1.2rem; }
             .px-content { padding: 2rem .9rem 5rem; }
             .px-nav-wrapper { padding: var(--safe-top) .9rem 0; }
@@ -705,16 +708,15 @@
         </div>
 
         <div id="cpGalleryView" style="display:none">
-            <button class="btn-regresar-fijo" id="btnBackGallery" onclick="closeGalleryView()">← Regresar al menú</button>
+            <button class="btn-regresar-fijo" id="btnBackGallery" onclick="closeGalleryView()">← Regresar</button>
             <div class="px-header" id="pxHeader">
                 <div class="px-title-container">
                     <h1 id="pxTitle">Evento</h1>
                     <p id="pxSubtitle">Galería Digital</p>
-                    <div id="pxExpirePillWrap"></div>
-                    <div style="display:flex; gap:0.65rem; justify-content:center; flex-wrap:wrap; margin-top:1.4rem;">
-                        <button class="px-scroll-btn" style="margin-top:0;" onclick="document.getElementById('pxNav').scrollIntoView({behavior:'smooth'})">Ver Fotos ↓</button>
-                        <button class="px-scroll-btn" style="margin-top:0; background:rgba(201,164,108,0.28); border-color:var(--c-accent);" onclick="openDownloadModal()">⬇ Descargar Galería</button>
-                        <button class="px-scroll-btn" style="margin-top:0; padding:0.65rem 1.1rem;" onclick="shareCurrentGallery()" title="Compartir enlace de la galería">🔗 Compartir</button>
+                    <div class="px-cover-actions">
+                        <button class="px-scroll-btn" onclick="document.getElementById('pxNav').scrollIntoView({behavior:'smooth'})">↓ Ver fotos</button>
+                        <button class="px-scroll-btn accent-pill" onclick="openDownloadModal()">⬇ Descargar</button>
+                        <button class="px-scroll-btn" onclick="shareCurrentGallery()" title="Compartir enlace">🔗 Compartir</button>
                     </div>
                 </div>
             </div>
@@ -722,11 +724,13 @@
             <div class="px-nav-wrapper" id="pxNav">
                 <div class="px-nav-inner" id="pxNavInner"></div>
                 <div class="px-actions">
-                    <button class="gal-btn port-filter-btn" id="btnLayoutSwitch" onclick="cycleGalleryLayout()" style="background:var(--c-surface2); color:var(--c-text); border-color:var(--c-border); padding:0.4rem 0.85rem; min-height:38px; font-size:0.8rem;" title="Cambiar acomodo de las fotos">📐 Vista</button>
-                    <button class="gal-btn port-filter-btn" id="btnSelAll" onclick="toggleSelAll()" style="display:none; background:var(--c-surface2); color:var(--c-text); border-color:var(--c-border); padding:0.4rem 0.85rem; min-height:38px; font-size:0.8rem;">Todo</button>
-                    <button class="gal-btn port-filter-btn active" style="background:var(--c-accent); color:#fff; border:none; padding:0.4rem 1rem; min-height:38px; font-size:0.8rem;" onclick="openDownloadModal()">⬇ Descargar Galería</button>
+                    <button class="gal-btn port-filter-btn" id="btnLayoutSwitch" onclick="cycleGalleryLayout()" style="background:var(--c-surface2); color:var(--c-text); border-color:var(--c-border); padding:0.35rem 0.75rem; min-height:34px; font-size:0.76rem;" title="Cambiar acomodo de las fotos">📐 Vista</button>
+                    <button class="gal-btn port-filter-btn" id="btnSelAll" onclick="toggleSelAll()" style="display:none; background:var(--c-surface2); color:var(--c-text); border-color:var(--c-border); padding:0.35rem 0.75rem; min-height:34px; font-size:0.76rem;">Todo</button>
+                    <button class="gal-btn port-filter-btn active" style="background:var(--c-accent); color:#fff; border:none; padding:0.35rem 0.85rem; min-height:34px; font-size:0.76rem;" onclick="openDownloadModal()">⬇ Descargar</button>
                 </div>
             </div>
+
+            <div id="pxExpirePillWrap" class="px-exp-strip"></div>
 
             <div class="px-content" id="pxContent"></div>
             
@@ -884,7 +888,8 @@
                 <span class="lb-zlbl" id="lbZoomLbl" onclick="resetZoomLB()" title="Restablecer zoom">100%</span>
                 <button type="button" class="lb-zbtn" onclick="zoomLB(0.5)" title="Acercar">+</button>
             </div>
-            <button type="button" class="lb-dl" id="lbRotBtn" onclick="rotateCurrentLB()" style="padding:.5rem 0.95rem;" title="Girar foto 90°">↻ Girar</button>
+            <button type="button" class="lb-dl" id="lbHdBtn" onclick="toggleLBHighRes()" style="padding:.5rem 0.9rem;" title="Ver en calidad original de Google Drive (Máxima nitidez al hacer zoom)">✨ HD Original</button>
+            <button type="button" class="lb-dl" id="lbRotBtn" onclick="rotateCurrentLB()" style="padding:.5rem 0.85rem;" title="Girar foto 90°">↻</button>
             <a class="lb-dl" id="lbDl" style="cursor:pointer;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Descargar</a>
         </div>
     </div>
@@ -1105,9 +1110,32 @@
         
         window.portfolioLimit = 6; 
 
-        function pSrc(p, s) { s = s || 800; if (p.driveId) return 'https://lh3.googleusercontent.com/d/' + p.driveId + '=s' + s; return (p.src || '').replace(/w=\d+/, 'w=' + s); }
-        function pDl(p) { if (p.driveId) return 'https://drive.google.com/uc?export=download&id=' + p.driveId; return (p.src || '').replace('w=800', 'w=1600'); }
-        function pFull(p) { return pSrc(p, 1600); }
+        function extractDriveId(p) {
+            if (!p) return null;
+            if (p.driveId) return p.driveId;
+            var s = p.src || '';
+            var m = s.match(/\/d\/([a-zA-Z0-9_-]+)/) || s.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            return m ? m[1] : null;
+        }
+        function pSrc(p, s) {
+            s = s || 800;
+            var dId = extractDriveId(p);
+            if (dId) return 'https://lh3.googleusercontent.com/d/' + dId + '=s' + s;
+            var raw = p.src || '';
+            if (raw.includes('googleusercontent.com') && raw.match(/=s\d+/)) return raw.replace(/=s\d+/, '=s' + s);
+            return raw.replace(/w=\d+/, 'w=' + s);
+        }
+        function pDl(p) {
+            var dId = extractDriveId(p);
+            if (dId) return 'https://drive.google.com/uc?export=download&id=' + dId;
+            return (p.src || '').replace('w=800', 'w=2400');
+        }
+        function pFull(p) { return pSrc(p, 2200); }
+        function pOrig(p) {
+            var dId = extractDriveId(p);
+            if (dId) return 'https://lh3.googleusercontent.com/d/' + dId + '=s0';
+            return pSrc(p, 4096);
+        }
         function toast(m, d) { var t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(function() { t.classList.remove('show'); }, d || 3000); }
         function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
         function uid() { return 'id_' + Math.random().toString(36).substr(2, 8); }
@@ -1580,34 +1608,35 @@
             var pillWrap = document.getElementById('pxExpirePillWrap');
             if (!c.expireAt) {
                 if (banner) banner.style.display = 'none';
-                if (pillWrap) pillWrap.innerHTML = '';
+                if (pillWrap) { pillWrap.style.display = 'none'; pillWrap.innerHTML = ''; }
                 return;
             }
             var diff = c.expireAt - Date.now();
             if (diff < 0) {
                 if (banner) {
+                    banner.style.display = 'block';
                     banner.className = 'exp-card urgent';
-                    msgEl.innerHTML = '<div class="exp-top"><span class="exp-status-badge"><span class="exp-dot"></span> Galería Vencida</span><button onclick="requestExtension()" class="btn btn-accent btn-sm">Renovar Acceso</button></div><p style="font-size:0.85rem; color:var(--c-muted); margin-top:0.6rem;">El periodo de almacenamiento gratuito concluyó el <b>' + toDisplayDate(c.expireAt) + '</b>.</p>';
+                    msgEl.innerHTML = '<div class="exp-slim-row"><div class="exp-slim-left"><span class="exp-dot"></span> <span>Acceso vencido el <b style="color:var(--c-text)">' + toDisplayDate(c.expireAt) + '</b></span></div><button onclick="requestExtension()" class="exp-mini-btn">Renovar</button></div>';
                 }
-                if (pillWrap) pillWrap.innerHTML = '<div class="px-exp-pill"><span class="exp-dot" style="color:#ff6b6b"></span> Acceso vencido el ' + toDisplayDate(c.expireAt) + '</div>';
+                if (pillWrap) {
+                    pillWrap.style.display = 'flex';
+                    pillWrap.innerHTML = '<div class="px-exp-strip-in"><span class="exp-dot" style="background:#ff6b6b;box-shadow:none;"></span> <span>Galería vencida el ' + toDisplayDate(c.expireAt) + '</span></div>';
+                }
                 return;
             }
 
             var days = Math.floor(diff / 86400000);
             var hours = Math.floor((diff % 86400000) / 3600000);
-            var mins = Math.floor((diff % 3600000) / 60000);
-            var pct = Math.max(5, Math.min(100, Math.round((diff / (90 * 86400000)) * 100)));
+            var pct = Math.max(4, Math.min(100, Math.round((diff / (90 * 86400000)) * 100)));
 
             var stateClass = 'exp-card';
-            var badgeText = 'Galería Activa · Respaldo Disponible';
             var dotColor = '#2ecc71';
+            var timeLabel = days > 0 ? (days + ' días restantes') : (hours + ' horas restantes');
             if (days <= 5) {
                 stateClass = 'exp-card urgent';
-                badgeText = '¡Últimos días para descargar!';
                 dotColor = '#ff6b6b';
             } else if (days <= 15) {
                 stateClass = 'exp-card warn';
-                badgeText = 'Próxima a vencer · Descarga tus fotos';
                 dotColor = '#f39c12';
             }
 
@@ -1615,30 +1644,19 @@
                 banner.style.display = 'block';
                 banner.className = stateClass;
                 msgEl.innerHTML = `
-                    <div class="exp-top">
-                        <span class="exp-status-badge"><span class="exp-dot"></span> ${badgeText}</span>
-                        <span style="font-size:0.78rem; color:var(--c-muted);">Vence: <b style="color:var(--c-text)">${toDisplayDate(c.expireAt)}</b></span>
-                    </div>
-                    <div class="exp-timer-boxes">
-                        <div class="exp-tbox"><b>${days}</b><span>Días</span></div>
-                        <div class="exp-tbox"><b>${hours}</b><span>Horas</span></div>
-                        <div class="exp-tbox"><b>${mins}</b><span>Min</span></div>
-                        <div style="flex:1; min-width:160px; font-size:0.82rem; color:var(--c-muted); padding-left:0.4rem;">
-                            Tu material digital permanece activo durante <b>3 meses</b> para su descarga en máxima calidad.
+                    <div class="exp-slim-row">
+                        <div class="exp-slim-left">
+                            <span class="exp-dot"></span>
+                            <span>Galería activa · <b style="color:var(--c-text)">${timeLabel}</b> <span style="opacity:0.75">(Vence ${toDisplayDate(c.expireAt)})</span></span>
                         </div>
+                        <button onclick="requestExtension()" class="exp-mini-btn">Extender</button>
                     </div>
-                    <div class="exp-bar-wrap"><div class="exp-bar-fill" style="width:${pct}%"></div></div>
-                    <div class="exp-foot">
-                        <span>Tiempo restante de almacenamiento en la nube</span>
-                        <div style="display:flex; gap:0.5rem;">
-                            ${c.driveFolderUrl ? '<button onclick="openDownloadModal()" class="btn btn-accent btn-sm" style="padding:0.35rem 0.9rem; min-height:34px; font-size:0.76rem;">⬇ Descargar Todo</button>' : ''}
-                            <button onclick="requestExtension()" style="background:transparent; color:var(--c-text); border:1px solid var(--c-border); padding:0.35rem 0.85rem; border-radius:50px; cursor:pointer; font-size:0.75rem;">Extender tiempo</button>
-                        </div>
-                    </div>`;
+                    <div class="exp-bar-line"><div class="exp-bar-fill" style="width:${pct}%"></div></div>`;
             }
 
             if (pillWrap) {
-                pillWrap.innerHTML = `<div class="px-exp-pill"><span class="exp-dot" style="color:${dotColor}"></span> <span>Galería activa por <b>${days}d ${hours}h</b> · Descarga antes del ${toDisplayDate(c.expireAt)}</span></div>`;
+                pillWrap.style.display = 'flex';
+                pillWrap.innerHTML = `<div class="px-exp-strip-in"><span class="exp-dot" style="background:${dotColor};box-shadow:none;"></span> <span>Disponible por <b style="color:var(--c-text)">${timeLabel}</b> · Descarga antes del ${toDisplayDate(c.expireAt)}</span></div>`;
             }
         }
 
@@ -2065,16 +2083,70 @@
         var lbPanX = 0;
         var lbPanY = 0;
         var lbHintShown = false;
+        var lbAlwaysHD = false;
+        var lbCurrentIsHD = false;
+
+        function ensureLBHighResLoaded(showFeedback) {
+            if (lbCurrentIsHD) return;
+            var p = portalPhotos[lbIdx];
+            if (!p || p.type === 'video') return;
+            var origUrl = pOrig(p);
+            var imgEl = document.getElementById('lbImg');
+            var hdBtn = document.getElementById('lbHdBtn');
+            if (!imgEl || !origUrl) return;
+
+            lbCurrentIsHD = true;
+            if (hdBtn) {
+                hdBtn.textContent = '⏳ Cargando HD...';
+                hdBtn.classList.add('hd-on');
+            }
+
+            var hiImg = new Image();
+            hiImg.onload = function() {
+                if (portalPhotos[lbIdx] === p) {
+                    imgEl.src = origUrl;
+                    if (hdBtn) hdBtn.textContent = '✨ HD Activo';
+                    if (showFeedback) toast('✨ Calidad original de Google Drive aplicada', 2000);
+                }
+            };
+            hiImg.onerror = function() {
+                // Fallback a 4096px si =s0 es bloqueado por Drive en algún archivo
+                var fallbackUrl = pSrc(p, 4096);
+                if (portalPhotos[lbIdx] === p && fallbackUrl) {
+                    imgEl.src = fallbackUrl;
+                    if (hdBtn) hdBtn.textContent = '✨ HD Activo';
+                }
+            };
+            hiImg.src = origUrl;
+        }
+
+        function toggleLBHighRes() {
+            lbAlwaysHD = !lbAlwaysHD;
+            if (lbAlwaysHD) {
+                ensureLBHighResLoaded(true);
+            } else {
+                var hdBtn = document.getElementById('lbHdBtn');
+                if (hdBtn) {
+                    hdBtn.textContent = '✨ HD Original';
+                    hdBtn.classList.remove('hd-on');
+                }
+                toast('Modo estándar activado (se activará HD al hacer zoom)', 2000);
+            }
+        }
 
         function updateLBTransform(animate) {
             var imgEl = document.getElementById('lbImg');
             if (!imgEl) return;
-            imgEl.style.transition = animate ? 'transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none';
+            imgEl.style.transition = animate ? 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none';
             var r = lbTempRot ? ' rotate(' + lbTempRot + 'deg)' : '';
-            imgEl.style.transform = 'translate3d(' + lbPanX + 'px, ' + lbPanY + 'px, 0) scale(' + lbScale + ')' + r;
+            // Usamos translate 2D en lugar de translate3d para que iOS/Chrome no congele la textura en baja resolución al hacer zoom
+            imgEl.style.transform = 'translate(' + lbPanX + 'px, ' + lbPanY + 'px) scale(' + lbScale + ')' + r;
             imgEl.classList.toggle('is-zoomed', lbScale > 1.05);
             var lbl = document.getElementById('lbZoomLbl');
             if (lbl) lbl.textContent = Math.round(lbScale * 100) + '%';
+            if (lbScale > 1.08 && !lbCurrentIsHD) {
+                ensureLBHighResLoaded(false);
+            }
         }
 
         function resetZoomLB() {
@@ -2085,7 +2157,7 @@
         }
 
         function zoomLB(delta) {
-            var next = Math.max(1, Math.min(4, lbScale + delta));
+            var next = Math.max(1, Math.min(4.5, lbScale + delta));
             lbScale = next;
             if (lbScale <= 1.02) {
                 lbScale = 1;
@@ -2125,11 +2197,13 @@
             lbScale = 1;
             lbPanX = 0;
             lbPanY = 0;
+            lbCurrentIsHD = false;
             
             var imgEl = document.getElementById('lbImg');
             var vidEl = document.getElementById('lbVid');
             var dlBtn = document.getElementById('lbDl');
             var rotBtn = document.getElementById('lbRotBtn');
+            var hdBtn = document.getElementById('lbHdBtn');
             var zoomCtrl = document.getElementById('lbZoomCtrl');
 
             if (p.type === 'video') {
@@ -2138,15 +2212,26 @@
                 vidEl.src = getEmbedUrl(p.videoUrl) + '?autoplay=1';
                 dlBtn.style.display = 'none';
                 if (rotBtn) rotBtn.style.display = 'none';
+                if (hdBtn) hdBtn.style.display = 'none';
                 if (zoomCtrl) zoomCtrl.style.display = 'none';
             } else {
                 vidEl.style.display = 'none';
                 vidEl.src = '';
                 imgEl.style.display = 'block';
                 updateLBTransform(false);
-                imgEl.src = pFull(p);
                 if (rotBtn) rotBtn.style.display = '';
                 if (zoomCtrl) zoomCtrl.style.display = 'inline-flex';
+                if (hdBtn) {
+                    hdBtn.style.display = '';
+                    hdBtn.textContent = lbAlwaysHD ? '⏳ Cargando HD...' : '✨ HD Original';
+                    hdBtn.classList.toggle('hd-on', lbAlwaysHD);
+                }
+
+                // Carga inicial rápida en 2200px y, si HD está activo o el usuario hace zoom, carga la original (=s0) de Drive
+                imgEl.src = pFull(p);
+                if (lbAlwaysHD) {
+                    ensureLBHighResLoaded(false);
+                }
                 
                 if (isPublicPortfolioView) {
                     dlBtn.style.display = 'none'; 
