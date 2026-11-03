@@ -285,24 +285,23 @@
         .pc .dlb:active { transform: scale(.92); }
         .pc .dlb svg { width: 14px; height: 14px; fill: #fff; }
 
-        /* Botón de Favoritas (Corazón ♥) en cada foto y apartado de Favoritas */
-        .pc .favb { position: absolute; top: .5rem; left: .5rem; width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.22); background: rgba(0, 0, 0, .42); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 3; padding: 0; transition: transform .2s, background .2s, border-color .2s, opacity .2s; opacity: 0.78; color: #fff; touch-action: manipulation; }
-        .pc:hover .favb { opacity: 1; background: rgba(0, 0, 0, .75); }
-        .pc .favb svg { width: 15px; height: 15px; fill: rgba(255,255,255,0.2); stroke: #fff; stroke-width: 2; transition: .2s; }
-        .pc .favb.on { opacity: 1; background: rgba(231, 76, 60, 0.92); border-color: #ff6b6b; box-shadow: 0 2px 10px rgba(231,76,60,0.45); }
-        .pc .favb.on svg { fill: #fff; stroke: #fff; transform: scale(1.08); }
+        /* Botón de Favoritas (Corazón ♥) discreto y Set independiente de Favoritas */
+        .pc .favb { position: absolute; top: .45rem; left: .45rem; width: 29px; height: 29px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.16); background: rgba(0, 0, 0, .35); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 3; padding: 0; transition: transform .2s, background .2s, border-color .2s, opacity .2s; opacity: 0.58; color: #fff; touch-action: manipulation; }
+        .pc:hover .favb { opacity: 0.95; background: rgba(0, 0, 0, .68); }
+        .pc .favb svg { width: 14px; height: 14px; fill: rgba(255,255,255,0.15); stroke: #fff; stroke-width: 2; transition: .2s; }
+        .pc .favb.on { opacity: 0.96; background: rgba(214, 69, 65, 0.9); border-color: rgba(255,255,255,0.4); box-shadow: 0 2px 8px rgba(0,0,0,0.35); }
+        .pc .favb.on svg { fill: #fff; stroke: #fff; transform: scale(1.05); }
         .pc .favb:active { transform: scale(0.88); }
+        .gallery-print-mode .pc .favb { display: none !important; }
 
-        .px-nav-item.fav-tab { color: #ff7675; display: inline-flex; align-items: center; gap: 0.35rem; }
-        .px-nav-item.fav-tab.active, .px-nav-item.fav-tab:hover { color: #ff5252; border-bottom-color: #ff5252; }
-        .fav-cnt-pill { background: rgba(231, 76, 60, 0.22); border: 1px solid rgba(231, 76, 60, 0.45); color: #ff7675; padding: 0.05rem 0.45rem; border-radius: 50px; font-size: 0.7rem; font-weight: 700; }
+        .px-nav-item.fav-tab { display: inline-flex; align-items: center; gap: 0.35rem; }
+        .px-nav-item.fav-tab.active { color: var(--c-accent); border-bottom-color: var(--c-accent); }
+        .fav-cnt-pill { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.16); color: var(--c-text); padding: 0.05rem 0.45rem; border-radius: 50px; font-size: 0.68rem; font-weight: 600; }
+        .px-nav-item.fav-tab.has-favs .fav-cnt-pill { background: rgba(214, 69, 65, 0.22); border-color: rgba(214, 69, 65, 0.5); color: #ff8a80; }
 
-        .fav-set-box { background: linear-gradient(145deg, rgba(28, 22, 26, 0.9), rgba(18, 18, 22, 0.95)); border: 1px solid rgba(231, 76, 60, 0.28); border-radius: var(--radius-lg); padding: 1.5rem 1.2rem; margin-bottom: 3rem; scroll-margin-top: 90px; }
-        .fav-set-hdr { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.2rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
-        .fav-set-title { font-family: var(--fh); font-size: 1.55rem; color: #fff; display: flex; align-items: center; gap: 0.5rem; margin: 0; }
-        .fav-set-sub { font-size: 0.82rem; color: var(--c-muted); margin-top: 0.2rem; }
-        .fav-set-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
-        .fav-empty-msg { text-align: center; padding: 2rem 1rem; color: var(--c-muted); font-size: 0.88rem; border: 1px dashed rgba(255,255,255,0.12); border-radius: var(--radius); background: rgba(0,0,0,0.2); }
+        .fav-set-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 1.8rem; padding: 0.9rem 1.1rem; background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius); }
+        .fav-set-actions { display: flex; gap: 0.45rem; flex-wrap: wrap; align-items: center; }
+        .fav-empty-msg { text-align: center; padding: 3rem 1.2rem; color: var(--c-muted); font-size: 0.9rem; border: 1px dashed var(--c-border); border-radius: var(--radius-lg); background: var(--c-surface); max-width: 520px; margin: 1rem auto; line-height: 1.6; }
 
         .lb-dl.fav-on { background: rgba(231, 76, 60, 0.88); border-color: #ff7675; color: #fff; font-weight: 600; }
 
@@ -886,7 +885,7 @@
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
-                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.6 Estable</span></h2>
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v1.7</span></h2>
                 <button class="adm-x" onclick="closeAdm()">×</button>
             </div>
             <div class="adm-tabs" id="admTabs">
@@ -956,26 +955,83 @@
             ];
         }
 
+        function extractExactCoordsFromText(str) {
+            if (!str || typeof str !== 'string') return null;
+            var s = str.trim();
+            // 1. Priorizar coordenadas exactas del pin en enlaces de Google Maps (!3dLAT!4dLNG)
+            var pinMatch = s.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+            if (pinMatch) return pinMatch[1] + ',' + pinMatch[2];
+            // 2. Coordenadas directas escritas por el usuario (ej. 19.19345, -99.52412)
+            var rawCoordMatch = s.match(/^\s*(-?\d{1,2}\.\d{3,})\s*,\s*(-?\d{1,3}\.\d{3,})\s*$/);
+            if (rawCoordMatch) return rawCoordMatch[1] + ',' + rawCoordMatch[2];
+            // 3. Coordenadas en parámetro ?q=lat,lng o query=lat,lng
+            var qCoordMatch = s.match(/[?&](?:q|query|ll)=(-?\d{1,2}\.\d{3,})\s*(?:,|%2C)\s*(-?\d{1,3}\.\d{3,})/i);
+            if (qCoordMatch) return qCoordMatch[1] + ',' + qCoordMatch[2];
+            // 4. Coordenadas en la URL de cámara de Google Maps (@LAT,LNG)
+            var atMatch = s.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+            if (atMatch) return atMatch[1] + ',' + atMatch[2];
+            return null;
+        }
+
         function getValidMapEmbed(rawMap, address) {
             var defaultAddr = address || 'Porfirio Díaz 280, San Miguelito, 52700 Capulhuac de Mirafuentes, Estado de México';
-            var fallbackEmbed = 'https://maps.google.com/maps?q=' + encodeURIComponent(defaultAddr) + '&t=&z=17&ie=UTF8&iwloc=&output=embed';
+            var fallbackEmbed = 'https://maps.google.com/maps?q=' + encodeURIComponent(defaultAddr) + '&t=&z=18&ie=UTF8&iwloc=&output=embed';
             if (!rawMap || typeof rawMap !== 'string') return fallbackEmbed;
             var clean = rawMap.trim();
             if (!clean) return fallbackEmbed;
+
+            // Si pegaron el código <iframe src="..."> completo de "Compartir -> Insertar un mapa"
             if (clean.includes('<iframe')) {
                 var m = clean.match(/src=["']([^"']+)["']/i);
                 if (m && m[1]) clean = m[1].trim();
             }
-            if (clean.includes('0x0%3A0x0') || clean.includes('0x0:0x0') || clean.includes('1610000000000') || clean.includes('maps.app.goo.gl') || clean.includes('goo.gl/maps')) {
+
+            // Ignorar únicamente el placeholder falso antiguo (0x0:0x0)
+            if (clean.includes('0x0%3A0x0') || clean.includes('0x0:0x0') || clean.includes('1610000000000')) {
                 return fallbackEmbed;
             }
-            if (clean.includes('google.com/maps') && !clean.includes('/maps/embed') && !clean.includes('output=embed')) {
-                return fallbackEmbed;
+
+            // Si ya es una URL de embed oficial de Google Maps (/maps/embed o output=embed), respetarla tal cual
+            if (clean.startsWith('http') && (clean.includes('/maps/embed') || clean.includes('output=embed'))) {
+                return clean;
             }
+
+            // Si contiene coordenadas exactas (en texto directo o dentro de un link de Google Maps), usar esas coordenadas con zoom 19
+            var exactCoords = extractExactCoordsFromText(clean);
+            if (exactCoords) {
+                return 'https://maps.google.com/maps?q=' + encodeURIComponent(exactCoords) + '&hl=es&z=19&ie=UTF8&iwloc=&output=embed';
+            }
+
+            // Si es un link de Google Maps con nombre de lugar (/maps/place/Nombre+Del+Lugar/ o ?q=...)
+            if (clean.includes('google.com/maps')) {
+                var placeMatch = clean.match(/\/maps\/place\/([^/?&#]+)/);
+                if (placeMatch && placeMatch[1]) {
+                    var placeName = decodeURIComponent(placeMatch[1].replace(/\+/g, ' '));
+                    return 'https://maps.google.com/maps?q=' + encodeURIComponent(placeName) + '&hl=es&z=18&ie=UTF8&iwloc=&output=embed';
+                }
+                var qMatch = clean.match(/[?&](?:q|query)=([^&#]+)/);
+                if (qMatch && qMatch[1]) {
+                    var qVal = decodeURIComponent(qMatch[1].replace(/\+/g, ' '));
+                    return 'https://maps.google.com/maps?q=' + encodeURIComponent(qVal) + '&hl=es&z=18&ie=UTF8&iwloc=&output=embed';
+                }
+            }
+
+            // Si pegaron coordenadas, Plus Code o dirección personalizada directa
             if (!clean.startsWith('http')) {
-                return 'https://maps.google.com/maps?q=' + encodeURIComponent(clean) + '&t=&z=17&ie=UTF8&iwloc=&output=embed';
+                return 'https://maps.google.com/maps?q=' + encodeURIComponent(clean) + '&hl=es&z=18&ie=UTF8&iwloc=&output=embed';
             }
-            return clean;
+
+            return fallbackEmbed;
+        }
+
+        function getDirectMapsLink(rawMap, address) {
+            var raw = (rawMap || '').trim();
+            var coords = extractExactCoordsFromText(raw);
+            if (coords) return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(coords);
+            if (raw.startsWith('http') && !raw.includes('/maps/embed') && !raw.includes('output=embed') && !raw.includes('1610000000000')) {
+                return raw;
+            }
+            return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(address || 'Porfirio Díaz 280, San Miguelito, 52700 Capulhuac de Mirafuentes, Méx.');
         }
 
         function getDefaults() {
@@ -1058,7 +1114,9 @@
             if (!D.settings.durationPresets || !Array.isArray(D.settings.durationPresets) || !D.settings.durationPresets.length) {
                 D.settings.durationPresets = getDefaultDurationPresets();
             }
-            D.settings.mapEmbed = getValidMapEmbed(D.settings.mapEmbed, D.settings.address);
+            if (D.settings.mapEmbed && (D.settings.mapEmbed.includes('0x0%3A0x0') || D.settings.mapEmbed.includes('1610000000000'))) {
+                D.settings.mapEmbed = getValidMapEmbed('', D.settings.address);
+            }
             if (!D.services) D.services = def.services;
             if (!D.portfolio) D.portfolio = def.portfolio;
             if (!D.testimonials) D.testimonials = def.testimonials;
@@ -1420,7 +1478,7 @@
                 '<div class="contact-detail"><span class="icon">🕒</span> <span>' + esc(s.hours) + '</span></div>' +
                 '<div class="contact-detail"><span class="icon">🔗</span> <a href="' + esc(s.facebook) + '" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:500;">Síguenos en Facebook</a></div>' +
                 '<div class="map-container"><iframe src="' + esc(getValidMapEmbed(s.mapEmbed, s.address)) + '" title="Ubicación Foto y Video Montenegro" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>' +
-                '<div style="margin-top:0.65rem;"><a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(s.address || 'Porfirio Díaz 280, San Miguelito, 52700 Capulhuac de Mirafuentes, Méx.') + '" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="width:100%; justify-content:center; font-size:0.82rem;">📍 Abrir ubicación en Google Maps (Cómo llegar)</a></div>';
+                '<div style="margin-top:0.65rem;"><a href="' + esc(getDirectMapsLink(s.mapEmbed, s.address)) + '" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="width:100%; justify-content:center; font-size:0.82rem;">📍 Abrir ubicación exacta en Google Maps (Cómo llegar)</a></div>';
             
             var sel = document.getElementById('servSelect'); 
             var selHtml = '<option value="" disabled selected>Tipo de servicio</option>';
@@ -1804,7 +1862,7 @@
         }
 
         var clientFavs = {};
-        var showEmptyFavSection = false;
+        var isFavSetActive = false;
 
         function loadClientFavs() {
             clientFavs = {};
@@ -1836,6 +1894,14 @@
             }).sort(function(a, b) { return a - b; });
         }
 
+        function updateFavNavBadge() {
+            var favIndices = getFavIndices();
+            var cntEl = document.getElementById('favNavCnt');
+            var tabEl = document.getElementById('navFavTab');
+            if (cntEl) cntEl.textContent = favIndices.length;
+            if (tabEl) tabEl.classList.toggle('has-favs', favIndices.length > 0);
+        }
+
         function toggleFav(i, e) {
             if (e) { e.preventDefault(); e.stopPropagation(); }
             if (clientFavs[i]) {
@@ -1847,13 +1913,15 @@
             var isFav = !!clientFavs[i];
             var btn1 = document.getElementById('fav-' + i);
             if (btn1) btn1.classList.toggle('on', isFav);
-            var favIndices = getFavIndices();
-            var cntEl = document.getElementById('favNavCnt');
-            if (cntEl) cntEl.textContent = favIndices.length;
-            renderFavoritesSetSection();
+            updateFavNavBadge();
             updateLBFavButton();
-            if (isFav) {
-                toast('♥ Foto guardada en tu apartado de Favoritas (' + favIndices.length + ')', 2000);
+
+            // Solo redibujar el set de Favoritas si el cliente está viendo actualmente ese Set
+            if (isFavSetActive) {
+                renderFavoritesSetSection();
+            } else if (isFav) {
+                var totalFavs = getFavIndices().length;
+                toast('♥ Guardada en el set Favoritas (' + totalFavs + ')', 1800);
             }
         }
 
@@ -1876,12 +1944,31 @@
         }
 
         function openFavSetTab(el) {
-            showEmptyFavSection = true;
+            isFavSetActive = true;
+            var normalWrap = document.getElementById('pxNormalSetsWrap');
+            var favWrap = document.getElementById('set-favoritas-wrap');
+            if (normalWrap) normalWrap.style.display = 'none';
+            if (favWrap) favWrap.style.display = 'block';
             renderFavoritesSetSection();
             document.querySelectorAll('.px-nav-item').forEach(function(n) { n.classList.remove('active'); });
-            if (el) el.classList.add('active');
-            var sec = document.getElementById('set-favoritas');
-            if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+            var tab = el || document.getElementById('navFavTab');
+            if (tab) tab.classList.add('active');
+            var navBar = document.getElementById('pxNav');
+            if (navBar) navBar.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function exitFavSetView() {
+            isFavSetActive = false;
+            var normalWrap = document.getElementById('pxNormalSetsWrap');
+            var favWrap = document.getElementById('set-favoritas-wrap');
+            if (favWrap) {
+                favWrap.style.display = 'none';
+                favWrap.innerHTML = '';
+            }
+            if (normalWrap) normalWrap.style.display = 'block';
+            document.querySelectorAll('.px-nav-item').forEach(function(n) { n.classList.remove('active'); });
+            var firstNormalTab = document.querySelector('.px-nav-item:not(.fav-tab)');
+            if (firstNormalTab) firstNormalTab.classList.add('active');
         }
 
         function sendFavSetWA() {
@@ -1914,44 +2001,43 @@
         }
 
         function clearAllFavs() {
-            if (!confirm('¿Deseas vaciar todas las fotos de tu apartado de Favoritas?')) return;
+            if (!confirm('¿Deseas quitar todas las fotografías marcadas como favoritas?')) return;
             clientFavs = {};
-            showEmptyFavSection = false;
             saveClientFavs();
             document.querySelectorAll('.pc .favb.on').forEach(function(b) { b.classList.remove('on'); });
-            var cntEl = document.getElementById('favNavCnt');
-            if (cntEl) cntEl.textContent = '0';
+            updateFavNavBadge();
             renderFavoritesSetSection();
-            toast('Apartado de Favoritas vaciado');
+            toast('Lista de favoritas vaciada');
         }
 
         function renderFavoritesSetSection() {
             var wrap = document.getElementById('set-favoritas-wrap');
             if (!wrap) return;
-            var favIndices = getFavIndices();
-            if (favIndices.length === 0 && !showEmptyFavSection) {
+            if (!isFavSetActive) {
                 wrap.style.display = 'none';
                 wrap.innerHTML = '';
                 return;
             }
             wrap.style.display = 'block';
-            var html = '<div class="fav-set-box" id="set-favoritas">' +
-                '<div class="fav-set-hdr">' +
-                    '<div>' +
-                        '<h3 class="fav-set-title"><span style="color:#ff5252">♥</span> Mis Fotografías Favoritas <span class="fav-cnt-pill" style="font-size:0.85rem; padding:0.15rem 0.65rem;">' + favIndices.length + '</span></h3>' +
-                        '<p class="fav-set-sub">Tu selección personal de fotos favoritas de la galería.</p>' +
+            var favIndices = getFavIndices();
+
+            var html = '<div class="px-set-section" id="set-favoritas">' +
+                '<div class="fav-set-toolbar">' +
+                    '<div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">' +
+                        '<button type="button" class="btn btn-sm" style="background:var(--c-surface2); color:var(--c-text); border:1px solid var(--c-border); min-height:36px; padding:0.35rem 0.9rem;" onclick="exitFavSetView()">← Ver todas las fotos</button>' +
+                        '<span style="font-family:var(--fh); font-size:1.2rem; color:var(--c-text);">♥ Favoritas (' + favIndices.length + ')</span>' +
                     '</div>' +
                     '<div class="fav-set-actions">' +
                         (favIndices.length > 0 ? (
-                            '<button type="button" class="btn btn-sm" style="background:#25D366; color:#fff; border:none;" onclick="sendFavSetWA()">📲 Enviar Favoritas por WhatsApp</button>' +
-                            '<button type="button" class="btn btn-accent btn-sm" onclick="moveFavsToPrintOrder()">🖨️ Pasar a Impresión</button>' +
-                            '<button type="button" class="btn btn-sm" style="background:rgba(255,255,255,0.06); color:var(--c-muted); border:1px solid var(--c-border);" onclick="clearAllFavs()">🗑️ Vaciar</button>'
-                        ) : '<button type="button" class="btn btn-sm" style="background:rgba(255,255,255,0.06); color:var(--c-muted); border:1px solid var(--c-border);" onclick="showEmptyFavSection=false; renderFavoritesSetSection();">Ocultar</button>') +
+                            '<button type="button" class="btn btn-sm" style="background:#25D366; color:#fff; border:none; min-height:36px; padding:0.35rem 0.95rem;" onclick="sendFavSetWA()">📲 Enviar lista por WhatsApp</button>' +
+                            '<button type="button" class="btn btn-accent btn-sm" style="min-height:36px; padding:0.35rem 0.95rem;" onclick="moveFavsToPrintOrder()">🖨️ Pedir Impresión</button>' +
+                            '<button type="button" class="btn btn-sm" style="background:transparent; color:var(--c-muted); border:1px solid var(--c-border); min-height:36px; padding:0.35rem 0.75rem;" onclick="clearAllFavs()">Vaciar</button>'
+                        ) : '') +
                     '</div>' +
                 '</div>';
 
             if (favIndices.length === 0) {
-                html += '<div class="fav-empty-msg">Aún no has agregado fotografías a tu apartado de Favoritas.<br>Toca el botón de corazón (<b>♥</b>) en la esquina de cualquier fotografía (o dentro del visor en pantalla completa) para ir guardándolas aquí.</div></div>';
+                html += '<div class="fav-empty-msg">Aún no has seleccionado fotografías favoritas.<br><span style="font-size:0.82rem; opacity:0.8;">Explora los sets de tu galería y toca el icono <b>♡</b> en tus fotos preferidas para reunirlas en este apartado.</span><br><br><button type="button" class="btn btn-outline btn-sm" style="color:var(--c-text); border-color:var(--c-border);" onclick="exitFavSetView()">Explorar fotografías</button></div></div>';
                 wrap.innerHTML = html;
                 return;
             }
@@ -2000,7 +2086,7 @@
             
             portalPhotos = c.photos || [];
             setLimits = {};
-            showEmptyFavSection = false;
+            isFavSetActive = false;
             loadClientFavs();
 
             var coverImg = c.galleryCover ? c.galleryCover : (portalPhotos.length > 0 ? pSrc(portalPhotos[0], 1600) : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&fit=crop');
@@ -2037,7 +2123,7 @@
             
             pushUrlState(curClient, 'galeria');
         }
-        function closeGalleryView() { document.getElementById('cpGalleryView').style.display = 'none'; isPrintMode = false; clearSel(); showMainView(); }
+        function closeGalleryView() { document.getElementById('cpGalleryView').style.display = 'none'; isPrintMode = false; isFavSetActive = false; clearSel(); showMainView(); }
 
         function togglePrintMode() {
             isPrintMode = !isPrintMode;
@@ -2137,17 +2223,24 @@
             var content = document.getElementById('pxContent');
             var setNames = Object.keys(sets).sort((a,b) => a === 'General' ? -1 : a.localeCompare(b));
 
-            var favCount = getFavIndices().length;
-            var navHtml = `<div class="px-nav-item fav-tab" id="navFavTab" onclick="openFavSetTab(this)">♥ Favoritas <span class="fav-cnt-pill" id="favNavCnt">${favCount}</span></div>`;
+            var navHtml = '';
             var contentFrag = document.createDocumentFragment();
 
+            // Contenedor del Set de Favoritas (oculto de principio hasta que el cliente toque la pestaña ♥ Favoritas)
             var favWrap = document.createElement('div');
             favWrap.id = 'set-favoritas-wrap';
+            favWrap.style.display = isFavSetActive ? 'block' : 'none';
             contentFrag.appendChild(favWrap);
+
+            // Contenedor de los Sets normales del evento
+            var normalSetsWrap = document.createElement('div');
+            normalSetsWrap.id = 'pxNormalSetsWrap';
+            normalSetsWrap.style.display = isFavSetActive ? 'none' : 'block';
 
             setNames.forEach((setName, idx) => {
                 var safeId = 'set-' + setName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-                navHtml += `<div class="px-nav-item ${idx===0?'active':''}" onclick="scrollToSet('${safeId}', this)">${esc(setName)}</div>`;
+                var isTabAct = (!isFavSetActive && idx === 0) ? 'active' : '';
+                navHtml += `<div class="px-nav-item ${isTabAct}" onclick="scrollToSet('${safeId}', this)">${esc(setName)}</div>`;
                 
                 var section = document.createElement('div');
                 section.className = 'px-set-section';
@@ -2174,7 +2267,7 @@
                     
                     d.innerHTML = `
                         <img id="gimg-${i}" class="${rotClass.trim()}" src="${pSrc(p, 800)}" alt="${esc(p.name || '')}" loading="lazy" onload="handleGridImgLoad(this, ${i})">
-                        <button class="favb${isFav ? ' on' : ''}" id="fav-${i}" type="button" onclick="toggleFav(${i}, event)" title="Agregar o quitar de Favoritas">
+                        <button class="favb${isFav ? ' on' : ''}" id="fav-${i}" type="button" onclick="toggleFav(${i}, event)" title="Agregar a Favoritas">
                             <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                         </button>
                         <div class="chk${isSel ? ' on' : ''}" id="chk-${i}">
@@ -2208,13 +2301,19 @@
                     section.appendChild(moreWrap);
                 }
 
-                contentFrag.appendChild(section);
+                normalSetsWrap.appendChild(section);
             });
+
+            contentFrag.appendChild(normalSetsWrap);
+
+            // Pestaña del Set Favoritas al final de los sets normales para no ser invasiva de principio
+            var favCount = getFavIndices().length;
+            navHtml += `<div class="px-nav-item fav-tab ${isFavSetActive ? 'active' : ''} ${favCount > 0 ? 'has-favs' : ''}" id="navFavTab" onclick="openFavSetTab(this)">♥ Favoritas <span class="fav-cnt-pill" id="favNavCnt">${favCount}</span></div>`;
             
             navInner.innerHTML = navHtml;
             content.innerHTML = '';
             content.appendChild(contentFrag);
-            renderFavoritesSetSection();
+            if (isFavSetActive) renderFavoritesSetSection();
         }
         
         function triggerDownload(i, e) {
@@ -2224,10 +2323,17 @@
         }
 
         function scrollToSet(id, el) {
+            if (isFavSetActive) {
+                isFavSetActive = false;
+                var favWrap = document.getElementById('set-favoritas-wrap');
+                var normalWrap = document.getElementById('pxNormalSetsWrap');
+                if (favWrap) { favWrap.style.display = 'none'; favWrap.innerHTML = ''; }
+                if (normalWrap) normalWrap.style.display = 'block';
+            }
             var target = document.getElementById(id);
             if (target) target.scrollIntoView({ behavior: 'smooth' });
             document.querySelectorAll('.px-nav-item').forEach(n => n.classList.remove('active'));
-            el.classList.add('active');
+            if (el) el.classList.add('active');
         }
 
         function openDownloadModal() {
@@ -3494,8 +3600,40 @@
         function editTestimonial(i) { var t = D.testimonials[i]; var newText = prompt('Testimonio:', t.text.replace(/"/g, '')); if (newText === null) return; var newAuthor = prompt('Autor:', t.author); if (newAuthor === null) return; D.testimonials[i].text = newText; D.testimonials[i].author = newAuthor; saveData(); renderAdmBody(); renderPublic(); }
         function delTestimonial(i) { D.testimonials.splice(i, 1); saveData(); renderAdmBody(); renderPublic(); }
 
+        function updateAdminMapPreview() {
+            var mapIn = document.getElementById('se_map');
+            var addrIn = document.getElementById('se_addr');
+            var prevIframe = document.getElementById('se_mapPreview');
+            if (!mapIn || !prevIframe) return;
+            var embedSrc = getValidMapEmbed(mapIn.value, addrIn ? addrIn.value : '');
+            prevIframe.src = embedSrc;
+        }
+
+        function useCurrentGpsForMap() {
+            if (!navigator.geolocation) {
+                toast('Tu navegador no soporta geolocalización GPS.');
+                return;
+            }
+            toast('Obteniendo coordenadas GPS exactas...');
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                var lat = pos.coords.latitude.toFixed(6);
+                var lng = pos.coords.longitude.toFixed(6);
+                var coordsStr = lat + ', ' + lng;
+                var mapIn = document.getElementById('se_map');
+                if (mapIn) {
+                    mapIn.value = coordsStr;
+                    updateAdminMapPreview();
+                    toast('📍 Coordenadas exactas colocadas (' + coordsStr + '). Haz clic en Guardar cambios.');
+                }
+            }, function(err) {
+                toast('No se pudo obtener el GPS: ' + err.message);
+            }, { enableHighAccuracy: true, timeout: 10000 });
+        }
+
         function renderAdmSettings(body) {
             var s = D.settings;
+            var shownMapVal = s.mapRawInput || s.mapEmbed || '';
+            var previewUrl = getValidMapEmbed(shownMapVal, s.address);
             body.innerHTML = '<h3 style="margin-bottom:1rem">Datos generales del sitio</h3>' +
                 '<div class="af-row"><div><label class="af-l">Teléfono</label><input class="af-i" id="se_phone" value="' + esc(s.phone) + '"></div><div><label class="af-l">Teléfono (solo números)</label><input class="af-i" id="se_phoneRaw" value="' + esc(s.phoneRaw) + '"></div></div>' +
                 '<label class="af-l">Dirección</label><input class="af-i" id="se_addr" value="' + esc(s.address) + '">' +
@@ -3507,8 +3645,18 @@
                 '<div style="display:flex;gap:10px;margin-bottom:1rem;"><input class="af-i" id="se_logoImg" placeholder="Si está vacío, mostrará el texto" value="' + esc(s.logoImage || '') + '" style="margin-bottom:0;flex:1;"><input type="file" accept="image/*" onchange="uploadGeneralImg(this, \'se_logoImg\')" style="width:105px;font-size:0.7rem;padding-top:10px;"></div>' +
                 '<label class="af-l">Imagen Principal (Inicio)</label>' +
                 '<div style="display:flex;gap:10px;margin-bottom:1rem;"><input class="af-i" id="se_heroImg" value="' + esc(s.heroImage || '') + '" style="margin-bottom:0;flex:1;"><input type="file" accept="image/*" onchange="uploadGeneralImg(this, \'se_heroImg\')" style="width:105px;font-size:0.7rem;padding-top:10px;"></div>' +
-                '<label class="af-l">Google Maps Embed URL</label><input class="af-i" id="se_map" value="' + esc(s.mapEmbed) + '">' +
-                '<label class="af-l" style="margin-top:1rem; color:var(--accent)">Clave API de Google Drive</label><input class="af-i" id="se_driveApi" value="' + esc(s.driveApiKey || '') + '">' +
+                '<div style="background:#fafafa; border:1px solid var(--border-light); border-radius:var(--radius); padding:1rem; margin-bottom:1rem;">' +
+                    '<label class="af-l" style="color:var(--accent);">📍 Ubicación Exacta en Google Maps (Coordenadas, Link o Iframe)</label>' +
+                    '<p class="adm-hint" style="margin-bottom:0.5rem;">Para que el pin caiga en el punto exacto de tu estudio: en Google Maps haz <b>clic derecho exactamente sobre tu local</b>, haz clic en los números de arriba (ej. <code>19.19345, -99.52412</code>) para copiarlos y pégalos aquí (también acepta el link largo de Google Maps o código <code>&lt;iframe&gt;</code>).</p>' +
+                    '<div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.65rem;">' +
+                        '<input class="af-i" id="se_map" value="' + esc(shownMapVal) + '" placeholder="Pega aquí las coordenadas (ej. 19.19345, -99.52412), link o iframe" oninput="updateAdminMapPreview()" style="margin-bottom:0; flex:1; min-width:200px;">' +
+                        '<button type="button" class="af-btn af-btn-s" style="margin:0;" onclick="useCurrentGpsForMap()">📍 Usar mi GPS actual</button>' +
+                    '</div>' +
+                    '<div style="border-radius:8px; overflow:hidden; border:1px solid var(--border); height:170px; background:#eee;">' +
+                        '<iframe id="se_mapPreview" src="' + esc(previewUrl) + '" style="width:100%; height:100%; border:0; display:block;" loading="lazy"></iframe>' +
+                    '</div>' +
+                '</div>' +
+                '<label class="af-l" style="margin-top:0.5rem; color:var(--accent)">Clave API de Google Drive</label><input class="af-i" id="se_driveApi" value="' + esc(s.driveApiKey || '') + '">' +
                 '<label class="af-l" style="margin-top:1rem">Cambiar contraseña admin</label><input class="af-i" type="password" id="se_pass" placeholder="Dejar vacío para no cambiar">' +
                 '<div class="af-btns"><button class="af-btn af-btn-p" onclick="saveSettings()">Guardar cambios</button></div>' +
                 '<hr style="border:none; border-top:1px solid var(--border-light); margin: 2rem 0;">' +
@@ -3519,9 +3667,24 @@
                 '</div>';
         }
         function saveSettings() {
-            var s = D.settings; s.phone = document.getElementById('se_phone').value.trim(); s.phoneRaw = document.getElementById('se_phoneRaw').value.trim(); s.address = document.getElementById('se_addr').value.trim(); s.hours = document.getElementById('se_hours').value.trim(); s.facebook = document.getElementById('se_fb').value.trim(); s.waNumber = document.getElementById('se_wa').value.trim(); s.heroDesc = document.getElementById('se_hero').value.trim(); s.mapEmbed = getValidMapEmbed(document.getElementById('se_map').value.trim(), s.address); s.driveApiKey = document.getElementById('se_driveApi').value.trim(); s.heroImage = document.getElementById('se_heroImg').value.trim(); s.logoImage = document.getElementById('se_logoImg').value.trim();
-            var p = document.getElementById('se_pass').value; if (p.length > 3) D.adminPass = p;
-            saveData(); renderPublic();
+            var s = D.settings;
+            s.phone = document.getElementById('se_phone').value.trim();
+            s.phoneRaw = document.getElementById('se_phoneRaw').value.trim();
+            s.address = document.getElementById('se_addr').value.trim();
+            s.hours = document.getElementById('se_hours').value.trim();
+            s.facebook = document.getElementById('se_fb').value.trim();
+            s.waNumber = document.getElementById('se_wa').value.trim();
+            s.heroDesc = document.getElementById('se_hero').value.trim();
+            var rawMapVal = document.getElementById('se_map').value.trim();
+            s.mapRawInput = rawMapVal;
+            s.mapEmbed = getValidMapEmbed(rawMapVal, s.address);
+            s.driveApiKey = document.getElementById('se_driveApi').value.trim();
+            s.heroImage = document.getElementById('se_heroImg').value.trim();
+            s.logoImage = document.getElementById('se_logoImg').value.trim();
+            var p = document.getElementById('se_pass').value;
+            if (p.length > 3) D.adminPass = p;
+            saveData();
+            renderPublic();
         }
 
         // Función corregida para leer correctamente los links compartidos (ej. ?c=boda2024 o ?c=boda2024-galeria)
