@@ -184,14 +184,15 @@
         .cp-desc { color: var(--c-muted); font-size: .92rem; margin-bottom: 1.5rem; line-height: 1.5; }
 
         .btn-regresar-fijo {
-            position: fixed; top: calc(1rem + var(--safe-top)); left: 1rem; z-index: 110000;
-            transform: translateZ(600px); -webkit-transform: translateZ(600px);
-            background: rgba(12, 12, 15, 0.84); color: #fff; border: 1px solid rgba(255,255,255,0.28);
-            padding: 0.5rem 1.15rem; border-radius: 50px; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            font-family: var(--fb); font-size: 0.82rem; font-weight: 500; display: flex; align-items: center; gap: 0.45rem; transition: opacity 0.25s, background 0.25s;
-            pointer-events: auto !important; min-height: 42px; box-shadow: 0 4px 16px rgba(0,0,0,0.45); touch-action: manipulation;
+            position: fixed; top: calc(1rem + var(--safe-top)); left: 1rem; z-index: 95000;
+            transform: none !important; -webkit-transform: none !important;
+            background: rgba(12, 12, 15, 0.88); color: #fff; border: 1px solid rgba(255,255,255,0.32);
+            padding: 0.55rem 1.25rem; border-radius: 50px; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            font-family: var(--fb); font-size: 0.84rem; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; transition: opacity 0.25s, background 0.25s;
+            pointer-events: auto !important; min-height: 44px; box-shadow: 0 4px 16px rgba(0,0,0,0.5); touch-action: manipulation; user-select: none; -webkit-user-select: none;
         }
-        .btn-regresar-fijo:hover { background: rgba(12, 12, 15, 0.96); border-color: var(--c-accent); color: var(--c-accent); }
+        .btn-regresar-fijo * { pointer-events: none; }
+        .btn-regresar-fijo:hover { background: rgba(12, 12, 15, 0.98); border-color: var(--c-accent); color: var(--c-accent); }
         body.lb-open .btn-regresar-fijo,
         body.lb-open .fab-print,
         body.lb-open .order-bar,
@@ -381,10 +382,12 @@
         .btn-gh:hover { border-color: var(--c-muted); color: var(--c-text); }
 
         /* Lightbox con Zoom interactivo y navegación táctil / teclado */
-        .lb { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(4, 4, 6, .97); z-index: 150000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .28s ease; overflow: hidden; touch-action: none; }
-        .lb.active { opacity: 1; pointer-events: auto; }
+        .lb { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(4, 4, 6, .97); z-index: 150000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; pointer-events: none !important; transition: opacity .25s ease, visibility .25s ease; overflow: hidden; touch-action: none; }
+        .lb:not(.active), .lb:not(.active) * { pointer-events: none !important; }
+        .lb.active { opacity: 1; visibility: visible; pointer-events: auto !important; }
         .lb-top { position: absolute; top: 0; left: 0; right: 0; padding: calc(0.9rem + var(--safe-top)) 1.2rem 0.9rem; display: flex; justify-content: space-between; align-items: center; z-index: 3005; background: linear-gradient(to bottom, rgba(0,0,0,0.75), transparent); pointer-events: none; }
-        .lb-back, .lb-x { pointer-events: auto; background: rgba(255, 255, 255, .14); border: 1px solid rgba(255,255,255,0.22); color: #fff; border-radius: 50px; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: .2s; font-family: var(--fb); touch-action: manipulation; }
+        .lb-back, .lb-x { pointer-events: none; background: rgba(255, 255, 255, .14); border: 1px solid rgba(255,255,255,0.22); color: #fff; border-radius: 50px; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: .2s; font-family: var(--fb); touch-action: manipulation; }
+        .lb.active .lb-back, .lb.active .lb-x { pointer-events: auto !important; }
         .lb-back { padding: 0.5rem 1.15rem; font-size: 0.84rem; font-weight: 500; gap: 0.4rem; min-height: 42px; }
         .lb-back:hover, .lb-x:hover { background: rgba(255, 255, 255, .28); }
         .lb-x { width: 42px; height: 42px; font-size: 1.5rem; }
@@ -899,7 +902,7 @@
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
-                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v1.8</span></h2>
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v1.9</span></h2>
                 <button class="adm-x" onclick="closeAdm()">×</button>
             </div>
             <div class="adm-tabs" id="admTabs">
@@ -2268,8 +2271,8 @@
                 var gridFrag = document.createDocumentFragment();
 
                 var allSetItems = sets[setName];
-                var limit = setLimits[setName] || 60;
-                var visibleItems = allSetItems.slice(0, limit);
+                var limit = allSetItems.length;
+                var visibleItems = allSetItems;
 
                 visibleItems.forEach(item => {
                     var i = item.index; var p = item.photo; var isSel = selected[i]; var isFav = !!clientFavs[i];
