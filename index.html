@@ -285,6 +285,37 @@
         .pc .dlb:active { transform: scale(.92); }
         .pc .dlb svg { width: 14px; height: 14px; fill: #fff; }
 
+        /* Botón de Favoritas (Corazón ♥) en cada foto y apartado de Favoritas */
+        .pc .favb { position: absolute; top: .5rem; left: .5rem; width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.22); background: rgba(0, 0, 0, .42); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 3; padding: 0; transition: transform .2s, background .2s, border-color .2s, opacity .2s; opacity: 0.78; color: #fff; touch-action: manipulation; }
+        .pc:hover .favb { opacity: 1; background: rgba(0, 0, 0, .75); }
+        .pc .favb svg { width: 15px; height: 15px; fill: rgba(255,255,255,0.2); stroke: #fff; stroke-width: 2; transition: .2s; }
+        .pc .favb.on { opacity: 1; background: rgba(231, 76, 60, 0.92); border-color: #ff6b6b; box-shadow: 0 2px 10px rgba(231,76,60,0.45); }
+        .pc .favb.on svg { fill: #fff; stroke: #fff; transform: scale(1.08); }
+        .pc .favb:active { transform: scale(0.88); }
+
+        .px-nav-item.fav-tab { color: #ff7675; display: inline-flex; align-items: center; gap: 0.35rem; }
+        .px-nav-item.fav-tab.active, .px-nav-item.fav-tab:hover { color: #ff5252; border-bottom-color: #ff5252; }
+        .fav-cnt-pill { background: rgba(231, 76, 60, 0.22); border: 1px solid rgba(231, 76, 60, 0.45); color: #ff7675; padding: 0.05rem 0.45rem; border-radius: 50px; font-size: 0.7rem; font-weight: 700; }
+
+        .fav-set-box { background: linear-gradient(145deg, rgba(28, 22, 26, 0.9), rgba(18, 18, 22, 0.95)); border: 1px solid rgba(231, 76, 60, 0.28); border-radius: var(--radius-lg); padding: 1.5rem 1.2rem; margin-bottom: 3rem; scroll-margin-top: 90px; }
+        .fav-set-hdr { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.2rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .fav-set-title { font-family: var(--fh); font-size: 1.55rem; color: #fff; display: flex; align-items: center; gap: 0.5rem; margin: 0; }
+        .fav-set-sub { font-size: 0.82rem; color: var(--c-muted); margin-top: 0.2rem; }
+        .fav-set-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+        .fav-empty-msg { text-align: center; padding: 2rem 1rem; color: var(--c-muted); font-size: 0.88rem; border: 1px dashed rgba(255,255,255,0.12); border-radius: var(--radius); background: rgba(0,0,0,0.2); }
+
+        .lb-dl.fav-on { background: rgba(231, 76, 60, 0.88); border-color: #ff7675; color: #fff; font-weight: 600; }
+
+        /* Accesos rápidos de duración en Admin */
+        .dur-presets { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 0.65rem; }
+        .dur-chip { display: inline-flex; align-items: center; gap: 0.35rem; background: var(--accent-subtle); border: 1.5px solid var(--border); color: var(--text); padding: 0.4rem 0.85rem; border-radius: 50px; font-size: 0.8rem; font-weight: 500; cursor: pointer; font-family: var(--fb); transition: .2s; min-height: 36px; }
+        .dur-chip:hover { border-color: var(--accent); background: #fff; }
+        .dur-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+        .dur-chip .del-chip { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: rgba(0,0,0,0.12); color: inherit; font-size: 0.75rem; margin-left: 2px; }
+        .dur-chip .del-chip:hover { background: #c0392b; color: #fff; }
+        .dur-creator { display: none; background: #fff; border: 1px dashed var(--accent); border-radius: var(--radius); padding: 0.8rem; margin-top: 0.5rem; margin-bottom: 0.8rem; }
+        .dur-creator.open { display: block; }
+
         .gallery-print-mode .pc .chk { display: flex; opacity: 1; pointer-events: auto; }
         .gallery-print-mode .pc .dlb { display: none !important; }
         .gallery-print-mode .pc:hover img { transform: none; filter: brightness(0.85); }
@@ -883,6 +914,7 @@
         </div>
         <div class="lb-bot">
             <span class="lb-c" id="lbC"></span>
+            <button type="button" class="lb-dl" id="lbFavBtn" onclick="toggleCurrentLBFav()" style="padding:.5rem 0.95rem;" title="Agregar o quitar de tu apartado de Favoritas">♡ Favorita</button>
             <div class="lb-zoom-ctrl" id="lbZoomCtrl">
                 <button type="button" class="lb-zbtn" onclick="zoomLB(-0.5)" title="Alejar">−</button>
                 <span class="lb-zlbl" id="lbZoomLbl" onclick="resetZoomLB()" title="Restablecer zoom">100%</span>
@@ -915,18 +947,51 @@
         // Salvavidas automático: si la red o Firebase tardan más de 3.5 segundos, quita la pantalla de carga sí o sí
         setTimeout(hideLoader, 3500);
 
+        function getDefaultDurationPresets() {
+            return [
+                { id: 'dur_1m', label: '1 Mes', value: 1, unit: 'months', days: 30, builtin: true },
+                { id: 'dur_3m', label: '3 Meses', value: 3, unit: 'months', days: 90, builtin: true },
+                { id: 'dur_6m', label: '6 Meses', value: 6, unit: 'months', days: 180, builtin: true },
+                { id: 'dur_1y', label: '1 Año', value: 1, unit: 'years', days: 365, builtin: true }
+            ];
+        }
+
+        function getValidMapEmbed(rawMap, address) {
+            var defaultAddr = address || 'Porfirio Díaz 280, San Miguelito, 52700 Capulhuac de Mirafuentes, Estado de México';
+            var fallbackEmbed = 'https://maps.google.com/maps?q=' + encodeURIComponent(defaultAddr) + '&t=&z=17&ie=UTF8&iwloc=&output=embed';
+            if (!rawMap || typeof rawMap !== 'string') return fallbackEmbed;
+            var clean = rawMap.trim();
+            if (!clean) return fallbackEmbed;
+            if (clean.includes('<iframe')) {
+                var m = clean.match(/src=["']([^"']+)["']/i);
+                if (m && m[1]) clean = m[1].trim();
+            }
+            if (clean.includes('0x0%3A0x0') || clean.includes('0x0:0x0') || clean.includes('1610000000000') || clean.includes('maps.app.goo.gl') || clean.includes('goo.gl/maps')) {
+                return fallbackEmbed;
+            }
+            if (clean.includes('google.com/maps') && !clean.includes('/maps/embed') && !clean.includes('output=embed')) {
+                return fallbackEmbed;
+            }
+            if (!clean.startsWith('http')) {
+                return 'https://maps.google.com/maps?q=' + encodeURIComponent(clean) + '&t=&z=17&ie=UTF8&iwloc=&output=embed';
+            }
+            return clean;
+        }
+
         function getDefaults() {
             return {
                 adminPass: 'admin123',
                 settings: {
                     phone: '729 699 0786', phoneRaw: '7296990786',
                     address: 'Porfirio Díaz 280, San Miguelito, 52700 Capulhuac de Mirafuentes, Méx.', hours: 'Lunes a Domingo · 10 a.m. – 7 p.m.',
-                    facebook: 'https://facebook.com', mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3765.12789114885!2d-99.5265!3d19.1386!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTnCsDA4JzE5LjAiTiA5OcKwMzEnMzUuNCJX!5e0!3m2!1ses!2smx!4v1610000000000',
+                    facebook: 'https://facebook.com',
+                    mapEmbed: 'https://maps.google.com/maps?q=Porfirio%20D%C3%ADaz%20280%2C%20San%20Miguelito%2C%2052700%20Capulhuac%20de%20Mirafuentes%2C%20Estado%20de%20M%C3%A9xico&t=&z=17&ie=UTF8&iwloc=&output=embed',
                     waNumber: '527296990786',
                     heroDesc: 'Desde Capulhuac de Mirafuentes, ofrecemos servicios de fotografía y video con calidad profesional. Bodas, eventos sociales, retratos, producción corporativa e impresión digital de alta calidad.',
                     driveApiKey: '',
                     heroImage: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&h=800&fit=crop&auto=format',
-                    logoImage: ''
+                    logoImage: '',
+                    durationPresets: getDefaultDurationPresets()
                 },
                 printPrices: [
                     { size: '10x15', label: '10 x 15 cm', measure: '10 x 15 cm', price: 10 },
@@ -990,6 +1055,10 @@
             var def = getDefaults();
             if (!D || typeof D !== 'object') D = def;
             if (!D.settings) D.settings = def.settings;
+            if (!D.settings.durationPresets || !Array.isArray(D.settings.durationPresets) || !D.settings.durationPresets.length) {
+                D.settings.durationPresets = getDefaultDurationPresets();
+            }
+            D.settings.mapEmbed = getValidMapEmbed(D.settings.mapEmbed, D.settings.address);
             if (!D.services) D.services = def.services;
             if (!D.portfolio) D.portfolio = def.portfolio;
             if (!D.testimonials) D.testimonials = def.testimonials;
@@ -1350,7 +1419,8 @@
                 '<div class="contact-detail"><span class="icon">📍</span> <span>' + esc(s.address) + '</span></div>' +
                 '<div class="contact-detail"><span class="icon">🕒</span> <span>' + esc(s.hours) + '</span></div>' +
                 '<div class="contact-detail"><span class="icon">🔗</span> <a href="' + esc(s.facebook) + '" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:500;">Síguenos en Facebook</a></div>' +
-                '<div class="map-container"><iframe src="' + esc(s.mapEmbed) + '" title="Ubicación" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>';
+                '<div class="map-container"><iframe src="' + esc(getValidMapEmbed(s.mapEmbed, s.address)) + '" title="Ubicación Foto y Video Montenegro" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>' +
+                '<div style="margin-top:0.65rem;"><a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(s.address || 'Porfirio Díaz 280, San Miguelito, 52700 Capulhuac de Mirafuentes, Méx.') + '" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="width:100%; justify-content:center; font-size:0.82rem;">📍 Abrir ubicación en Google Maps (Cómo llegar)</a></div>';
             
             var sel = document.getElementById('servSelect'); 
             var selHtml = '<option value="" disabled selected>Tipo de servicio</option>';
@@ -1627,7 +1697,8 @@
 
             var days = Math.floor(diff / 86400000);
             var hours = Math.floor((diff % 86400000) / 3600000);
-            var pct = Math.max(4, Math.min(100, Math.round((diff / (90 * 86400000)) * 100)));
+            var totalDays = (c.durationDays && c.durationDays > 0) ? c.durationDays : 90;
+            var pct = Math.max(4, Math.min(100, Math.round((diff / (totalDays * 86400000)) * 100)));
 
             var stateClass = 'exp-card';
             var dotColor = '#2ecc71';
@@ -1732,6 +1803,191 @@
             }
         }
 
+        var clientFavs = {};
+        var showEmptyFavSection = false;
+
+        function loadClientFavs() {
+            clientFavs = {};
+            if (!curClient) return;
+            try {
+                var saved = localStorage.getItem('fvm_favs_' + curClient);
+                if (saved) {
+                    clientFavs = JSON.parse(saved) || {};
+                } else if (D.clients[curClient] && Array.isArray(D.clients[curClient].favorites)) {
+                    D.clients[curClient].favorites.forEach(function(idx) { clientFavs[idx] = true; });
+                }
+            } catch (e) { clientFavs = {}; }
+        }
+
+        function saveClientFavs() {
+            if (!curClient) return;
+            try {
+                localStorage.setItem('fvm_favs_' + curClient, JSON.stringify(clientFavs));
+                if (D.clients[curClient]) {
+                    D.clients[curClient].favorites = Object.keys(clientFavs).map(Number).filter(function(k) { return !!clientFavs[k]; });
+                    localStorage.setItem('fvm_data', JSON.stringify(D));
+                }
+            } catch (e) {}
+        }
+
+        function getFavIndices() {
+            return Object.keys(clientFavs).map(Number).filter(function(i) {
+                return clientFavs[i] && portalPhotos[i];
+            }).sort(function(a, b) { return a - b; });
+        }
+
+        function toggleFav(i, e) {
+            if (e) { e.preventDefault(); e.stopPropagation(); }
+            if (clientFavs[i]) {
+                delete clientFavs[i];
+            } else {
+                clientFavs[i] = true;
+            }
+            saveClientFavs();
+            var isFav = !!clientFavs[i];
+            var btn1 = document.getElementById('fav-' + i);
+            if (btn1) btn1.classList.toggle('on', isFav);
+            var favIndices = getFavIndices();
+            var cntEl = document.getElementById('favNavCnt');
+            if (cntEl) cntEl.textContent = favIndices.length;
+            renderFavoritesSetSection();
+            updateLBFavButton();
+            if (isFav) {
+                toast('♥ Foto guardada en tu apartado de Favoritas (' + favIndices.length + ')', 2000);
+            }
+        }
+
+        function toggleCurrentLBFav() {
+            if (isPublicPortfolioView) return;
+            toggleFav(lbIdx);
+        }
+
+        function updateLBFavButton() {
+            var favBtn = document.getElementById('lbFavBtn');
+            if (!favBtn) return;
+            if (isPublicPortfolioView || !portalPhotos[lbIdx] || portalPhotos[lbIdx].type === 'video') {
+                favBtn.style.display = 'none';
+                return;
+            }
+            favBtn.style.display = 'inline-flex';
+            var isFav = !!clientFavs[lbIdx];
+            favBtn.classList.toggle('fav-on', isFav);
+            favBtn.innerHTML = isFav ? '♥ En Favoritas' : '♡ Favorita';
+        }
+
+        function openFavSetTab(el) {
+            showEmptyFavSection = true;
+            renderFavoritesSetSection();
+            document.querySelectorAll('.px-nav-item').forEach(function(n) { n.classList.remove('active'); });
+            if (el) el.classList.add('active');
+            var sec = document.getElementById('set-favoritas');
+            if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function sendFavSetWA() {
+            var favs = getFavIndices();
+            if (!favs.length) { toast('Primero marca tus fotos favoritas con el corazón ♥.'); return; }
+            var c = D.clients[curClient];
+            var msg = '*Mis Fotografías Favoritas ♥*\nCliente: ' + c.name + '\nEvento: ' + c.event + '\nTotal seleccionadas: ' + favs.length + ' fotos\n\n';
+            favs.forEach(function(i, idx) {
+                var p = portalPhotos[i];
+                if (p) msg += (idx + 1) + '. ' + (p.name || 'Foto ' + (i + 1)) + (p.set && p.set !== 'General' ? ' (' + p.set + ')' : '') + '\n';
+            });
+            window.open('https://wa.me/' + D.settings.waNumber + '?text=' + encodeURIComponent(msg), '_blank');
+        }
+
+        function moveFavsToPrintOrder() {
+            var favs = getFavIndices();
+            if (!favs.length) { toast('Primero marca tus fotos favoritas con el corazón ♥.'); return; }
+            favs.forEach(function(i) {
+                if (!selected[i]) selected[i] = '10x15';
+            });
+            if (!isPrintMode) {
+                isPrintMode = true;
+                document.getElementById('cpGalleryView').classList.add('gallery-print-mode');
+                document.getElementById('btnSelAll').style.display = 'block';
+                updateFabIcon();
+            }
+            renderPixiesetGallery();
+            updateOrderBar();
+            openOrder();
+        }
+
+        function clearAllFavs() {
+            if (!confirm('¿Deseas vaciar todas las fotos de tu apartado de Favoritas?')) return;
+            clientFavs = {};
+            showEmptyFavSection = false;
+            saveClientFavs();
+            document.querySelectorAll('.pc .favb.on').forEach(function(b) { b.classList.remove('on'); });
+            var cntEl = document.getElementById('favNavCnt');
+            if (cntEl) cntEl.textContent = '0';
+            renderFavoritesSetSection();
+            toast('Apartado de Favoritas vaciado');
+        }
+
+        function renderFavoritesSetSection() {
+            var wrap = document.getElementById('set-favoritas-wrap');
+            if (!wrap) return;
+            var favIndices = getFavIndices();
+            if (favIndices.length === 0 && !showEmptyFavSection) {
+                wrap.style.display = 'none';
+                wrap.innerHTML = '';
+                return;
+            }
+            wrap.style.display = 'block';
+            var html = '<div class="fav-set-box" id="set-favoritas">' +
+                '<div class="fav-set-hdr">' +
+                    '<div>' +
+                        '<h3 class="fav-set-title"><span style="color:#ff5252">♥</span> Mis Fotografías Favoritas <span class="fav-cnt-pill" style="font-size:0.85rem; padding:0.15rem 0.65rem;">' + favIndices.length + '</span></h3>' +
+                        '<p class="fav-set-sub">Tu selección personal de fotos favoritas de la galería.</p>' +
+                    '</div>' +
+                    '<div class="fav-set-actions">' +
+                        (favIndices.length > 0 ? (
+                            '<button type="button" class="btn btn-sm" style="background:#25D366; color:#fff; border:none;" onclick="sendFavSetWA()">📲 Enviar Favoritas por WhatsApp</button>' +
+                            '<button type="button" class="btn btn-accent btn-sm" onclick="moveFavsToPrintOrder()">🖨️ Pasar a Impresión</button>' +
+                            '<button type="button" class="btn btn-sm" style="background:rgba(255,255,255,0.06); color:var(--c-muted); border:1px solid var(--c-border);" onclick="clearAllFavs()">🗑️ Vaciar</button>'
+                        ) : '<button type="button" class="btn btn-sm" style="background:rgba(255,255,255,0.06); color:var(--c-muted); border:1px solid var(--c-border);" onclick="showEmptyFavSection=false; renderFavoritesSetSection();">Ocultar</button>') +
+                    '</div>' +
+                '</div>';
+
+            if (favIndices.length === 0) {
+                html += '<div class="fav-empty-msg">Aún no has agregado fotografías a tu apartado de Favoritas.<br>Toca el botón de corazón (<b>♥</b>) en la esquina de cualquier fotografía (o dentro del visor en pantalla completa) para ir guardándolas aquí.</div></div>';
+                wrap.innerHTML = html;
+                return;
+            }
+
+            html += '<div class="px-grid' + (currentGalleryLayout !== 'auto' ? ' layout-' + currentGalleryLayout : '') + '" id="favSetGrid"></div></div>';
+            wrap.innerHTML = html;
+
+            var grid = document.getElementById('favSetGrid');
+            var frag = document.createDocumentFragment();
+            favIndices.forEach(function(i) {
+                var p = portalPhotos[i];
+                if (!p) return;
+                var isSel = selected[i];
+                var d = document.createElement('div');
+                var initOrient = p.orient ? ' ' + p.orient : '';
+                var rotClass = p.rot ? ' rot-' + p.rot : '';
+                d.className = 'pc' + initOrient;
+                d.innerHTML = `
+                    <img class="${rotClass.trim()}" src="${pSrc(p, 800)}" alt="${esc(p.name || '')}" loading="lazy" onload="handleGridImgLoad(this, ${i})">
+                    <button class="favb on" type="button" onclick="toggleFav(${i}, event)" title="Quitar de Favoritas">
+                        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </button>
+                    <div class="chk${isSel ? ' on' : ''}">
+                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <button class="dlb" type="button" onclick="triggerDownload(${i}, event)" title="Descargar foto">
+                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    </button>`;
+                d.addEventListener('click', function() {
+                    if (isPrintMode) { toggleSel(i); } else { openLB(i); }
+                });
+                frag.appendChild(d);
+            });
+            grid.appendChild(frag);
+        }
+
         function openGalleryView() {
             var c = D.clients[curClient];
             if (c.expireAt && (c.expireAt - Date.now()) < 0) {
@@ -1744,6 +2000,9 @@
             
             portalPhotos = c.photos || [];
             setLimits = {};
+            showEmptyFavSection = false;
+            loadClientFavs();
+
             var coverImg = c.galleryCover ? c.galleryCover : (portalPhotos.length > 0 ? pSrc(portalPhotos[0], 1600) : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&fit=crop');
             
             if (coverImg.includes('/d/')) {
@@ -1788,7 +2047,7 @@
             if (isPrintMode) {
                 galleryView.classList.add('gallery-print-mode');
                 btnSelAll.style.display = 'block';
-                toast('✨ Toca las fotos que deseas elegir como Favoritas o pedir impresas.');
+                toast('🖨️ Modo Impresión: Toca las fotos para agregarlas a tu pedido.');
             } else {
                 galleryView.classList.remove('gallery-print-mode');
                 btnSelAll.style.display = 'none';
@@ -1801,10 +2060,10 @@
             var fabBtn = document.getElementById('fabPrintBtn');
             if(isPrintMode) {
                 fabBtn.style.background = '#c0392b';
-                fabBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg><span id="fabPrintText">Salir de Selección</span>';
+                fabBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg><span id="fabPrintText">Cancelar Impresión</span>';
             } else {
                 fabBtn.style.background = 'var(--c-accent)';
-                fabBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg><span id="fabPrintText">Seleccionar / Imprimir</span>';
+                fabBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg><span id="fabPrintText">Pedir Impresiones</span>';
             }
         }
 
@@ -1878,8 +2137,13 @@
             var content = document.getElementById('pxContent');
             var setNames = Object.keys(sets).sort((a,b) => a === 'General' ? -1 : a.localeCompare(b));
 
-            var navHtml = '';
+            var favCount = getFavIndices().length;
+            var navHtml = `<div class="px-nav-item fav-tab" id="navFavTab" onclick="openFavSetTab(this)">♥ Favoritas <span class="fav-cnt-pill" id="favNavCnt">${favCount}</span></div>`;
             var contentFrag = document.createDocumentFragment();
+
+            var favWrap = document.createElement('div');
+            favWrap.id = 'set-favoritas-wrap';
+            contentFrag.appendChild(favWrap);
 
             setNames.forEach((setName, idx) => {
                 var safeId = 'set-' + setName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -1901,7 +2165,7 @@
                 var visibleItems = allSetItems.slice(0, limit);
 
                 visibleItems.forEach(item => {
-                    var i = item.index; var p = item.photo; var isSel = selected[i];
+                    var i = item.index; var p = item.photo; var isSel = selected[i]; var isFav = !!clientFavs[i];
                     var d = document.createElement('div');
                     var initOrient = p.orient ? ' ' + p.orient : '';
                     var rotClass = p.rot ? ' rot-' + p.rot : '';
@@ -1910,6 +2174,9 @@
                     
                     d.innerHTML = `
                         <img id="gimg-${i}" class="${rotClass.trim()}" src="${pSrc(p, 800)}" alt="${esc(p.name || '')}" loading="lazy" onload="handleGridImgLoad(this, ${i})">
+                        <button class="favb${isFav ? ' on' : ''}" id="fav-${i}" type="button" onclick="toggleFav(${i}, event)" title="Agregar o quitar de Favoritas">
+                            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        </button>
                         <div class="chk${isSel ? ' on' : ''}" id="chk-${i}">
                             <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                         </div>
@@ -1947,6 +2214,7 @@
             navInner.innerHTML = navHtml;
             content.innerHTML = '';
             content.appendChild(contentFrag);
+            renderFavoritesSetSection();
         }
         
         function triggerDownload(i, e) {
@@ -2242,6 +2510,7 @@
                 }
             }
 
+            updateLBFavButton();
             document.querySelector('.lb-p').style.display = portalPhotos.length > 1 ? '' : 'none'; 
             document.querySelector('.lb-nx').style.display = portalPhotos.length > 1 ? '' : 'none';
             document.body.classList.add('lb-open');
@@ -2654,7 +2923,12 @@
             body.innerHTML = '<h3 style="margin-bottom:1rem">' + (isNew ? 'Nuevo evento' : 'Editar evento') + '</h3>' +
                 '<label class="af-l">Código de acceso (sin espacios, ej. boda2026)</label><input class="af-i" id="ce_code" value="' + esc(isNew ? '' : admState.editId) + '" placeholder="boda2026" ' + (isNew ? '' : 'readonly style="opacity:.6;cursor:not-allowed"') + '>' +
                 '<div class="af-row"><div><label class="af-l">Nombre del cliente</label><input class="af-i" id="ce_name" value="' + esc(c.name) + '" placeholder="María & Carlos"></div><div><label class="af-l">Evento</label><input class="af-i" id="ce_event" value="' + esc(c.event) + '" placeholder="Boda — 15 de octubre, 2026"></div></div>' +
-                '<label class="af-l">Vencimiento del Acceso (3 meses por defecto)</label><div style="display:flex; gap:.5rem; margin-bottom:.8rem; flex-wrap:wrap;"><input type="date" class="af-i" id="ce_expire" value="' + expireStr + '" style="margin:0; flex:1; min-width:160px;"><button type="button" class="af-btn af-btn-s" style="margin:0;" onclick="addThreeMonths()">+ 3 Meses</button><button type="button" class="af-btn af-btn-s" style="margin:0;" onclick="addOneYear()">+ 1 Año</button></div>' +
+                '<label class="af-l">Duración y Vencimiento de la Galería (Accesos Rápidos)</label>' +
+                '<div id="durPresetsContainer"></div>' +
+                '<div style="display:flex; gap:.5rem; margin-bottom:.8rem; flex-wrap:wrap; align-items:center;">' +
+                    '<input type="date" class="af-i" id="ce_expire" value="' + expireStr + '" style="margin:0; flex:1; min-width:160px;">' +
+                    '<input type="hidden" id="ce_durationDays" value="' + (c.durationDays || 90) + '">' +
+                '</div>' +
                 '<div style="margin:1rem 0;padding:1rem;background:#fafafa;border-radius:var(--radius);border:1px solid var(--border-light)"><label class="af-l" style="margin-bottom:.6rem">Contenido del evento</label>' +
                 '<div class="toggle-row"><label><div class="toggle-sw"><input type="checkbox" id="ce_hasVideo" ' + (c.hasVideo ? 'checked' : '') + ' onchange="toggleClientSection(\'video\')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div>Video</label></div>' +
                 '<div class="toggle-row"><label><div class="toggle-sw"><input type="checkbox" id="ce_hasPhotos" ' + (c.hasPhotos ? 'checked' : '') + ' onchange="toggleClientSection(\'photos\')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div>Fotos (Galería Digital)</label></div>' +
@@ -2708,6 +2982,84 @@
                 '<div class="af-btns"><button class="af-btn af-btn-p" onclick="saveClient(\'' + (isNew ? '' : admState.editId) + '\')">Guardar Evento</button><button class="af-btn af-btn-s" onclick="admState.view=\'list\';renderAdmBody()">Cancelar</button></div>';
             
             renderClientPhotosList(tempClientPhotos);
+            renderDurationPresetsUI();
+        }
+
+        function getDurationPresetsList() {
+            if (!D.settings.durationPresets || !Array.isArray(D.settings.durationPresets) || !D.settings.durationPresets.length) {
+                D.settings.durationPresets = getDefaultDurationPresets();
+            }
+            return D.settings.durationPresets;
+        }
+
+        function applyDurationPreset(val, unit, days, chipEl) {
+            var d = new Date();
+            d.setHours(12, 0, 0, 0);
+            var num = parseInt(val) || 1;
+            if (unit === 'days') d.setDate(d.getDate() + num);
+            else if (unit === 'months') d.setMonth(d.getMonth() + num);
+            else if (unit === 'years') d.setFullYear(d.getFullYear() + num);
+
+            var inp = document.getElementById('ce_expire');
+            if (inp) inp.value = toDateInput(d.getTime());
+            var dDays = document.getElementById('ce_durationDays');
+            if (dDays) dDays.value = days || 90;
+            document.querySelectorAll('.dur-chip').forEach(function(c) { c.classList.remove('active'); });
+            if (chipEl) chipEl.classList.add('active');
+            toast('📅 Vigencia configurada al ' + toDisplayDate(d.getTime()), 2200);
+        }
+
+        function saveNewDurationPreset() {
+            var val = parseInt(document.getElementById('new_dur_val').value);
+            var unit = document.getElementById('new_dur_unit').value;
+            var customLbl = document.getElementById('new_dur_lbl').value.trim();
+            if (!val || val <= 0) { toast('Ingresa una cantidad válida'); return; }
+            var unitName = unit === 'days' ? (val === 1 ? 'Día' : 'Días') : (unit === 'months' ? (val === 1 ? 'Mes' : 'Meses') : (val === 1 ? 'Año' : 'Años'));
+            var label = customLbl ? (customLbl + ' (' + val + ' ' + unitName + ')') : (val + ' ' + unitName);
+            var days = unit === 'days' ? val : (unit === 'months' ? val * 30 : val * 365);
+
+            var list = getDurationPresetsList();
+            list.push({ id: uid(), label: label, value: val, unit: unit, days: days, builtin: false });
+            saveData();
+            renderDurationPresetsUI();
+            applyDurationPreset(val, unit, days);
+        }
+
+        function deleteDurationPreset(id, e) {
+            if (e) { e.preventDefault(); e.stopPropagation(); }
+            D.settings.durationPresets = getDurationPresetsList().filter(function(p) { return p.id !== id; });
+            saveData();
+            renderDurationPresetsUI();
+        }
+
+        function renderDurationPresetsUI() {
+            var wrap = document.getElementById('durPresetsContainer');
+            if (!wrap) return;
+            var presets = getDurationPresetsList();
+            var curDaysEl = document.getElementById('ce_durationDays');
+            var curDays = curDaysEl ? parseInt(curDaysEl.value) : 90;
+            var html = '<div class="dur-presets">';
+            presets.forEach(function(p) {
+                var isAct = (p.days === curDays) ? ' active' : '';
+                html += '<button type="button" class="dur-chip' + isAct + '" onclick="applyDurationPreset(' + p.value + ', \'' + p.unit + '\', ' + (p.days || 90) + ', this)">⚡ ' + esc(p.label) +
+                    (!p.builtin ? '<span class="del-chip" onclick="deleteDurationPreset(\'' + p.id + '\', event)" title="Eliminar acceso rápido">×</span>' : '') +
+                    '</button>';
+            });
+            html += '<button type="button" class="dur-chip" style="background:#fff; border-style:dashed; color:var(--accent);" onclick="document.getElementById(\'durCreatorBox\').classList.toggle(\'open\')">+ Nueva duración / paquete</button></div>' +
+                '<div class="dur-creator" id="durCreatorBox">' +
+                    '<div style="font-size:0.78rem; font-weight:600; color:var(--text-muted); margin-bottom:0.5rem;">Crear acceso rápido de duración para tus paquetes:</div>' +
+                    '<div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">' +
+                        '<input type="number" id="new_dur_val" class="af-i" placeholder="Ej. 2" min="1" style="width:85px; margin:0; min-height:38px; padding:0.4rem 0.6rem;">' +
+                        '<select id="new_dur_unit" class="af-i" style="width:120px; margin:0; min-height:38px; padding:0.4rem 0.6rem;">' +
+                            '<option value="months" selected>Meses</option>' +
+                            '<option value="days">Días</option>' +
+                            '<option value="years">Años</option>' +
+                        '</select>' +
+                        '<input type="text" id="new_dur_lbl" class="af-i" placeholder="Nombre opcional (Ej. Paquete XV)" style="flex:1; min-width:150px; margin:0; min-height:38px; padding:0.4rem 0.6rem;">' +
+                        '<button type="button" class="af-btn af-btn-p" style="margin:0; min-height:38px; padding:0.4rem 0.9rem;" onclick="saveNewDurationPreset()">Guardar y Aplicar</button>' +
+                    '</div>' +
+                '</div>';
+            wrap.innerHTML = html;
         }
         function toggleClientSection(sec) { document.getElementById('ce_' + sec + 'Sec').style.display = document.getElementById('ce_has' + sec.charAt(0).toUpperCase() + sec.slice(1)).checked ? 'block' : 'none'; }
         
@@ -2938,7 +3290,10 @@
             }
 
             var expireDate = document.getElementById('ce_expire').value; 
-            var expireTime = expireDate ? new Date(expireDate + 'T12:00:00').getTime() : (Date.now() + 31536000000);
+            var expireTime = expireDate ? new Date(expireDate + 'T12:00:00').getTime() : (Date.now() + 7776000000);
+            var durDaysEl = document.getElementById('ce_durationDays');
+            var durationDays = durDaysEl ? (parseInt(durDaysEl.value) || 90) : 90;
+            var prevFavs = (D.clients[code] && Array.isArray(D.clients[code].favorites)) ? D.clients[code].favorites : [];
             var photos = tempClientPhotos.filter(function(p) { return p.src && p.src.trim(); });
             if (oldCode && oldCode !== code) { delete D.clients[oldCode]; }
             
@@ -2953,6 +3308,8 @@
                 driveFolderUrl: driveUrl, 
                 galleryCover: galleryCover, 
                 defaultLayout: defaultLayout, 
+                durationDays: durationDays,
+                favorites: prevFavs,
                 photobook: D.clients[code] && D.clients[code].photobook ? D.clients[code].photobook : { cover: null, spreads: [null], hasBackCover: false, back: null }, 
                 expireAt: expireTime 
             };
@@ -3162,7 +3519,7 @@
                 '</div>';
         }
         function saveSettings() {
-            var s = D.settings; s.phone = document.getElementById('se_phone').value.trim(); s.phoneRaw = document.getElementById('se_phoneRaw').value.trim(); s.address = document.getElementById('se_addr').value.trim(); s.hours = document.getElementById('se_hours').value.trim(); s.facebook = document.getElementById('se_fb').value.trim(); s.waNumber = document.getElementById('se_wa').value.trim(); s.heroDesc = document.getElementById('se_hero').value.trim(); s.mapEmbed = document.getElementById('se_map').value.trim(); s.driveApiKey = document.getElementById('se_driveApi').value.trim(); s.heroImage = document.getElementById('se_heroImg').value.trim(); s.logoImage = document.getElementById('se_logoImg').value.trim();
+            var s = D.settings; s.phone = document.getElementById('se_phone').value.trim(); s.phoneRaw = document.getElementById('se_phoneRaw').value.trim(); s.address = document.getElementById('se_addr').value.trim(); s.hours = document.getElementById('se_hours').value.trim(); s.facebook = document.getElementById('se_fb').value.trim(); s.waNumber = document.getElementById('se_wa').value.trim(); s.heroDesc = document.getElementById('se_hero').value.trim(); s.mapEmbed = getValidMapEmbed(document.getElementById('se_map').value.trim(), s.address); s.driveApiKey = document.getElementById('se_driveApi').value.trim(); s.heroImage = document.getElementById('se_heroImg').value.trim(); s.logoImage = document.getElementById('se_logoImg').value.trim();
             var p = document.getElementById('se_pass').value; if (p.length > 3) D.adminPass = p;
             saveData(); renderPublic();
         }
