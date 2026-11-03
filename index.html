@@ -184,13 +184,14 @@
         .cp-desc { color: var(--c-muted); font-size: .92rem; margin-bottom: 1.5rem; line-height: 1.5; }
 
         .btn-regresar-fijo {
-            position: fixed; top: calc(1rem + var(--safe-top)); left: 1rem; z-index: 900;
-            background: rgba(12, 12, 15, 0.68); color: #fff; border: 1px solid rgba(255,255,255,0.18);
-            padding: 0.5rem 1.1rem; border-radius: 50px; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            font-family: var(--fb); font-size: 0.82rem; font-weight: 500; display: flex; align-items: center; gap: 0.45rem; transition: opacity 0.25s, transform 0.25s, background 0.25s;
-            pointer-events: auto; min-height: 40px; box-shadow: 0 4px 16px rgba(0,0,0,0.35); touch-action: manipulation;
+            position: fixed; top: calc(1rem + var(--safe-top)); left: 1rem; z-index: 110000;
+            transform: translateZ(600px); -webkit-transform: translateZ(600px);
+            background: rgba(12, 12, 15, 0.84); color: #fff; border: 1px solid rgba(255,255,255,0.28);
+            padding: 0.5rem 1.15rem; border-radius: 50px; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            font-family: var(--fb); font-size: 0.82rem; font-weight: 500; display: flex; align-items: center; gap: 0.45rem; transition: opacity 0.25s, background 0.25s;
+            pointer-events: auto !important; min-height: 42px; box-shadow: 0 4px 16px rgba(0,0,0,0.45); touch-action: manipulation;
         }
-        .btn-regresar-fijo:hover { background: rgba(12, 12, 15, 0.95); border-color: var(--c-accent); color: var(--c-accent); }
+        .btn-regresar-fijo:hover { background: rgba(12, 12, 15, 0.96); border-color: var(--c-accent); color: var(--c-accent); }
         body.lb-open .btn-regresar-fijo,
         body.lb-open .fab-print,
         body.lb-open .order-bar,
@@ -315,6 +316,19 @@
         .dur-creator { display: none; background: #fff; border: 1px dashed var(--accent); border-radius: var(--radius); padding: 0.8rem; margin-top: 0.5rem; margin-bottom: 0.8rem; }
         .dur-creator.open { display: block; }
 
+        /* Contador discreto de visitas y dispositivos en Panel Admin */
+        .toggle-badge.stats-b { background: #eef6ff; color: #1d4ed8; border: 1px solid #bfdbfe; cursor: pointer; transition: .2s; }
+        .toggle-badge.stats-b:hover { background: #dbeafe; }
+        .stats-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin-bottom: 1.2rem; }
+        .stats-box { background: #fafafa; border: 1px solid var(--border-light); border-radius: var(--radius); padding: 0.9rem 0.75rem; text-align: center; }
+        .stats-box b { display: block; font-family: var(--fh); font-size: 1.55rem; color: var(--accent); line-height: 1.1; margin-bottom: 0.2rem; }
+        .stats-box span { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .dev-item { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.75rem 0.9rem; border: 1px solid var(--border-light); border-radius: var(--radius); margin-bottom: 0.5rem; background: #fff; flex-wrap: wrap; }
+        .dev-item.is-mine { background: #f8fafc; border-style: dashed; opacity: 0.8; }
+        .dev-info { flex: 1; min-width: 180px; }
+        .dev-name { font-weight: 600; font-size: 0.88rem; color: var(--text); display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+        .dev-meta { font-size: 0.75rem; color: var(--text-light); margin-top: 0.15rem; }
+
         .gallery-print-mode .pc .chk { display: flex; opacity: 1; pointer-events: auto; }
         .gallery-print-mode .pc .dlb { display: none !important; }
         .gallery-print-mode .pc:hover img { transform: none; filter: brightness(0.85); }
@@ -367,7 +381,7 @@
         .btn-gh:hover { border-color: var(--c-muted); color: var(--c-text); }
 
         /* Lightbox con Zoom interactivo y navegación táctil / teclado */
-        .lb { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(4, 4, 6, .97); z-index: 100000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .28s ease; overflow: hidden; touch-action: none; }
+        .lb { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(4, 4, 6, .97); z-index: 150000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .28s ease; overflow: hidden; touch-action: none; }
         .lb.active { opacity: 1; pointer-events: auto; }
         .lb-top { position: absolute; top: 0; left: 0; right: 0; padding: calc(0.9rem + var(--safe-top)) 1.2rem 0.9rem; display: flex; justify-content: space-between; align-items: center; z-index: 3005; background: linear-gradient(to bottom, rgba(0,0,0,0.75), transparent); pointer-events: none; }
         .lb-back, .lb-x { pointer-events: auto; background: rgba(255, 255, 255, .14); border: 1px solid rgba(255,255,255,0.22); color: #fff; border-radius: 50px; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: .2s; font-family: var(--fb); touch-action: manipulation; }
@@ -509,7 +523,7 @@
         @keyframes rotatePhone { 0% { transform: rotate(0deg); } 50% { transform: rotate(-90deg); } 100% { transform: rotate(-90deg); } }
 
         body.fullscreen-mode { background: #060608; overflow: hidden; }
-        body.fullscreen-mode .btn-regresar-fijo, body.fullscreen-mode .pb-fullscreen-btn { display: none !important; }
+        body.fullscreen-mode .pb-fullscreen-btn { display: none !important; }
         body.fullscreen-mode .pb-book { width: min(420px, 65vh); margin-top: 0; }
         body.fullscreen-mode .pb-mobile-toolbar { display: flex; }
         body.fullscreen-mode .pb-book-controls { display: none; }
@@ -885,7 +899,7 @@
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
-                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v1.7</span></h2>
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v1.8</span></h2>
                 <button class="adm-x" onclick="closeAdm()">×</button>
             </div>
             <div class="adm-tabs" id="admTabs">
@@ -3739,6 +3753,353 @@
                 toast('⚠️ La galería "' + cleanRaw + '" no existe o aún no se ha guardado en la nube.', 4500);
             }
         }
+
+        // =========================================================================
+        // VERSIÓN 1.8:
+        // 1. Corrección definitiva de botones "← Regresar al menú"
+        // 2. Contador Discreto de Visitas y Dispositivos (excluye tus 3 equipos)
+        // =========================================================================
+        function backToPortalMenu(e) {
+            if (e) { e.preventDefault(); e.stopPropagation(); }
+            if (typeof isFavSetActive !== 'undefined' && isFavSetActive && document.getElementById('cpGalleryView').style.display !== 'none') {
+                exitFavSetView();
+                var bGal = document.getElementById('btnBackGallery');
+                if (bGal) bGal.innerHTML = '← Regresar al menú';
+                return;
+            }
+            try { exitFullscreenMode(); } catch(err) {}
+            try { closeLB(); } catch(err) {}
+            isPrintMode = false;
+            if (typeof isFavSetActive !== 'undefined') isFavSetActive = false;
+            selected = {};
+            quantities = {};
+            allSel = false;
+
+            var vidWrap = document.getElementById('vidWrap');
+            if (vidWrap) vidWrap.innerHTML = '';
+            var galView = document.getElementById('cpGalleryView');
+            if (galView) {
+                galView.style.display = 'none';
+                galView.classList.remove('gallery-print-mode');
+            }
+            var vidView = document.getElementById('cpVideoView');
+            if (vidView) vidView.style.display = 'none';
+            var pbView = document.getElementById('cpPhotobookView');
+            if (pbView) pbView.style.display = 'none';
+            var orderBar = document.getElementById('orderBar');
+            if (orderBar) orderBar.classList.remove('vis');
+
+            document.getElementById('cpHdrMain').style.display = 'block';
+            document.getElementById('cp-ft-main').style.display = 'block';
+            document.getElementById('cpMainView').style.display = 'block';
+            renderAccessCards();
+            updateOrderBar();
+            pushUrlState(curClient, null);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        closeGalleryView = backToPortalMenu;
+        closeVideoView = backToPortalMenu;
+        closePhotobookView = backToPortalMenu;
+
+        function bindBackButtonsV18() {
+            ['btnBackGallery', 'btnBackVideo', 'btnBackPB'].forEach(function(id) {
+                var btn = document.getElementById(id);
+                if (btn) {
+                    btn.innerHTML = '← Regresar al menú';
+                    btn.setAttribute('onclick', 'backToPortalMenu(event)');
+                    btn.onclick = backToPortalMenu;
+                }
+            });
+        }
+        window.addEventListener('DOMContentLoaded', bindBackButtonsV18);
+
+        var _origOpenGalleryV18 = openGalleryView;
+        openGalleryView = function() {
+            _origOpenGalleryV18();
+            bindBackButtonsV18();
+        };
+
+        var _origOpenVideoV18 = openVideoView;
+        openVideoView = function() {
+            _origOpenVideoV18();
+            bindBackButtonsV18();
+        };
+
+        var _origOpenPBV18 = openPhotobookView;
+        openPhotobookView = function() {
+            _origOpenPBV18();
+            bindBackButtonsV18();
+        };
+
+        // === CONTADOR INTELIGENTE Y DISCRETO DE VISITAS Y DISPOSITIVOS ===
+        function getDeviceId() {
+            var id = null;
+            try { id = localStorage.getItem('fvm_dev_id'); } catch(e) {}
+            if (!id) {
+                id = 'dev_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString(36).slice(-4);
+                try { localStorage.setItem('fvm_dev_id', id); } catch(e) {}
+            }
+            return id;
+        }
+
+        function getDeviceLabel() {
+            var ua = navigator.userAgent || '';
+            var os = 'Dispositivo';
+            if (/iPhone/i.test(ua)) os = '📱 iPhone';
+            else if (/iPad/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) os = '📱 iPad';
+            else if (/Android/i.test(ua)) os = '📱 Android';
+            else if (/Windows/i.test(ua)) os = '💻 PC Windows';
+            else if (/Macintosh|Mac OS/i.test(ua)) os = '💻 Mac';
+            else if (/Linux/i.test(ua)) os = '💻 PC Linux';
+
+            var br = '';
+            if (/Edg\//i.test(ua)) br = 'Edge';
+            else if (/Chrome\//i.test(ua) && !/Edg\//i.test(ua)) br = 'Chrome';
+            else if (/Safari\//i.test(ua) && !/Chrome\//i.test(ua)) br = 'Safari';
+            else if (/Firefox\//i.test(ua)) br = 'Firefox';
+
+            return os + (br ? ' (' + br + ')' : '');
+        }
+
+        function isOwnerDevice(devId) {
+            devId = devId || getDeviceId();
+            try {
+                if (devId === getDeviceId() && localStorage.getItem('fvm_is_owner_device') === '1') return true;
+            } catch(e) {}
+            if (D && D.settings && D.settings.ownerDevices && D.settings.ownerDevices[devId]) return true;
+            return false;
+        }
+
+        function markDeviceAsOwner(devId, isOwner, silent) {
+            devId = devId || getDeviceId();
+            if (!D.settings.ownerDevices || typeof D.settings.ownerDevices !== 'object') {
+                D.settings.ownerDevices = {};
+            }
+            if (isOwner) {
+                D.settings.ownerDevices[devId] = { label: getDeviceLabel(), addedAt: Date.now() };
+                if (devId === getDeviceId()) {
+                    try { localStorage.setItem('fvm_is_owner_device', '1'); } catch(e) {}
+                }
+            } else {
+                delete D.settings.ownerDevices[devId];
+                if (devId === getDeviceId()) {
+                    try { localStorage.removeItem('fvm_is_owner_device'); } catch(e) {}
+                }
+            }
+            if (D && D.clients) {
+                Object.keys(D.clients).forEach(function(k) {
+                    var cl = D.clients[k];
+                    if (cl && cl.visitStats && cl.visitStats.devices && cl.visitStats.devices[devId]) {
+                        cl.visitStats.devices[devId].isOwner = !!isOwner;
+                    }
+                });
+            }
+            try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch(e) {}
+            if (db) {
+                db.collection("web_data").doc("fvm_data").set(D).catch(function(){});
+            }
+            if (!silent) {
+                toast(isOwner ? '🛡️ Dispositivo marcado como tuyo (No sumará visitas)' : 'Dispositivo desmarcado (Contará como cliente)');
+            }
+        }
+
+        var _origOpenAdmV18 = openAdm;
+        openAdm = function() {
+            markDeviceAsOwner(getDeviceId(), true, true);
+            _origOpenAdmV18();
+        };
+
+        function formatDateTimeShort(ms) {
+            if (!ms) return '—';
+            var d = new Date(ms);
+            var day = ('0' + d.getDate()).slice(-2);
+            var mon = ('0' + (d.getMonth() + 1)).slice(-2);
+            var yr = d.getFullYear();
+            var hr = ('0' + d.getHours()).slice(-2);
+            var mn = ('0' + d.getMinutes()).slice(-2);
+            return day + '/' + mon + '/' + yr + ' ' + hr + ':' + mn;
+        }
+
+        function recordClientVisit(code) {
+            if (!code || !D || !D.clients || !D.clients[code]) return;
+            var c = D.clients[code];
+            if (!c.visitStats || typeof c.visitStats !== 'object') {
+                c.visitStats = { devices: {} };
+            }
+            if (!c.visitStats.devices || typeof c.visitStats.devices !== 'object') {
+                c.visitStats.devices = {};
+            }
+
+            var devId = getDeviceId();
+            var label = getDeviceLabel();
+            var mine = isOwnerDevice(devId);
+            var now = Date.now();
+
+            var entry = c.visitStats.devices[devId] || {
+                label: label,
+                count: 0,
+                firstSeen: now,
+                lastSeen: now,
+                isOwner: mine
+            };
+
+            entry.label = label;
+            entry.isOwner = mine;
+
+            var sessKey = 'fvm_visit_' + code;
+            var lastSess = 0;
+            try { lastSess = parseInt(sessionStorage.getItem(sessKey) || '0'); } catch(e) {}
+
+            if (!lastSess || (now - lastSess) > 1800000 || entry.count === 0) {
+                entry.count = (entry.count || 0) + 1;
+                try { sessionStorage.setItem(sessKey, String(now)); } catch(e) {}
+            }
+            entry.lastSeen = now;
+            c.visitStats.devices[devId] = entry;
+
+            try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch(e) {}
+            if (db) {
+                db.collection("web_data").doc("fvm_data").set(D).catch(function(){});
+            }
+        }
+
+        var _origEnterPortalV18 = enterPortal;
+        enterPortal = function(targetView) {
+            if (curClient) recordClientVisit(curClient);
+            _origEnterPortalV18(targetView);
+        };
+
+        function getClientStatsSummary(c) {
+            var res = { clientVisits: 0, clientDevices: 0, ownerVisits: 0, ownerDevices: 0, list: [] };
+            if (!c || !c.visitStats || !c.visitStats.devices) return res;
+            Object.keys(c.visitStats.devices).forEach(function(devId) {
+                var d = c.visitStats.devices[devId];
+                if (!d) return;
+                var mine = !!(d.isOwner || isOwnerDevice(devId));
+                var cnt = parseInt(d.count) || 0;
+                if (mine) {
+                    res.ownerVisits += cnt;
+                    res.ownerDevices++;
+                } else {
+                    res.clientVisits += cnt;
+                    res.clientDevices++;
+                }
+                res.list.push({
+                    id: devId,
+                    label: d.label || 'Dispositivo',
+                    count: cnt,
+                    firstSeen: d.firstSeen || d.lastSeen,
+                    lastSeen: d.lastSeen || 0,
+                    isOwner: mine
+                });
+            });
+            res.list.sort(function(a, b) { return b.lastSeen - a.lastSeen; });
+            return res;
+        }
+
+        function viewClientStats(code) {
+            admState.view = 'stats';
+            admState.editId = code;
+            renderAdmBody();
+        }
+
+        function resetClientStats(code) {
+            if (!confirm('¿Reiniciar a cero el historial de visitas de este evento?')) return;
+            if (D.clients[code]) {
+                D.clients[code].visitStats = { devices: {} };
+                saveData();
+                renderAdmBody();
+            }
+        }
+
+        function renderClientStatsAdmin(body) {
+            var code = admState.editId;
+            var c = D.clients[code];
+            if (!c) { admState.view = 'list'; renderAdmBody(); return; }
+            var st = getClientStatsSummary(c);
+            var myDevId = getDeviceId();
+
+            var h = '<div style="margin-bottom:1.2rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.8rem;">' +
+                '<div style="display:flex; align-items:center; gap:0.8rem;">' +
+                    '<button class="cp-back" style="background:var(--border-light);color:var(--text-muted);border-color:var(--border)" onclick="admState.view=\'list\';renderAdmBody()">← Volver a clientes</button>' +
+                    '<div><h3 style="font-family:var(--fh);margin-bottom:0">Accesos a la Galería: ' + esc(c.name) + '</h3><div style="font-size:0.78rem; color:var(--text-light);">Código: <b>' + esc(code) + '</b></div></div>' +
+                '</div>' +
+                '<button class="al-btn del" onclick="resetClientStats(\'' + esc(code) + '\')">🗑️ Reiniciar contador</button>' +
+            '</div>' +
+            '<div class="stats-summary-grid">' +
+                '<div class="stats-box"><b>' + st.clientVisits + '</b><span>👁️ Visitas de Clientes</span></div>' +
+                '<div class="stats-box"><b>' + st.clientDevices + '</b><span>📱 Dispositivos Clientes</span></div>' +
+                '<div class="stats-box"><b style="color:var(--text-light)">' + st.ownerVisits + '</b><span>🛡️ Tus pruebas (Ignoradas)</span></div>' +
+            '</div>' +
+            '<p class="adm-hint" style="background:#f8fafc; padding:0.75rem 1rem; border-radius:8px; border:1px solid var(--border-light); margin-bottom:1rem;">' +
+                '💡 <b>¿Cómo funciona?</b> Tus 3 dispositivos (laptop, celular y PC) se marcan automáticamente como tuyos al abrir este Panel de Administración. Si ves en la lista de abajo alguno de tus equipos que aún no estaba marcado, toca <b>"🛡️ Es mi dispositivo"</b> para que nunca sume visitas.' +
+            '</p>' +
+            '<label class="af-l">Dispositivos que han entrado (' + st.list.length + ')</label>';
+
+            if (!st.list.length) {
+                h += '<div class="adm-empty">Aún no se registran entradas en esta galería.</div>';
+            } else {
+                st.list.forEach(function(item) {
+                    var isCurrent = (item.id === myDevId);
+                    h += '<div class="dev-item' + (item.isOwner ? ' is-mine' : '') + '">' +
+                        '<div class="dev-info">' +
+                            '<div class="dev-name">' +
+                                esc(item.label) +
+                                (isCurrent ? ' <span class="toggle-badge on" style="font-size:0.68rem;">Este equipo actual</span>' : '') +
+                                (item.isOwner ? ' <span class="toggle-badge off" style="font-size:0.68rem;">🛡️ Tuyo (No cuenta)</span>' : ' <span class="toggle-badge stats-b" style="font-size:0.68rem;">Cliente / Invitado</span>') +
+                            '</div>' +
+                            '<div class="dev-meta">' +
+                                'Entradas: <b>' + item.count + '</b> · Última vez: <b>' + formatDateTimeShort(item.lastSeen) + '</b> (1ra vez: ' + formatDateTimeShort(item.firstSeen) + ')' +
+                            '</div>' +
+                        '</div>' +
+                        '<div>' +
+                            (item.isOwner ?
+                                '<button type="button" class="al-btn" onclick="markDeviceAsOwner(\'' + item.id + '\', false); renderAdmBody();">Contar como cliente</button>' :
+                                '<button type="button" class="al-btn" style="background:#eef6ff; border-color:#bfdbfe; color:#1d4ed8;" onclick="markDeviceAsOwner(\'' + item.id + '\', true); renderAdmBody();">🛡️ Es mi dispositivo (Ignorar)</button>'
+                            ) +
+                        '</div>' +
+                    '</div>';
+                });
+            }
+            body.innerHTML = h;
+        }
+
+        renderAdmClients = function(body) {
+            if (admState.view === 'edit') { renderClientForm(body); return; }
+            if (admState.view === 'photobook') { renderPhotobookAdmin(body); return; }
+            if (admState.view === 'stats') { renderClientStatsAdmin(body); return; }
+
+            var h = '<button class="adm-add-btn" onclick="newClient()">+ Nuevo evento / cliente</button><p class="adm-hint">Cada cliente tiene un código único. El contador 👁️ muestra únicamente las visitas reales de clientes (ignorando tus dispositivos).</p>';
+            var codes = Object.keys(D.clients);
+            if (!codes.length) { body.innerHTML = h + '<div class="adm-empty">No hay clientes registrados.</div>'; return; }
+
+            codes.forEach(function(code) {
+                var c = D.clients[code], badges = '';
+                if (c.hasVideo) badges += '<span class="toggle-badge on">Video</span> ';
+                if (c.hasPhotos) badges += '<span class="toggle-badge on">Fotos (' + (c.photos ? c.photos.length : 0) + ')</span> ';
+                if (c.hasPhotobook) badges += '<span class="toggle-badge on">Fotolibro</span> ';
+                if (!badges) badges = '<span class="toggle-badge off">Sin contenido</span> ';
+
+                var st = getClientStatsSummary(c);
+                badges += '<span class="toggle-badge stats-b" onclick="viewClientStats(\'' + esc(code) + '\')" title="Ver qué dispositivos han entrado">👁️ ' + st.clientVisits + ' visitas · 📱 ' + st.clientDevices + ' disp.</span>';
+
+                h += ('<div class="al-item" style="flex-wrap:wrap"><div class="al-item-info"><div class="al-item-t">' + esc(c.name) + '</div><div class="al-item-s">' + esc(c.event) + ' · Código: <strong>' + esc(code) + '</strong></div><div style="margin-top:.35rem; display:flex; gap:0.35rem; flex-wrap:wrap;">' + badges + '</div></div><div class="al-acts" style="flex-wrap:wrap"><button class="al-btn" onclick="viewClientStats(\'' + code + '\')">📊 Accesos</button><button class="al-btn" onclick="copyClientUrl(\'' + code + '\')">🔗 Copiar Link</button><button class="al-btn" onclick="editClient(\'' + code + '\')">Editar</button>' + (c.hasPhotobook ? '<button class="al-btn" onclick="editPhotobook(\'' + code + '\')">Fotolibro</button>' : '') + '<button class="al-btn del" onclick="delClient(\'' + code + '\')">Eliminar</button></div></div>');
+            });
+            body.innerHTML = h;
+        };
+
+        var _origSaveClientV18 = saveClient;
+        saveClient = function(oldCode) {
+            var codeEl = document.getElementById('ce_code');
+            var code = codeEl ? codeEl.value.trim().toLowerCase().replace(/\s+/g, '') : '';
+            var lookupKey = oldCode || code;
+            var prevStats = (D.clients[lookupKey] && D.clients[lookupKey].visitStats) ? D.clients[lookupKey].visitStats : { devices: {} };
+            _origSaveClientV18(oldCode);
+            if (code && D.clients[code]) {
+                D.clients[code].visitStats = prevStats;
+            }
+        };
 
         window.addEventListener('DOMContentLoaded', function() { loadData(); });
     </script>
