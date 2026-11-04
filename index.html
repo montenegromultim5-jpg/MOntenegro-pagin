@@ -317,6 +317,18 @@
         .dur-creator { display: none; background: #fff; border: 1px dashed var(--accent); border-radius: var(--radius); padding: 0.8rem; margin-top: 0.5rem; margin-bottom: 0.8rem; }
         .dur-creator.open { display: block; }
 
+        /* Favoritas Compartidas en Tiempo Real (Admin & Galería) */
+        .toggle-badge.favs-b { background: #fff0f3; color: #e11d48; border: 1px solid #fecdd3; cursor: pointer; font-weight: 600; transition: .2s; }
+        .toggle-badge.favs-b:hover { background: #ffe4e6; }
+        .adm-fav-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); gap: 0.65rem; margin-top: 0.75rem; }
+        .adm-fav-card { background: #fff; border: 1px solid var(--border-light); border-radius: 8px; overflow: hidden; position: relative; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+        .adm-fav-card img { width: 100%; height: 95px; object-fit: cover; background: #eee; display: block; cursor: pointer; }
+        .adm-fav-card-info { padding: 0.4rem 0.5rem; font-size: 0.74rem; line-height: 1.3; }
+        .adm-fav-card-name { font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .adm-fav-card-set { color: var(--text-light); font-size: 0.68rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .adm-fav-rm { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%; background: rgba(0,0,0,0.65); color: #fff; border: none; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; }
+        .adm-fav-rm:hover { background: #e11d48; }
+
         /* Estado Oculto (Cliente / Set) */
         .toggle-badge.hidden-b { background: #fef2f2; color: #c0392b; border: 1px solid #fecaca; font-weight: 600; }
         .hidden-unavailable-box { text-align: center; padding: 3.5rem 1.4rem; background: var(--c-surface2); border-radius: var(--radius-lg); border: 1px dashed rgba(231, 76, 60, 0.45); max-width: 540px; margin: 2rem auto; box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
@@ -920,7 +932,7 @@
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
-                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.0</span></h2>
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.1</span></h2>
                 <button class="adm-x" onclick="closeAdm()">×</button>
             </div>
             <div class="adm-tabs" id="admTabs">
@@ -1653,20 +1665,20 @@
 
         async function doLogin() {
             var inputVal = document.getElementById('codeIn').value.trim();
-            var matchedKey = findClientKey(inputVal);
-            
-            if (!matchedKey && db) {
+            if (db) {
                 try {
-                    const docSnap = await db.collection("web_data").doc("fvm_data").get({ source: 'server' });
-                    if (docSnap.exists) {
+                    const docSnap = await Promise.race([
+                        db.collection("web_data").doc("fvm_data").get({ source: 'server' }),
+                        new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 3500))
+                    ]);
+                    if (docSnap && docSnap.exists) {
                         D = docSnap.data();
                         ensureDataStructure();
-                        localStorage.setItem('fvm_data', JSON.stringify(D));
-                        matchedKey = findClientKey(inputVal);
+                        try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch(e) {}
                     }
                 } catch(e) {}
             }
-
+            var matchedKey = findClientKey(inputVal);
             if (!matchedKey) { 
                 document.getElementById('loginErr').classList.add('show'); 
                 return; 
@@ -1901,24 +1913,50 @@
 
         function loadClientFavs() {
             clientFavs = {};
-            if (!curClient) return;
+            if (!curClient || !D || !D.clients || !D.clients[curClient]) return;
+            var c = D.clients[curClient];
             try {
-                var saved = localStorage.getItem('fvm_favs_' + curClient);
-                if (saved) {
-                    clientFavs = JSON.parse(saved) || {};
-                } else if (D.clients[curClient] && Array.isArray(D.clients[curClient].favorites)) {
-                    D.clients[curClient].favorites.forEach(function(idx) { clientFavs[idx] = true; });
+                var cloudFavs = Array.isArray(c.favorites) ? c.favorites : [];
+                if (cloudFavs.length > 0 || c.favCloudSynced) {
+                    cloudFavs.forEach(function(idx) {
+                        var n = parseInt(idx);
+                        if (!isNaN(n)) clientFavs[n] = true;
+                    });
+                } else {
+                    // Migración única si algún dispositivo tenía favoritas locales antes de v2.1
+                    var localSaved = localStorage.getItem('fvm_favs_' + curClient);
+                    if (localSaved) {
+                        var parsed = JSON.parse(localSaved) || {};
+                        Object.keys(parsed).forEach(function(k) {
+                            if (parsed[k]) clientFavs[parseInt(k)] = true;
+                        });
+                        if (Object.keys(clientFavs).length > 0) {
+                            saveClientFavs();
+                        }
+                    }
                 }
+                localStorage.setItem('fvm_favs_' + curClient, JSON.stringify(clientFavs));
             } catch (e) { clientFavs = {}; }
         }
 
         function saveClientFavs() {
-            if (!curClient) return;
+            if (!curClient || !D || !D.clients || !D.clients[curClient]) return;
             try {
-                localStorage.setItem('fvm_favs_' + curClient, JSON.stringify(clientFavs));
-                if (D.clients[curClient]) {
-                    D.clients[curClient].favorites = Object.keys(clientFavs).map(Number).filter(function(k) { return !!clientFavs[k]; });
+                var favArr = Object.keys(clientFavs).map(Number).filter(function(k) { return !isNaN(k) && !!clientFavs[k]; }).sort(function(a, b) { return a - b; });
+                D.clients[curClient].favorites = favArr;
+                D.clients[curClient].favCloudSynced = true;
+                try {
+                    localStorage.setItem('fvm_favs_' + curClient, JSON.stringify(clientFavs));
                     localStorage.setItem('fvm_data', JSON.stringify(D));
+                } catch(e) {}
+
+                if (db) {
+                    var upd = {};
+                    upd['clients.' + curClient + '.favorites'] = favArr;
+                    upd['clients.' + curClient + '.favCloudSynced'] = true;
+                    db.collection("web_data").doc("fvm_data").update(upd).catch(function() {
+                        db.collection("web_data").doc("fvm_data").set(D).catch(function(){});
+                    });
                 }
             } catch (e) {}
         }
@@ -4393,6 +4431,245 @@
                     : '<button class="al-btn" style="background:#fff5f5; border-color:#fecaca; color:#c0392b;" onclick="toggleClientHiddenQuick(\'' + esc(code) + '\')" title="Ocultar y mostrar mensaje de No Disponible">🙈 Ocultar</button>';
 
                 h += ('<div class="al-item" style="flex-wrap:wrap;' + (c.isHidden ? ' background:#fffafa; border-color:#fecaca;' : '') + '"><div class="al-item-info"><div class="al-item-t">' + esc(c.name) + (c.isHidden ? ' <span style="font-size:0.75rem; color:#c0392b; font-weight:600;">(OCULTO)</span>' : '') + '</div><div class="al-item-s">' + esc(c.event) + ' · Código: <strong>' + esc(code) + '</strong></div><div style="margin-top:.35rem; display:flex; gap:0.35rem; flex-wrap:wrap;">' + badges + '</div></div><div class="al-acts" style="flex-wrap:wrap">' + toggleHideBtn + '<button class="al-btn" onclick="viewClientStats(\'' + code + '\')">📊 Accesos</button><button class="al-btn" onclick="copyClientUrl(\'' + code + '\')">🔗 Copiar Link</button><button class="al-btn" onclick="editClient(\'' + code + '\')">Editar</button>' + (c.hasPhotobook ? '<button class="al-btn" onclick="editPhotobook(\'' + code + '\')">Fotolibro</button>' : '') + '<button class="al-btn del" onclick="delClient(\'' + code + '\')">Eliminar</button></div></div>');
+            });
+            body.innerHTML = h;
+        };
+
+        // =========================================================================
+        // VERSIÓN 2.1:
+        // 1. Favoritas (♥) 100% Compartidas en Tiempo Real entre Cliente, Invitados y Administrador
+        // 2. Visor y Gestor de Fotos Favoritas dentro del Panel de Administración
+        // =========================================================================
+        function applyRealtimeFavsUpdateForActiveClient() {
+            if (!curClient || !D || !D.clients || !D.clients[curClient]) return;
+            var c = D.clients[curClient];
+            var cloudArr = Array.isArray(c.favorites) ? c.favorites.map(Number).filter(function(n){ return !isNaN(n); }).sort(function(a,b){ return a-b; }) : [];
+            var currentArr = getFavIndices();
+            if (JSON.stringify(cloudArr) === JSON.stringify(currentArr)) return;
+
+            clientFavs = {};
+            cloudArr.forEach(function(idx) { clientFavs[idx] = true; });
+            try { localStorage.setItem('fvm_favs_' + curClient, JSON.stringify(clientFavs)); } catch(e) {}
+
+            // Actualizar corazones en la cuadrícula activa sin perder posición de scroll
+            document.querySelectorAll('#pxNormalSetsWrap .pc .favb').forEach(function(btn) {
+                var idAttr = btn.id || '';
+                if (idAttr.startsWith('fav-')) {
+                    var idx = parseInt(idAttr.replace('fav-', ''));
+                    btn.classList.toggle('on', !!clientFavs[idx]);
+                }
+            });
+
+            updateFavNavBadge();
+            updateLBFavButton();
+            if (typeof isFavSetActive !== 'undefined' && isFavSetActive) {
+                renderFavoritesSetSection();
+            }
+        }
+
+        function initRealtimeCloudFavoritesListener() {
+            if (!db) return;
+            try {
+                db.collection("web_data").doc("fvm_data").onSnapshot(function(docSnap) {
+                    if (!docSnap || !docSnap.exists) return;
+                    var remoteData = docSnap.data();
+                    if (!remoteData || !remoteData.clients || !D || !D.clients) return;
+
+                    var admChanged = false;
+                    Object.keys(remoteData.clients).forEach(function(code) {
+                        var remClient = remoteData.clients[code];
+                        var locClient = D.clients[code];
+                        if (remClient && locClient) {
+                            var remFavs = Array.isArray(remClient.favorites) ? remClient.favorites : [];
+                            var locFavs = Array.isArray(locClient.favorites) ? locClient.favorites : [];
+                            if (JSON.stringify(remFavs) !== JSON.stringify(locFavs)) {
+                                locClient.favorites = remFavs;
+                                locClient.favCloudSynced = !!remClient.favCloudSynced;
+                                admChanged = true;
+                            }
+                            if (remClient.visitStats) {
+                                locClient.visitStats = remClient.visitStats;
+                            }
+                        }
+                    });
+
+                    try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch(e) {}
+
+                    if (curClient && D.clients[curClient]) {
+                        applyRealtimeFavsUpdateForActiveClient();
+                    }
+                    if (admChanged && document.getElementById('admPanel').classList.contains('active') && admState.tab === 'clients' && (admState.view === 'list' || admState.view === 'stats')) {
+                        renderAdmBody();
+                    }
+                }, function(err) {
+                    console.warn("Realtime listener warning:", err);
+                });
+            } catch (e) {}
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initRealtimeCloudFavoritesListener, 1200);
+        });
+
+        // Funciones para ver, copiar y gestionar las Favoritas compartidas desde el Panel de Administración
+        function getClientSharedFavList(c) {
+            if (!c || !Array.isArray(c.favorites) || !Array.isArray(c.photos)) return [];
+            var valid = [];
+            var seen = {};
+            c.favorites.forEach(function(idx) {
+                var n = parseInt(idx);
+                if (!isNaN(n) && c.photos[n] && !seen[n]) {
+                    seen[n] = true;
+                    valid.push({ index: n, photo: c.photos[n] });
+                }
+            });
+            valid.sort(function(a, b) { return a.index - b.index; });
+            return valid;
+        }
+
+        function copyAdminClientFavNames(code) {
+            var c = D.clients[code];
+            var favList = getClientSharedFavList(c);
+            if (!favList.length) { toast('Este evento aún no tiene fotos favoritas seleccionadas.'); return; }
+            var names = favList.map(function(item, i) {
+                var p = item.photo;
+                return (i + 1) + '. ' + (p.name || ('Foto ' + (item.index + 1))) + (p.set && p.set !== 'General' ? ' [' + p.set + ']' : '');
+            }).join('\n');
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(names).then(function() {
+                    toast('📋 Lista de ' + favList.length + ' favoritas copiada al portapapeles');
+                });
+            } else {
+                var ta = document.createElement('textarea');
+                ta.value = names;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); toast('📋 Lista de ' + favList.length + ' favoritas copiada'); } catch(e) {}
+                document.body.removeChild(ta);
+            }
+        }
+
+        function removeClientFavFromAdmin(code, photoIdx) {
+            var c = D.clients[code];
+            if (!c || !Array.isArray(c.favorites)) return;
+            c.favorites = c.favorites.map(Number).filter(function(idx) { return idx !== photoIdx; });
+            c.favCloudSynced = true;
+            if (curClient === code) {
+                delete clientFavs[photoIdx];
+            }
+            try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch(e) {}
+            if (db) {
+                var upd = {};
+                upd['clients.' + code + '.favorites'] = c.favorites;
+                upd['clients.' + code + '.favCloudSynced'] = true;
+                db.collection("web_data").doc("fvm_data").update(upd).catch(function() {
+                    db.collection("web_data").doc("fvm_data").set(D).catch(function(){});
+                });
+            }
+            renderAdmBody();
+            toast('Fotografía quitada de Favoritas');
+        }
+
+        function openClientGalleryOnFavsFromAdmin(code) {
+            closeAdm();
+            curClient = code;
+            enterPortal('galeria');
+            setTimeout(function() {
+                var favTab = document.getElementById('navFavTab');
+                openFavSetTab(favTab);
+            }, 250);
+        }
+
+        // Ampliar renderClientStatsAdmin para mostrar las Fotos Favoritas compartidas junto con los Accesos
+        var _origRenderClientStatsAdminV21 = renderClientStatsAdmin;
+        renderClientStatsAdmin = function(body) {
+            _origRenderClientStatsAdminV21(body);
+            var code = admState.editId;
+            var c = D.clients[code];
+            if (!c) return;
+            var favList = getClientSharedFavList(c);
+
+            // Añadir tarjeta de Favoritas al resumen superior
+            var gridBoxes = body.querySelector('.stats-summary-grid');
+            if (gridBoxes) {
+                var favBox = document.createElement('div');
+                favBox.className = 'stats-box';
+                favBox.innerHTML = '<b style="color:#e11d48">' + favList.length + '</b><span>♥ Fotos Favoritas</span>';
+                gridBoxes.appendChild(favBox);
+            }
+
+            var favSec = document.createElement('div');
+            favSec.style.cssText = 'margin-top: 1.8rem; padding-top: 1.4rem; border-top: 1px solid var(--border-light);';
+            var h = '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem; margin-bottom:0.6rem;">' +
+                '<label class="af-l" style="margin:0; color:#e11d48; font-size:0.86rem;">♥ Fotografías Favoritas Seleccionadas (' + favList.length + ')</label>' +
+                '<div style="display:flex; gap:0.45rem; flex-wrap:wrap;">' +
+                    (favList.length > 0 ? '<button type="button" class="al-btn" onclick="copyAdminClientFavNames(\'' + esc(code) + '\')">📋 Copiar nombres de archivos</button>' : '') +
+                    '<button type="button" class="al-btn" style="background:#fff0f3; border-color:#fecdd3; color:#e11d48;" onclick="openClientGalleryOnFavsFromAdmin(\'' + esc(code) + '\')">👁️ Ver Set Favoritas en Galería</button>' +
+                '</div>' +
+            '</div>' +
+            '<p class="adm-hint" style="margin-bottom:0.8rem;">Esta selección es compartida en tiempo real: cualquier foto que el cliente (o tú) marque con el corazón <b>♥</b> aparece aquí y en el apartado <b>♥ Favoritas</b> de todos los dispositivos.</p>';
+
+            if (!favList.length) {
+                h += '<div class="adm-empty" style="padding:1.5rem;">Aún no se han marcado fotografías como favoritas en esta galería.</div>';
+            } else {
+                h += '<div class="adm-fav-grid">';
+                favList.forEach(function(item) {
+                    var p = item.photo;
+                    var rotDeg = p.rot || 0;
+                    h += '<div class="adm-fav-card">' +
+                        '<img src="' + esc(pSrc(p, 300)) + '" alt="" loading="lazy" style="transform:rotate(' + rotDeg + 'deg)" onclick="openClientGalleryOnFavsFromAdmin(\'' + esc(code) + '\')" title="Ver en galería">' +
+                        '<button type="button" class="adm-fav-rm" onclick="removeClientFavFromAdmin(\'' + esc(code) + '\', ' + item.index + ')" title="Quitar de favoritas">×</button>' +
+                        '<div class="adm-fav-card-info">' +
+                            '<div class="adm-fav-card-name" title="' + esc(p.name || ('Foto ' + (item.index + 1))) + '">' + esc(p.name || ('Foto ' + (item.index + 1))) + '</div>' +
+                            '<div class="adm-fav-card-set">' + esc(p.set || 'General') + '</div>' +
+                        '</div>' +
+                    '</div>';
+                });
+                h += '</div>';
+            }
+            favSec.innerHTML = h;
+            body.appendChild(favSec);
+        };
+
+        // Mostrar insignia "♥ X favoritas" en cada cliente dentro de la lista del Panel Admin
+        renderAdmClients = function(body) {
+            if (admState.view === 'edit') { renderClientForm(body); return; }
+            if (admState.view === 'photobook') { renderPhotobookAdmin(body); return; }
+            if (admState.view === 'stats') { renderClientStatsAdmin(body); return; }
+
+            var h = '<button class="adm-add-btn" onclick="newClient()">+ Nuevo evento / cliente</button><p class="adm-hint">Cada cliente tiene un código único. Las <b>♥ Favoritas</b> se sincronizan en tiempo real entre todos los dispositivos.</p>';
+            var codes = Object.keys(D.clients);
+            if (!codes.length) { body.innerHTML = h + '<div class="adm-empty">No hay clientes registrados.</div>'; return; }
+
+            codes.forEach(function(code) {
+                var c = D.clients[code], badges = '';
+                if (c.isHidden) {
+                    badges += '<span class="toggle-badge hidden-b">🚫 Oculto (No disponible)</span> ';
+                }
+                if (c.hasVideo) badges += '<span class="toggle-badge on">Video</span> ';
+                if (c.hasPhotos) badges += '<span class="toggle-badge on">Fotos (' + (c.photos ? c.photos.length : 0) + ')</span> ';
+                if (c.hasPhotobook) badges += '<span class="toggle-badge on">Fotolibro</span> ';
+                if (!c.hasVideo && !c.hasPhotos && !c.hasPhotobook) badges += '<span class="toggle-badge off">Sin contenido</span> ';
+
+                var hiddenSetsCount = (c.hiddenSets && typeof c.hiddenSets === 'object') ? Object.keys(c.hiddenSets).filter(function(k){ return !!c.hiddenSets[k]; }).length : 0;
+                if (hiddenSetsCount > 0 && !c.isHidden) {
+                    badges += '<span class="toggle-badge hidden-b">' + hiddenSetsCount + ' set(s) oculto(s)</span> ';
+                }
+
+                var favCount = getClientSharedFavList(c).length;
+                badges += '<span class="toggle-badge favs-b" onclick="viewClientStats(\'' + esc(code) + '\')" title="Ver fotos favoritas seleccionadas">♥ ' + favCount + ' favoritas</span> ';
+
+                var st = getClientStatsSummary(c);
+                badges += '<span class="toggle-badge stats-b" onclick="viewClientStats(\'' + esc(code) + '\')" title="Ver qué dispositivos han entrado">👁️ ' + st.clientVisits + ' visitas · 📱 ' + st.clientDevices + ' disp.</span>';
+
+                var toggleHideBtn = c.isHidden
+                    ? '<button class="al-btn" style="background:#e8f5e9; border-color:#a5d6a7; color:#2e7d32; font-weight:600;" onclick="toggleClientHiddenQuick(\'' + esc(code) + '\')" title="Hacer visible nuevamente">👁️ Mostrar</button>'
+                    : '<button class="al-btn" style="background:#fff5f5; border-color:#fecaca; color:#c0392b;" onclick="toggleClientHiddenQuick(\'' + esc(code) + '\')" title="Ocultar y mostrar mensaje de No Disponible">🙈 Ocultar</button>';
+
+                h += ('<div class="al-item" style="flex-wrap:wrap;' + (c.isHidden ? ' background:#fffafa; border-color:#fecaca;' : '') + '"><div class="al-item-info"><div class="al-item-t">' + esc(c.name) + (c.isHidden ? ' <span style="font-size:0.75rem; color:#c0392b; font-weight:600;">(OCULTO)</span>' : '') + '</div><div class="al-item-s">' + esc(c.event) + ' · Código: <strong>' + esc(code) + '</strong></div><div style="margin-top:.35rem; display:flex; gap:0.35rem; flex-wrap:wrap;">' + badges + '</div></div><div class="al-acts" style="flex-wrap:wrap">' + toggleHideBtn + '<button class="al-btn" onclick="viewClientStats(\'' + code + '\')">📊 Accesos / ♥</button><button class="al-btn" onclick="copyClientUrl(\'' + code + '\')">🔗 Copiar Link</button><button class="al-btn" onclick="editClient(\'' + code + '\')">Editar</button>' + (c.hasPhotobook ? '<button class="al-btn" onclick="editPhotobook(\'' + code + '\')">Fotolibro</button>' : '') + '<button class="al-btn del" onclick="delClient(\'' + code + '\')">Eliminar</button></div></div>');
             });
             body.innerHTML = h;
         };
