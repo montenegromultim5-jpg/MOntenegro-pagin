@@ -317,6 +317,14 @@
         .dur-creator { display: none; background: #fff; border: 1px dashed var(--accent); border-radius: var(--radius); padding: 0.8rem; margin-top: 0.5rem; margin-bottom: 0.8rem; }
         .dur-creator.open { display: block; }
 
+        /* Estado Oculto (Cliente / Set) */
+        .toggle-badge.hidden-b { background: #fef2f2; color: #c0392b; border: 1px solid #fecaca; font-weight: 600; }
+        .hidden-unavailable-box { text-align: center; padding: 3.5rem 1.4rem; background: var(--c-surface2); border-radius: var(--radius-lg); border: 1px dashed rgba(231, 76, 60, 0.45); max-width: 540px; margin: 2rem auto; box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
+        .hidden-unavailable-box .hu-icon { font-size: 3rem; margin-bottom: 0.9rem; display: block; }
+        .hidden-unavailable-box h3 { font-family: var(--fh); font-size: 1.55rem; margin-bottom: 0.6rem; color: #fff; }
+        .hidden-unavailable-box p { color: var(--c-muted); font-size: 0.95rem; max-width: 420px; margin: 0 auto 1.2rem; line-height: 1.6; }
+        .hidden-unavailable-box .hu-phone { display: inline-block; background: rgba(255,255,255,0.05); border: 1px solid var(--c-border); padding: 0.5rem 1.2rem; border-radius: 50px; color: var(--c-accent); font-weight: 600; font-size: 1.05rem; margin-bottom: 1.4rem; letter-spacing: 0.5px; }
+
         /* Contador discreto de visitas y dispositivos en Panel Admin */
         .toggle-badge.stats-b { background: #eef6ff; color: #1d4ed8; border: 1px solid #bfdbfe; cursor: pointer; transition: .2s; }
         .toggle-badge.stats-b:hover { background: #dbeafe; }
@@ -731,6 +739,16 @@
                     <div id="cpExpireMsg"></div>
                 </div>
                 
+                <div id="cpHiddenLock" class="hidden-unavailable-box" style="display:none;">
+                    <span class="hu-icon">🚫</span>
+                    <h3>El set no se encuentra disponible</h3>
+                    <p>El set no se encuentra disponible, comunícate con el administrador.</p>
+                    <div class="hu-phone" id="cpHiddenPhoneLbl">WhatsApp: 729 699 0786</div>
+                    <div>
+                        <button type="button" onclick="contactAdminHiddenSet()" class="btn btn-wa" style="border:none; padding: 0.85rem 1.8rem;">💬 Comunicarme por WhatsApp</button>
+                    </div>
+                </div>
+
                 <div id="cpExpiredLock" style="display:none; text-align:center; padding: 3.5rem 1.2rem; background: var(--c-surface2); border-radius: var(--radius-lg); border: 1px dashed var(--c-border);">
                     <span style="font-size: 3rem; margin-bottom: 1rem; display: block;">🔒</span>
                     <h3 style="font-family: var(--fh); font-size: 1.5rem; margin-bottom: .5rem;">Acceso Expirado</h3>
@@ -902,7 +920,7 @@
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
-                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v1.9</span></h2>
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.0</span></h2>
                 <button class="adm-x" onclick="closeAdm()">×</button>
             </div>
             <div class="adm-tabs" id="admTabs">
@@ -4102,6 +4120,281 @@
             if (code && D.clients[code]) {
                 D.clients[code].visitStats = prevStats;
             }
+        };
+
+        // =========================================================================
+        // VERSIÓN 2.0:
+        // 1. Opción para Ocultar/Mostrar Clientes o Sets individuales desde Admin
+        // 2. Mensaje "El set no se encuentra disponible, comunícate con el administrador" + WhatsApp directo
+        // =========================================================================
+        function getAdminWaPhoneDisplay() {
+            return (D && D.settings && D.settings.phone) ? D.settings.phone : '729 699 0786';
+        }
+
+        function getAdminWaNumberClean() {
+            var raw = (D && D.settings && D.settings.waNumber) ? D.settings.waNumber : ((D && D.settings && D.settings.phoneRaw) ? ('52' + D.settings.phoneRaw) : '527296990786');
+            return String(raw).replace(/[^0-9]/g, '');
+        }
+
+        function contactAdminHiddenSet(setName) {
+            var c = (curClient && D && D.clients && D.clients[curClient]) ? D.clients[curClient] : null;
+            var evtInfo = c ? (c.name + ' (' + c.event + ')') : (curClient || '');
+            var setTxt = setName ? (' el set "' + setName + '" de') : '';
+            var msg = 'Hola, intenté ingresar a' + setTxt + ' mi galería pero me aparece el mensaje: "El set no se encuentra disponible, comunícate con el administrador".' +
+                (evtInfo ? ('\n\n*Evento:* ' + evtInfo + '\n*Código:* ' + curClient) : '');
+            window.open('https://wa.me/' + getAdminWaNumberClean() + '?text=' + encodeURIComponent(msg), '_blank');
+        }
+
+        function buildHiddenUnavailableHTML(setName) {
+            var phoneDisp = esc(getAdminWaPhoneDisplay());
+            var safeSet = setName ? esc(setName).replace(/'/g, "\\'") : '';
+            return '<div class="hidden-unavailable-box">' +
+                '<span class="hu-icon">🚫</span>' +
+                '<h3>El set no se encuentra disponible</h3>' +
+                '<p>El set no se encuentra disponible, comunícate con el administrador.</p>' +
+                '<div class="hu-phone">📱 WhatsApp: ' + phoneDisp + '</div>' +
+                '<div>' +
+                    '<button type="button" onclick="contactAdminHiddenSet(\'' + safeSet + '\')" class="btn btn-wa" style="border:none; padding: 0.85rem 1.8rem;">💬 Comunicarme por WhatsApp (' + phoneDisp + ')</button>' +
+                '</div>' +
+            '</div>';
+        }
+
+        function toggleClientHiddenQuick(code) {
+            if (!code || !D || !D.clients || !D.clients[code]) return;
+            var c = D.clients[code];
+            c.isHidden = !c.isHidden;
+            saveData(function() {
+                renderAdmBody();
+                toast(c.isHidden ? '🙈 Cliente oculto (Mostrará aviso de No Disponible)' : '👁️ Cliente visible nuevamente');
+            });
+        }
+
+        // Interceptar enterPortal para que si el cliente está oculto muestre directamente la pantalla con el aviso
+        var _origEnterPortalV20 = enterPortal;
+        enterPortal = function(targetView) {
+            var c = (curClient && D && D.clients) ? D.clients[curClient] : null;
+            if (c && c.isHidden) {
+                if (typeof recordClientVisit === 'function') recordClientVisit(curClient);
+                document.getElementById('mainSite').style.display = 'none';
+                document.getElementById('navbar').style.display = 'none';
+                document.getElementById('cpPortal').classList.add('active');
+                document.getElementById('cpName').textContent = c.name;
+                document.getElementById('cpEvent').textContent = c.event;
+                document.body.style.overflow = 'auto';
+                window.scrollTo(0, 0);
+                showMainView();
+                return;
+            }
+            _origEnterPortalV20(targetView);
+        };
+
+        // Interceptar renderAccessCards para mostrar el bloqueo cuando c.isHidden es true
+        var _origRenderAccessCardsV20 = renderAccessCards;
+        renderAccessCards = function() {
+            var c = (curClient && D && D.clients) ? D.clients[curClient] : null;
+            var hiddenLock = document.getElementById('cpHiddenLock');
+            var banner = document.getElementById('cpExpireBanner');
+            var expLock = document.getElementById('cpExpiredLock');
+            var container = document.getElementById('accessCardsContainer');
+
+            if (c && c.isHidden) {
+                clearInterval(expireTicker);
+                if (banner) banner.style.display = 'none';
+                if (expLock) expLock.style.display = 'none';
+                if (container) container.style.display = 'none';
+                if (hiddenLock) {
+                    hiddenLock.style.display = 'block';
+                    hiddenLock.outerHTML = '<div id="cpHiddenLock">' + buildHiddenUnavailableHTML('') + '</div>';
+                }
+                return;
+            } else {
+                if (hiddenLock) hiddenLock.style.display = 'none';
+            }
+            _origRenderAccessCardsV20();
+        };
+
+        // Evitar que abran Galería, Video o Fotolibro si el cliente está oculto
+        var _origOpenGalleryV20 = openGalleryView;
+        openGalleryView = function() {
+            var c = (curClient && D && D.clients) ? D.clients[curClient] : null;
+            if (c && c.isHidden) { showMainView(); return; }
+            _origOpenGalleryV20();
+        };
+
+        var _origOpenVideoV20 = openVideoView;
+        openVideoView = function() {
+            var c = (curClient && D && D.clients) ? D.clients[curClient] : null;
+            if (c && c.isHidden) { showMainView(); return; }
+            _origOpenVideoV20();
+        };
+
+        var _origOpenPBV20 = openPhotobookView;
+        openPhotobookView = function() {
+            var c = (curClient && D && D.clients) ? D.clients[curClient] : null;
+            if (c && c.isHidden) { showMainView(); return; }
+            _origOpenPBV20();
+        };
+
+        // Permitir también ocultar Sets individuales dentro de una galería activa
+        var _origRenderPixiesetGalleryV20 = renderPixiesetGallery;
+        renderPixiesetGallery = function() {
+            _origRenderPixiesetGalleryV20();
+            var c = (curClient && D && D.clients) ? D.clients[curClient] : null;
+            if (!c || !c.hiddenSets || typeof c.hiddenSets !== 'object') return;
+
+            var setsMap = {};
+            (portalPhotos || []).forEach(function(p) {
+                var sName = p.set || 'General';
+                setsMap[sName] = true;
+            });
+
+            Object.keys(setsMap).forEach(function(setName) {
+                if (c.hiddenSets[setName]) {
+                    var safeId = 'set-' + setName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                    var secEl = document.getElementById(safeId);
+                    if (secEl) {
+                        var titleHtml = (Object.keys(setsMap).length > 1 || setName !== 'General') ? ('<h3 class="px-set-title">' + esc(setName) + '</h3>') : '';
+                        secEl.innerHTML = titleHtml + buildHiddenUnavailableHTML(setName);
+                    }
+                }
+            });
+        };
+
+        // Agregar controles de "Ocultar cliente" y "Ocultar sets individuales" en el formulario de Editar Cliente
+        var tempHiddenSets = {};
+
+        function toggleTempHiddenSet(setName, isChecked) {
+            if (!tempHiddenSets || typeof tempHiddenSets !== 'object') tempHiddenSets = {};
+            if (isChecked) tempHiddenSets[setName] = true;
+            else delete tempHiddenSets[setName];
+        }
+
+        function renderHiddenSetsCheckboxesUI() {
+            var wrap = document.getElementById('ce_hiddenSetsWrap');
+            if (!wrap) return;
+            var setsFound = {};
+            (tempClientPhotos || []).forEach(function(p) {
+                var sName = (p && p.set) ? p.set.trim() : 'General';
+                if (!sName) sName = 'General';
+                setsFound[sName] = (setsFound[sName] || 0) + 1;
+            });
+            var setNames = Object.keys(setsFound);
+            if (!setNames.length) {
+                wrap.innerHTML = '';
+                wrap.style.display = 'none';
+                return;
+            }
+            wrap.style.display = 'block';
+            var h = '<label class="af-l" style="margin-bottom:0.45rem; color:#c0392b;">🙈 Ocultar Sets individuales de esta galería (Opcional)</label>' +
+                '<p class="adm-hint" style="margin-bottom:0.6rem;">Si marcas un set aquí, en lugar de sus fotos aparecerá el mensaje: <i>"El set no se encuentra disponible, comunícate con el administrador"</i> con tu WhatsApp.</p>' +
+                '<div style="display:flex; gap:0.6rem; flex-wrap:wrap;">';
+            setNames.forEach(function(sName) {
+                var isHid = !!(tempHiddenSets && tempHiddenSets[sName]);
+                var safeName = esc(sName).replace(/'/g, "\\'");
+                h += '<label style="display:inline-flex; align-items:center; gap:0.45rem; background:#fff; border:1px solid ' + (isHid ? '#fca5a5' : 'var(--border)') + '; padding:0.4rem 0.8rem; border-radius:50px; font-size:0.82rem; cursor:pointer;">' +
+                    '<input type="checkbox" ' + (isHid ? 'checked' : '') + ' onchange="toggleTempHiddenSet(\'' + safeName + '\', this.checked)">' +
+                    '<span><b>' + esc(sName) + '</b> (' + setsFound[sName] + ' fotos)</span>' +
+                '</label>';
+            });
+            h += '</div>';
+            wrap.innerHTML = h;
+        }
+
+        var _origRenderClientFormV20 = renderClientForm;
+        renderClientForm = function(body) {
+            var isNew = !admState.editId;
+            var c = (!isNew && D.clients[admState.editId]) ? D.clients[admState.editId] : {};
+            tempHiddenSets = (c.hiddenSets && typeof c.hiddenSets === 'object') ? JSON.parse(JSON.stringify(c.hiddenSets)) : {};
+
+            _origRenderClientFormV20(body);
+
+            // Insertar interruptor para ocultar todo el cliente / evento
+            var hasVideoInput = document.getElementById('ce_hasVideo');
+            if (hasVideoInput) {
+                var toggleContainer = hasVideoInput.closest('div[style*="margin:1rem 0"]');
+                if (toggleContainer) {
+                    var hideBox = document.createElement('div');
+                    hideBox.style.cssText = 'margin-bottom:0.85rem; padding:0.75rem 0.9rem; background:#fef2f2; border:1px solid #fecaca; border-radius:8px;';
+                    hideBox.innerHTML = '<div class="toggle-row" style="margin:0; padding:0;"><label style="font-weight:600; color:#991b1b;"><div class="toggle-sw"><input type="checkbox" id="ce_isHidden" ' + (c.isHidden ? 'checked' : '') + '><div class="toggle-track"></div><div class="toggle-thumb"></div></div>🙈 Ocultar este cliente / set completo (Mostrar aviso: "El set no se encuentra disponible, comunícate con el administrador")</label></div>';
+                    toggleContainer.insertBefore(hideBox, toggleContainer.firstChild);
+                }
+            }
+
+            // Insertar contenedor para ocultar sets individuales dentro de la sección de fotos
+            var photosSec = document.getElementById('ce_photosSec');
+            if (photosSec && !document.getElementById('ce_hiddenSetsWrap')) {
+                var hsDiv = document.createElement('div');
+                hsDiv.id = 'ce_hiddenSetsWrap';
+                hsDiv.style.cssText = 'margin-top:0.9rem; padding:0.85rem; background:#fff5f5; border:1px dashed #fca5a5; border-radius:var(--radius); display:none;';
+                photosSec.appendChild(hsDiv);
+                renderHiddenSetsCheckboxesUI();
+            }
+        };
+
+        var _origRenderClientPhotosListV20 = renderClientPhotosList;
+        renderClientPhotosList = function(photos) {
+            _origRenderClientPhotosListV20(photos);
+            renderHiddenSetsCheckboxesUI();
+        };
+
+        // Guardar estado isHidden y hiddenSets al guardar el cliente
+        var _prevSaveClientV20 = saveClient;
+        saveClient = function(oldCode) {
+            var codeEl = document.getElementById('ce_code');
+            var code = codeEl ? codeEl.value.trim().toLowerCase().replace(/\s+/g, '') : '';
+            var isHiddenEl = document.getElementById('ce_isHidden');
+            var isHiddenVal = isHiddenEl ? !!isHiddenEl.checked : false;
+            var savedHiddenSets = tempHiddenSets ? JSON.parse(JSON.stringify(tempHiddenSets)) : {};
+
+            _prevSaveClientV20(oldCode);
+
+            if (code && D.clients[code]) {
+                D.clients[code].isHidden = isHiddenVal;
+                D.clients[code].hiddenSets = savedHiddenSets;
+                saveData(function(ok) {
+                    if (ok) {
+                        admState.view = 'list';
+                        renderAdmBody();
+                    }
+                });
+            }
+        };
+
+        // Actualizar la lista de Clientes en el Panel Admin con el botón rápido "🙈 Ocultar" / "👁️ Mostrar"
+        renderAdmClients = function(body) {
+            if (admState.view === 'edit') { renderClientForm(body); return; }
+            if (admState.view === 'photobook') { renderPhotobookAdmin(body); return; }
+            if (admState.view === 'stats') { renderClientStatsAdmin(body); return; }
+
+            var h = '<button class="adm-add-btn" onclick="newClient()">+ Nuevo evento / cliente</button><p class="adm-hint">Cada cliente tiene un código único. Usa el botón <b>"🙈 Ocultar"</b> para suspender temporalmente una galería y mostrar el aviso de comunicarse al WhatsApp del administrador.</p>';
+            var codes = Object.keys(D.clients);
+            if (!codes.length) { body.innerHTML = h + '<div class="adm-empty">No hay clientes registrados.</div>'; return; }
+
+            codes.forEach(function(code) {
+                var c = D.clients[code], badges = '';
+                if (c.isHidden) {
+                    badges += '<span class="toggle-badge hidden-b">🚫 Oculto (No disponible)</span> ';
+                }
+                if (c.hasVideo) badges += '<span class="toggle-badge on">Video</span> ';
+                if (c.hasPhotos) badges += '<span class="toggle-badge on">Fotos (' + (c.photos ? c.photos.length : 0) + ')</span> ';
+                if (c.hasPhotobook) badges += '<span class="toggle-badge on">Fotolibro</span> ';
+                if (!c.hasVideo && !c.hasPhotos && !c.hasPhotobook) badges += '<span class="toggle-badge off">Sin contenido</span> ';
+
+                var hiddenSetsCount = (c.hiddenSets && typeof c.hiddenSets === 'object') ? Object.keys(c.hiddenSets).filter(function(k){ return !!c.hiddenSets[k]; }).length : 0;
+                if (hiddenSetsCount > 0 && !c.isHidden) {
+                    badges += '<span class="toggle-badge hidden-b">' + hiddenSetsCount + ' set(s) oculto(s)</span> ';
+                }
+
+                var st = getClientStatsSummary(c);
+                badges += '<span class="toggle-badge stats-b" onclick="viewClientStats(\'' + esc(code) + '\')" title="Ver qué dispositivos han entrado">👁️ ' + st.clientVisits + ' visitas · 📱 ' + st.clientDevices + ' disp.</span>';
+
+                var toggleHideBtn = c.isHidden
+                    ? '<button class="al-btn" style="background:#e8f5e9; border-color:#a5d6a7; color:#2e7d32; font-weight:600;" onclick="toggleClientHiddenQuick(\'' + esc(code) + '\')" title="Hacer visible nuevamente">👁️ Mostrar</button>'
+                    : '<button class="al-btn" style="background:#fff5f5; border-color:#fecaca; color:#c0392b;" onclick="toggleClientHiddenQuick(\'' + esc(code) + '\')" title="Ocultar y mostrar mensaje de No Disponible">🙈 Ocultar</button>';
+
+                h += ('<div class="al-item" style="flex-wrap:wrap;' + (c.isHidden ? ' background:#fffafa; border-color:#fecaca;' : '') + '"><div class="al-item-info"><div class="al-item-t">' + esc(c.name) + (c.isHidden ? ' <span style="font-size:0.75rem; color:#c0392b; font-weight:600;">(OCULTO)</span>' : '') + '</div><div class="al-item-s">' + esc(c.event) + ' · Código: <strong>' + esc(code) + '</strong></div><div style="margin-top:.35rem; display:flex; gap:0.35rem; flex-wrap:wrap;">' + badges + '</div></div><div class="al-acts" style="flex-wrap:wrap">' + toggleHideBtn + '<button class="al-btn" onclick="viewClientStats(\'' + code + '\')">📊 Accesos</button><button class="al-btn" onclick="copyClientUrl(\'' + code + '\')">🔗 Copiar Link</button><button class="al-btn" onclick="editClient(\'' + code + '\')">Editar</button>' + (c.hasPhotobook ? '<button class="al-btn" onclick="editPhotobook(\'' + code + '\')">Fotolibro</button>' : '') + '<button class="al-btn del" onclick="delClient(\'' + code + '\')">Eliminar</button></div></div>');
+            });
+            body.innerHTML = h;
         };
 
         window.addEventListener('DOMContentLoaded', function() { loadData(); });
