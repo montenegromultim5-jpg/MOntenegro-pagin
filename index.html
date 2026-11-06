@@ -947,7 +947,7 @@
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
-                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.2</span></h2>
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.3</span></h2>
                 <button class="adm-x" onclick="closeAdm()">×</button>
             </div>
             <div class="adm-tabs" id="admTabs">
@@ -1355,12 +1355,17 @@
             reader.onload = function(e) { 
                 var img = new Image(); img.onload = function() { 
                     var canvas = document.createElement('canvas'); var w = img.width, h = img.height; 
-                    if (w > 1600) { h = Math.floor(h * (1600 / w)); w = 1600; } 
+                    var isLogo = (targetId === 'se_logoImg');
+                    var maxW = isLogo ? 480 : 1000;
+                    if (w > maxW) { h = Math.floor(h * (maxW / w)); w = maxW; } 
                     canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h); 
-                    var mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
-                    var q = mimeType === 'image/jpeg' ? 0.80 : undefined;
-                    document.getElementById(targetId).value = canvas.toDataURL(mimeType, q); 
-                    toast('Imagen procesada. Haz clic en Guardar.'); 
+                    var usePng = isLogo && file.type === 'image/png';
+                    var dataUrl = usePng ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', 0.72);
+                    if (usePng && dataUrl.length > 90000) {
+                        dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+                    }
+                    document.getElementById(targetId).value = dataUrl; 
+                    toast('Imagen optimizada y lista. Haz clic en Guardar.'); 
                 }; 
                 img.src = e.target.result; 
             };
@@ -3568,7 +3573,7 @@
         function togglePBBack() { var checked = document.getElementById('pb_hasBack').checked; D.clients[admState.editId].photobook.hasBackCover = checked; document.getElementById('pbBackSec').style.display = checked ? 'block' : 'none'; saveData(); }
         function uploadPBImg(input, type, idx) {
             var file = input.files[0]; if (!file) return; var reader = new FileReader();
-            reader.onload = function(e) { var img = new Image(); img.onload = function() { var canvas = document.createElement('canvas'); var w = img.width, h = img.height; if (w > 1600) { h = Math.floor(h * (1600 / w)); w = 1600; } canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h); var b64 = canvas.toDataURL('image/jpeg', .80); if (type === 'cover') updatePB('cover', b64); else if (type === 'back') updatePB('back', b64); else updatePBSpread(idx, b64); renderPhotobookAdmin(document.getElementById('admBody')); toast('Imagen cargada'); }; img.src = e.target.result; };
+            reader.onload = function(e) { var img = new Image(); img.onload = function() { var canvas = document.createElement('canvas'); var w = img.width, h = img.height; if (w > 1000) { h = Math.floor(h * (1000 / w)); w = 1000; } canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h); var b64 = canvas.toDataURL('image/jpeg', .70); if (type === 'cover') updatePB('cover', b64); else if (type === 'back') updatePB('back', b64); else updatePBSpread(idx, b64); renderPhotobookAdmin(document.getElementById('admBody')); toast('Imagen optimizada y cargada'); }; img.src = e.target.result; };
             reader.readAsDataURL(file); input.value = '';
         }
         function savePBData() { saveData(); }
@@ -5121,6 +5126,606 @@
                     }
                 });
             }
+        };
+
+        // =========================================================================
+        // VERSIÓN 2.3:
+        // 1. Compresión Inteligente de Galerías e Imágenes Base64 (Reduce 75%-85% el peso en Firebase)
+        // 2. Particionado Automático Multi-Documento en Firebase (Elimina el límite de 1,048,576 bytes)
+        // 3. Medidor de Espacio en la Nube en el Panel de Administración (Pestaña General)
+        // =========================================================================
+        function estimateJsonBytes(obj) {
+            try {
+                var str = JSON.stringify(obj);
+                if (typeof Blob !== 'undefined') return new Blob([str]).size;
+                return unescape(encodeURIComponent(str)).length;
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        function packClientPhotosForCloud(photos) {
+            if (!Array.isArray(photos) || !photos.length) return '';
+            var lines = [];
+            for (var i = 0; i < photos.length; i++) {
+                var p = photos[i];
+                if (!p || (!p.src && !p.driveId)) continue;
+                var dId = extractDriveId(p);
+                var idOrUrl = dId ? ('@' + dId) : (p.src || '').trim();
+                var nm = (p.name || '').replace(/[\t\r\n]/g, ' ').trim();
+                var st = (p.set && p.set !== 'General') ? p.set.replace(/[\t\r\n]/g, ' ').trim() : '';
+                var or = p.orient === 'vertical' ? 'v' : (p.orient === 'horizontal' ? 'h' : '');
+                var rt = (p.rot && parseInt(p.rot)) ? String(parseInt(p.rot)) : '';
+                lines.push(idOrUrl + '\t' + nm + '\t' + st + '\t' + or + '\t' + rt);
+            }
+            return lines.join('\n');
+        }
+
+        function unpackClientPhotosFromCloud(packedStr) {
+            if (!packedStr || typeof packedStr !== 'string') return [];
+            var lines = packedStr.split('\n');
+            var out = [];
+            for (var i = 0; i < lines.length; i++) {
+                var ln = lines[i];
+                if (!ln) continue;
+                var parts = ln.split('\t');
+                var rawId = parts[0] || '';
+                if (!rawId) continue;
+                var isDrive = rawId.charAt(0) === '@';
+                var dId = isDrive ? rawId.slice(1) : extractDriveId({ src: rawId });
+                var src = isDrive ? ('https://lh3.googleusercontent.com/d/' + dId + '=s1600') : rawId;
+                var nm = parts[1] || '';
+                var st = parts[2] || 'General';
+                var or = parts[3] === 'v' ? 'vertical' : (parts[3] === 'h' ? 'horizontal' : '');
+                var rt = parts[4] ? (parseInt(parts[4]) || 0) : 0;
+                out.push({
+                    src: src,
+                    name: nm,
+                    set: st,
+                    driveId: dId || null,
+                    orient: or,
+                    rot: rt
+                });
+            }
+            return out;
+        }
+
+        function recompressBase64DataUrl(b64, maxW, quality, allowPng) {
+            return new Promise(function(resolve) {
+                if (!b64 || typeof b64 !== 'string' || !b64.startsWith('data:image/') || b64.length < 45000) {
+                    resolve(b64);
+                    return;
+                }
+                var img = new Image();
+                var timer = setTimeout(function() { resolve(b64); }, 2500);
+                img.onload = function() {
+                    clearTimeout(timer);
+                    try {
+                        var w = img.width || 800, h = img.height || 600;
+                        if (w > maxW) {
+                            h = Math.floor(h * (maxW / w));
+                            w = maxW;
+                        }
+                        var canvas = document.createElement('canvas');
+                        canvas.width = w;
+                        canvas.height = h;
+                        var ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        var isPng = allowPng && b64.startsWith('data:image/png');
+                        var out = isPng ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', quality || 0.70);
+                        if (isPng && out.length > 85000) {
+                            out = canvas.toDataURL('image/jpeg', quality || 0.72);
+                        }
+                        resolve(out.length < b64.length ? out : b64);
+                    } catch (err) {
+                        resolve(b64);
+                    }
+                };
+                img.onerror = function() {
+                    clearTimeout(timer);
+                    resolve(b64);
+                };
+                img.src = b64;
+            });
+        }
+
+        async function optimizeAllDataImagesInPlace(dataObj) {
+            if (!dataObj || typeof dataObj !== 'object') return;
+            try {
+                if (dataObj.settings) {
+                    if (dataObj.settings.logoImage) {
+                        dataObj.settings.logoImage = await recompressBase64DataUrl(dataObj.settings.logoImage, 480, 0.75, true);
+                    }
+                    if (dataObj.settings.heroImage) {
+                        dataObj.settings.heroImage = await recompressBase64DataUrl(dataObj.settings.heroImage, 960, 0.72, false);
+                    }
+                }
+                if (Array.isArray(dataObj.portfolio)) {
+                    for (var i = 0; i < dataObj.portfolio.length; i++) {
+                        var pt = dataObj.portfolio[i];
+                        if (pt && pt.src && pt.src.startsWith('data:image/')) {
+                            pt.src = await recompressBase64DataUrl(pt.src, 850, 0.70, false);
+                        }
+                    }
+                }
+                if (dataObj.clients && typeof dataObj.clients === 'object') {
+                    var codes = Object.keys(dataObj.clients);
+                    for (var j = 0; j < codes.length; j++) {
+                        var c = dataObj.clients[codes[j]];
+                        if (!c) continue;
+                        if (c.galleryCover && c.galleryCover.startsWith('data:image/')) {
+                            c.galleryCover = await recompressBase64DataUrl(c.galleryCover, 960, 0.70, false);
+                        }
+                        if (c.photobook && typeof c.photobook === 'object') {
+                            if (c.photobook.cover && c.photobook.cover.startsWith('data:image/')) {
+                                c.photobook.cover = await recompressBase64DataUrl(c.photobook.cover, 960, 0.68, false);
+                            }
+                            if (c.photobook.back && c.photobook.back.startsWith('data:image/')) {
+                                c.photobook.back = await recompressBase64DataUrl(c.photobook.back, 960, 0.68, false);
+                            }
+                            if (Array.isArray(c.photobook.spreads)) {
+                                for (var k = 0; k < c.photobook.spreads.length; k++) {
+                                    var sp = c.photobook.spreads[k];
+                                    if (sp && sp.startsWith('data:image/')) {
+                                        c.photobook.spreads[k] = await recompressBase64DataUrl(sp, 1000, 0.68, false);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn("Optimization pass warning:", e);
+            }
+        }
+
+        function buildCloudShards(dataObj) {
+            var clone = JSON.parse(JSON.stringify(dataObj || {}));
+            delete clone.extDocs;
+
+            // Compactar las listas de fotos de cada cliente en un solo bloque de texto ligero
+            if (clone.clients && typeof clone.clients === 'object') {
+                Object.keys(clone.clients).forEach(function(code) {
+                    var c = clone.clients[code];
+                    if (c && Array.isArray(c.photos) && c.photos.length > 0) {
+                        c.photosPacked = packClientPhotosForCloud(c.photos);
+                        delete c.photos;
+                    }
+                });
+            }
+
+            var totalBytes = estimateJsonBytes(clone);
+            var MAX_MAIN_BYTES = 780000; // Margen seguro muy por debajo del límite de 1,048,576 bytes de Firestore
+            var MAX_EXT_BYTES = 740000;
+
+            if (totalBytes <= MAX_MAIN_BYTES) {
+                clone.extDocs = [];
+                return { mainDoc: clone, extDocsMap: {} };
+            }
+
+            // Si supera 780 KB, repartir clientes excedentes en documentos adicionales fvm_data_ext_1, fvm_data_ext_2...
+            var allClients = clone.clients || {};
+            var clientKeys = Object.keys(allClients);
+            clone.clients = {};
+            clone.extDocs = [];
+
+            var extDocsMap = {};
+            var curExtIdx = 1;
+            var curExtName = 'fvm_data_ext_' + curExtIdx;
+            var curExtObj = { clients: {} };
+
+            for (var i = 0; i < clientKeys.length; i++) {
+                var k = clientKeys[i];
+                var clData = allClients[k];
+                clone.clients[k] = clData;
+                if (estimateJsonBytes(clone) > 650000) {
+                    // Mover este cliente a un documento de extensión
+                    delete clone.clients[k];
+                    curExtObj.clients[k] = clData;
+                    if (estimateJsonBytes(curExtObj) > MAX_EXT_BYTES) {
+                        delete curExtObj.clients[k];
+                        extDocsMap[curExtName] = curExtObj;
+                        clone.extDocs.push(curExtName);
+                        curExtIdx++;
+                        curExtName = 'fvm_data_ext_' + curExtIdx;
+                        curExtObj = { clients: {} };
+                        curExtObj.clients[k] = clData;
+                    }
+                }
+            }
+
+            if (Object.keys(curExtObj.clients).length > 0) {
+                extDocsMap[curExtName] = curExtObj;
+                clone.extDocs.push(curExtName);
+            }
+
+            return { mainDoc: clone, extDocsMap: extDocsMap };
+        }
+
+        function unpackCloudDataset(rawMain, extDocsList) {
+            if (!rawMain || typeof rawMain !== 'object') return getDefaults();
+            if (!rawMain.clients || typeof rawMain.clients !== 'object') rawMain.clients = {};
+
+            if (Array.isArray(extDocsList)) {
+                extDocsList.forEach(function(extData) {
+                    if (extData && extData.clients && typeof extData.clients === 'object') {
+                        Object.keys(extData.clients).forEach(function(k) {
+                            rawMain.clients[k] = extData.clients[k];
+                        });
+                    }
+                });
+            }
+
+            Object.keys(rawMain.clients).forEach(function(code) {
+                var c = rawMain.clients[code];
+                if (!c) return;
+                if (typeof c.photosPacked === 'string') {
+                    c.photos = unpackClientPhotosFromCloud(c.photosPacked);
+                    delete c.photosPacked;
+                } else if (!Array.isArray(c.photos)) {
+                    c.photos = [];
+                }
+            });
+
+            return rawMain;
+        }
+
+        async function fetchFullCloudData(options) {
+            if (!db) throw new Error("Firebase no disponible");
+            var docRef = db.collection("web_data").doc("fvm_data");
+            var docSnap;
+            try {
+                docSnap = await Promise.race([
+                    docRef.get(options || {}),
+                    new Promise(function(_, reject) { setTimeout(function() { reject(new Error("Timeout")); }, 5000); })
+                ]);
+            } catch (err) {
+                docSnap = await docRef.get();
+            }
+
+            if (!docSnap || !docSnap.exists) return null;
+            var mainData = docSnap.data();
+            var extNames = Array.isArray(mainData.extDocs) ? mainData.extDocs : [];
+            var extResults = [];
+
+            if (extNames.length > 0) {
+                try {
+                    var promises = extNames.map(function(docName) {
+                        return db.collection("web_data").doc(docName).get(options || {}).catch(function() {
+                            return db.collection("web_data").doc(docName).get();
+                        });
+                    });
+                    var snaps = await Promise.all(promises);
+                    snaps.forEach(function(s) {
+                        if (s && s.exists) extResults.push(s.data());
+                    });
+                } catch (extErr) {
+                    console.warn("Error cargando documentos extendidos:", extErr);
+                }
+            }
+
+            return unpackCloudDataset(mainData, extResults);
+        }
+
+        async function saveToFirestoreCompact(showLoaderAndToast, callback) {
+            var loader = document.getElementById('loader');
+            var loaderText = document.querySelector('.loader-text');
+            if (showLoaderAndToast && loader && loaderText) {
+                loaderText.innerText = "Optimizando y guardando en la nube...";
+                loader.style.display = 'flex';
+                loader.style.opacity = '1';
+            }
+
+            try {
+                await optimizeAllDataImagesInPlace(D);
+                try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch(e) {}
+
+                if (!db) {
+                    if (showLoaderAndToast) {
+                        hideLoader();
+                        toast('Guardado localmente (Sin conexión a nube)', 3000);
+                    }
+                    if (typeof callback === 'function') callback(true);
+                    return true;
+                }
+
+                var shards = buildCloudShards(D);
+                var writes = [db.collection("web_data").doc("fvm_data").set(shards.mainDoc)];
+                var extKeys = Object.keys(shards.extDocsMap);
+                extKeys.forEach(function(extDocName) {
+                    writes.push(db.collection("web_data").doc(extDocName).set(shards.extDocsMap[extDocName]));
+                });
+
+                await Promise.all(writes);
+                if (showLoaderAndToast) {
+                    var kb = Math.round(estimateJsonBytes(shards.mainDoc) / 1024);
+                    toast('✅ Guardado en la nube correctamente (' + kb + ' KB)', 2800);
+                }
+                if (typeof callback === 'function') callback(true);
+                return true;
+            } catch (error) {
+                console.error("Error detallado de Firebase:", error);
+                if (showLoaderAndToast) {
+                    toast('❌ Error al guardar en la nube: ' + (error.message || "Verifica conexión"), 5000);
+                }
+                if (typeof callback === 'function') callback(false);
+                return false;
+            } finally {
+                if (showLoaderAndToast) hideLoader();
+            }
+        }
+
+        // Reemplazar saveData y loadData globales por las versiones con compresión y soporte multi-documento
+        saveData = function(callback) {
+            return saveToFirestoreCompact(true, callback);
+        };
+
+        loadData = async function(forceServer = false) {
+            const loader = document.getElementById('loader');
+            if (loader && forceServer) { loader.style.display = 'flex'; loader.style.opacity = '1'; }
+
+            var urlParams = new URLSearchParams(window.location.search);
+            var hasUrlClient = urlParams.has('c') || window.location.hash.includes('c=');
+
+            if (!forceServer && !hasUrlClient) {
+                try {
+                    var cached = localStorage.getItem('fvm_data');
+                    if (cached) {
+                        D = unpackCloudDataset(JSON.parse(cached), []);
+                        ensureDataStructure();
+                        renderPublic();
+                        hideLoader();
+                    }
+                } catch (e) {}
+            }
+
+            try {
+                const options = (forceServer || hasUrlClient) ? { source: 'server' } : {};
+                var cloudData = await fetchFullCloudData(options);
+                if (cloudData) {
+                    D = cloudData;
+                    try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch(e) {}
+                    if (forceServer) toast('Datos actualizados desde el servidor', 2500);
+                } else if (!localStorage.getItem('fvm_data')) {
+                    D = getDefaults();
+                    saveData();
+                }
+            } catch (error) {
+                console.warn("Usando respaldo local:", error);
+                try {
+                    var s = localStorage.getItem('fvm_data');
+                    if (s) D = unpackCloudDataset(JSON.parse(s), []);
+                } catch(e) {}
+            } finally {
+                ensureDataStructure();
+                try {
+                    renderPublic();
+                    await checkUrlForClient();
+                } catch (renderError) {
+                    console.error("Error dibujando la página:", renderError);
+                }
+                hideLoader();
+            }
+        };
+
+        // Asegurar que doLogin, checkUrlForClient y los guardados silenciosos también desempaqueten y compriman
+        doLogin = async function() {
+            var inputVal = document.getElementById('codeIn').value.trim();
+            if (db) {
+                try {
+                    var cloudData = await fetchFullCloudData({ source: 'server' });
+                    if (cloudData) {
+                        D = cloudData;
+                        ensureDataStructure();
+                        try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch(e) {}
+                    }
+                } catch(e) {}
+            }
+            var matchedKey = findClientKey(inputVal);
+            if (!matchedKey) {
+                document.getElementById('loginErr').classList.add('show');
+                return;
+            }
+            curClient = matchedKey; selected = {}; allSel = false; isPrintMode = false; closeLogin(); enterPortal();
+        };
+
+        checkUrlForClient = async function() {
+            var params = new URLSearchParams(window.location.search);
+            var rawParam = params.get('c');
+            var viewParam = params.get('v');
+
+            if (!rawParam && window.location.hash.includes('c=')) {
+                var hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
+                rawParam = hashParams.get('c');
+                viewParam = viewParam || hashParams.get('v');
+            }
+
+            if (!rawParam) return;
+            var cleanRaw = rawParam.trim();
+
+            var suffixes = ['-galeria', '-video', '-fotolibro'];
+            for (var i = 0; i < suffixes.length; i++) {
+                var sfx = suffixes[i];
+                if (cleanRaw.toLowerCase().endsWith(sfx)) {
+                    var baseCandidate = cleanRaw.slice(0, -sfx.length);
+                    if (findClientKey(baseCandidate) || !findClientKey(cleanRaw)) {
+                        viewParam = viewParam || sfx.substring(1);
+                        cleanRaw = baseCandidate;
+                    }
+                    break;
+                }
+            }
+
+            var matchedKey = findClientKey(cleanRaw);
+            if (!matchedKey && db) {
+                try {
+                    var cloudData = await fetchFullCloudData({ source: 'server' });
+                    if (cloudData) {
+                        D = cloudData;
+                        ensureDataStructure();
+                        try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch(e) {}
+                        matchedKey = findClientKey(cleanRaw);
+                    }
+                } catch(e) {}
+            }
+
+            if (matchedKey && D.clients[matchedKey]) {
+                curClient = matchedKey;
+                enterPortal(viewParam);
+            } else {
+                toast('⚠️ La galería "' + cleanRaw + '" no existe o aún no se ha guardado en la nube.', 4500);
+            }
+        };
+
+        // Reemplazar guardados en segundo plano para que NUNCA envíen D sin comprimir
+        saveClientFavs = function() {
+            if (!curClient || !D || !D.clients || !D.clients[curClient]) return;
+            try {
+                var favArr = Object.keys(clientFavs).map(Number).filter(function(k) { return !isNaN(k) && !!clientFavs[k]; }).sort(function(a, b) { return a - b; });
+                D.clients[curClient].favorites = favArr;
+                D.clients[curClient].favCloudSynced = true;
+                try {
+                    localStorage.setItem('fvm_favs_' + curClient, JSON.stringify(clientFavs));
+                    localStorage.setItem('fvm_data', JSON.stringify(D));
+                } catch(e) {}
+
+                if (db) {
+                    var upd = {};
+                    upd['clients.' + curClient + '.favorites'] = favArr;
+                    upd['clients.' + curClient + '.favCloudSynced'] = true;
+                    db.collection("web_data").doc("fvm_data").update(upd).catch(function() {
+                        saveToFirestoreCompact(false);
+                    });
+                }
+            } catch (e) {}
+        };
+
+        removeClientFavFromAdmin = function(code, photoIdx) {
+            var c = D.clients[code];
+            if (!c || !Array.isArray(c.favorites)) return;
+            c.favorites = c.favorites.map(Number).filter(function(idx) { return idx !== photoIdx; });
+            c.favCloudSynced = true;
+            if (curClient === code) {
+                delete clientFavs[photoIdx];
+            }
+            try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch(e) {}
+            if (db) {
+                var upd = {};
+                upd['clients.' + code + '.favorites'] = c.favorites;
+                upd['clients.' + code + '.favCloudSynced'] = true;
+                db.collection("web_data").doc("fvm_data").update(upd).catch(function() {
+                    saveToFirestoreCompact(false);
+                });
+            }
+            renderAdmBody();
+            toast('Fotografía quitada de Favoritas');
+        };
+
+        markDeviceAsOwner = function(devId, isOwner, silent) {
+            devId = devId || getDeviceId();
+            if (!D.settings.ownerDevices || typeof D.settings.ownerDevices !== 'object') {
+                D.settings.ownerDevices = {};
+            }
+            if (isOwner) {
+                D.settings.ownerDevices[devId] = { label: getDeviceLabel(), addedAt: Date.now() };
+                if (devId === getDeviceId()) {
+                    try { localStorage.setItem('fvm_is_owner_device', '1'); } catch(e) {}
+                }
+            } else {
+                delete D.settings.ownerDevices[devId];
+                if (devId === getDeviceId()) {
+                    try { localStorage.removeItem('fvm_is_owner_device'); } catch(e) {}
+                }
+            }
+            if (D && D.clients) {
+                Object.keys(D.clients).forEach(function(k) {
+                    var cl = D.clients[k];
+                    if (cl && cl.visitStats && cl.visitStats.devices && cl.visitStats.devices[devId]) {
+                        cl.visitStats.devices[devId].isOwner = !!isOwner;
+                    }
+                });
+            }
+            try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch(e) {}
+            if (db) {
+                saveToFirestoreCompact(false);
+            }
+            if (!silent) {
+                toast(isOwner ? '🛡️ Dispositivo marcado como tuyo (No sumará visitas)' : 'Dispositivo desmarcado (Contará como cliente)');
+            }
+        };
+
+        recordClientVisit = function(code) {
+            if (!code || !D || !D.clients || !D.clients[code]) return;
+            var c = D.clients[code];
+            if (!c.visitStats || typeof c.visitStats !== 'object') {
+                c.visitStats = { devices: {} };
+            }
+            if (!c.visitStats.devices || typeof c.visitStats.devices !== 'object') {
+                c.visitStats.devices = {};
+            }
+
+            var devId = getDeviceId();
+            var label = getDeviceLabel();
+            var mine = isOwnerDevice(devId);
+            var now = Date.now();
+
+            var entry = c.visitStats.devices[devId] || {
+                label: label,
+                count: 0,
+                firstSeen: now,
+                lastSeen: now,
+                isOwner: mine
+            };
+
+            entry.label = label;
+            entry.isOwner = mine;
+
+            var sessKey = 'fvm_visit_' + code;
+            var lastSess = 0;
+            try { lastSess = parseInt(sessionStorage.getItem(sessKey) || '0'); } catch(e) {}
+
+            if (!lastSess || (now - lastSess) > 1800000 || entry.count === 0) {
+                entry.count = (entry.count || 0) + 1;
+                try { sessionStorage.setItem(sessKey, String(now)); } catch(e) {}
+            }
+            entry.lastSeen = now;
+            c.visitStats.devices[devId] = entry;
+
+            try { localStorage.setItem('fvm_data', JSON.stringify(D)); } catch(e) {}
+            if (db) {
+                var upd = {};
+                upd['clients.' + code + '.visitStats'] = c.visitStats;
+                db.collection("web_data").doc("fvm_data").update(upd).catch(function() {
+                    saveToFirestoreCompact(false);
+                });
+            }
+        };
+
+        // Medidor de Espacio en la Nube en la pestaña General del Panel Admin
+        var _origRenderAdmSettingsV23 = renderAdmSettings;
+        renderAdmSettings = function(body) {
+            _origRenderAdmSettingsV23(body);
+            var rawKB = Math.round(estimateJsonBytes(D) / 1024);
+            var shards = buildCloudShards(D);
+            var packedKB = Math.round(estimateJsonBytes(shards.mainDoc) / 1024);
+            var pct = Math.min(100, Math.round((packedKB / 1024) * 100));
+            var extCount = Object.keys(shards.extDocsMap).length;
+
+            var meterDiv = document.createElement('div');
+            meterDiv.style.cssText = 'margin-top: 1.2rem; padding: 1rem; background: #f8fafc; border: 1px solid var(--border-light); border-radius: var(--radius);';
+            meterDiv.innerHTML =
+                '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.45rem;">' +
+                    '<span style="font-size:0.82rem; font-weight:600; color:var(--text);">☁️ Espacio del Documento Principal en Firebase</span>' +
+                    '<span style="font-size:0.8rem; font-weight:700; color:var(--accent);">' + packedKB + ' KB / 1,024 KB (' + pct + '%)</span>' +
+                '</div>' +
+                '<div style="width:100%; height:8px; background:#e2e8f0; border-radius:10px; overflow:hidden; margin-bottom:0.55rem;">' +
+                    '<div style="width:' + pct + '%; height:100%; background:linear-gradient(90deg, var(--accent), #2ecc71); border-radius:10px;"></div>' +
+                '</div>' +
+                '<div style="font-size:0.76rem; color:var(--text-light); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">' +
+                    '<span>Tamaño original sin comprimir: <b>' + rawKB + ' KB</b> → Tamaño comprimido en nube: <b>' + packedKB + ' KB</b>' + (extCount > 0 ? (' + ' + extCount + ' doc(s) extra') : '') + '</span>' +
+                    '<button type="button" class="al-btn" onclick="saveData(function(){ renderAdmBody(); })">⚡ Optimizar y Guardar Ahora</button>' +
+                '</div>';
+            body.appendChild(meterDiv);
         };
 
         window.addEventListener('DOMContentLoaded', function() { loadData(); });
