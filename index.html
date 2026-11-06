@@ -358,12 +358,25 @@
         .fab-print:hover { transform: scale(1.04); background: var(--accent-hover); }
         .fab-print svg { width: 20px; height: 20px; fill: #fff; flex-shrink: 0; }
 
-        /* Video Portal View */
-        #cpVideoView { background: var(--c-bg); min-height: 100vh; min-height: 100dvh; padding-top: calc(5rem + var(--safe-top)); position: relative; }
-        .vid-sec { max-width: var(--max-w); margin: 0 auto; padding: 0 1.2rem 3rem; }
-        .vid-wrap { position: relative; width: 100%; padding-bottom: 56.25%; border-radius: var(--radius-lg); overflow: hidden; background: #000; box-shadow: 0 20px 50px rgba(0,0,0,0.6); border: 1px solid var(--c-border); }
+        /* Video Portal View (Mini Tráiler Principal + Película Completa y Más Videos) */
+        #cpVideoView { background: var(--c-bg); min-height: 100vh; min-height: 100dvh; padding-top: calc(4.8rem + var(--safe-top)); position: relative; }
+        .vid-sec { max-width: 1020px; margin: 0 auto; padding: 0 1.2rem 4rem; }
+        .vid-wrap { position: relative; width: 100%; padding-bottom: 56.25%; border-radius: var(--radius-lg); overflow: hidden; background: #000; box-shadow: 0 20px 50px rgba(0,0,0,0.65); border: 1px solid var(--c-border); }
         .vid-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        .vid-title { font-family: var(--fh); font-size: 1.8rem; margin-bottom: 1.2rem; color: var(--c-text); text-align: center; }
+        .vid-title { font-family: var(--fh); font-size: clamp(1.35rem, 3vw, 1.85rem); margin-bottom: 0.9rem; color: var(--c-text); text-align: center; display: flex; align-items: center; justify-content: center; gap: 0.55rem; flex-wrap: wrap; }
+        .vid-badge-main { display: inline-flex; align-items: center; gap: 0.3rem; background: rgba(201, 164, 108, 0.2); border: 1px solid var(--c-accent); color: var(--c-accent); font-family: var(--fb); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; padding: 0.22rem 0.7rem; border-radius: 50px; }
+        .vid-tabs-bar { display: flex; gap: 0.55rem; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 1.25rem; }
+        .vid-tab-btn { background: var(--c-surface); color: var(--c-muted); border: 1px solid var(--c-border); padding: 0.55rem 1.15rem; border-radius: 50px; cursor: pointer; font-family: var(--fb); font-size: 0.82rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.45rem; transition: 0.25s; min-height: 40px; touch-action: manipulation; }
+        .vid-tab-btn:hover { border-color: var(--c-accent); color: var(--c-text); }
+        .vid-tab-btn.active { background: var(--c-accent); color: #0a0a0c; border-color: var(--c-accent); font-weight: 600; box-shadow: 0 4px 16px rgba(201, 164, 108, 0.3); }
+        .vid-next-card { margin-top: 1.4rem; background: linear-gradient(145deg, rgba(26, 26, 32, 0.95), rgba(16, 16, 20, 0.98)); border: 1px solid rgba(201, 164, 108, 0.35); border-radius: var(--radius-lg); padding: 1.25rem 1.4rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+        .vid-next-info h4 { font-family: var(--fh); font-size: 1.2rem; color: #fff; margin-bottom: 0.2rem; }
+        .vid-next-info p { font-size: 0.84rem; color: var(--c-muted); margin: 0; }
+        .vid-playlist-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.8rem; margin-top: 1.2rem; }
+        .vid-pl-item { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 0.9rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; cursor: pointer; transition: 0.22s; }
+        .vid-pl-item:hover { border-color: var(--c-accent); transform: translateY(-2px); }
+        .vid-pl-item.active { border-color: var(--c-accent); background: rgba(201, 164, 108, 0.1); }
+        .access-card.trailer-featured { border: 1.5px solid var(--c-accent); background: linear-gradient(145deg, rgba(28, 25, 20, 0.95), rgba(18, 18, 22, 0.98)); position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
 
         /* Order Bar & Modal */
         .order-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 200; background: rgba(12, 12, 15, .96); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-top: 1px solid var(--c-border); padding: .8rem 1.2rem calc(.8rem + var(--safe-bottom)); transform: translateY(100%); transition: transform .35s cubic-bezier(.4, 0, .2, 1); }
@@ -779,8 +792,10 @@
         <div id="cpVideoView" style="display:none">
             <button class="btn-regresar-fijo" id="btnBackVideo" onclick="closeVideoView()">← Regresar al menú</button>
             <section class="vid-sec">
-                <p class="vid-title" id="vidTitle"></p>
+                <div id="vidTabsBar" class="vid-tabs-bar"></div>
+                <div class="vid-title" id="vidTitle"></div>
                 <div class="vid-wrap" id="vidWrap"></div>
+                <div id="vidNextContainer"></div>
             </section>
         </div>
 
@@ -932,7 +947,7 @@
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
-                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.1</span></h2>
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.2</span></h2>
                 <button class="adm-x" onclick="closeAdm()">×</button>
             </div>
             <div class="adm-tabs" id="admTabs">
@@ -4672,6 +4687,440 @@
                 h += ('<div class="al-item" style="flex-wrap:wrap;' + (c.isHidden ? ' background:#fffafa; border-color:#fecaca;' : '') + '"><div class="al-item-info"><div class="al-item-t">' + esc(c.name) + (c.isHidden ? ' <span style="font-size:0.75rem; color:#c0392b; font-weight:600;">(OCULTO)</span>' : '') + '</div><div class="al-item-s">' + esc(c.event) + ' · Código: <strong>' + esc(code) + '</strong></div><div style="margin-top:.35rem; display:flex; gap:0.35rem; flex-wrap:wrap;">' + badges + '</div></div><div class="al-acts" style="flex-wrap:wrap">' + toggleHideBtn + '<button class="al-btn" onclick="viewClientStats(\'' + code + '\')">📊 Accesos / ♥</button><button class="al-btn" onclick="copyClientUrl(\'' + code + '\')">🔗 Copiar Link</button><button class="al-btn" onclick="editClient(\'' + code + '\')">Editar</button>' + (c.hasPhotobook ? '<button class="al-btn" onclick="editPhotobook(\'' + code + '\')">Fotolibro</button>' : '') + '<button class="al-btn del" onclick="delClient(\'' + code + '\')">Eliminar</button></div></div>');
             });
             body.innerHTML = h;
+        };
+
+        // =========================================================================
+        // VERSIÓN 2.2:
+        // 1. Apartado Principal de "Mini Tráiler" + "Video Completo" y "Más Videos"
+        // 2. Primero se muestra el Mini Tráiler y después permite pasar al Video Completo
+        // =========================================================================
+        var tempExtraVideos = [];
+        var currentActiveVideoIdx = 0;
+
+        function toVideoIframeHtml(raw) {
+            if (!raw || typeof raw !== 'string') return '';
+            var clean = raw.trim();
+            if (!clean) return '';
+            if (clean.includes('<iframe')) return clean;
+            if (clean.includes('drive.google.com/file/d/')) {
+                var m = clean.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (m) return '<iframe src="https://drive.google.com/file/d/' + m[1] + '/preview" allow="autoplay; fullscreen" allowfullscreen width="100%" height="100%" frameborder="0"></iframe>';
+            } else if (clean.includes('drive.google.com') && clean.includes('id=')) {
+                var m2 = clean.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+                if (m2) return '<iframe src="https://drive.google.com/file/d/' + m2[1] + '/preview" allow="autoplay; fullscreen" allowfullscreen width="100%" height="100%" frameborder="0"></iframe>';
+            } else if (clean.includes('youtu.be/') || clean.includes('youtube.com/')) {
+                var ytM = clean.match(/(?:youtu\.be\/|v=|\/v\/|\/embed\/|\/shorts\/)([^&?\s"/]+)/);
+                if (ytM) return '<iframe src="https://www.youtube.com/embed/' + ytM[1] + '?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen width="100%" height="100%" frameborder="0"></iframe>';
+            }
+            if (clean.startsWith('http')) {
+                return '<iframe src="' + esc(clean) + '" allow="autoplay; fullscreen" allowfullscreen width="100%" height="100%" frameborder="0"></iframe>';
+            }
+            return clean;
+        }
+
+        function getClientVideoItems(c) {
+            var list = [];
+            if (!c || !c.hasVideo || !c.video) return list;
+            var v = c.video;
+
+            // 1. Primero SIEMPRE el Mini Tráiler (si está configurado) como apartado principal
+            var trHtml = toVideoIframeHtml(v.trailerId || '');
+            if (trHtml) {
+                list.push({
+                    key: 'trailer',
+                    isTrailer: true,
+                    badge: '✨ Apartado Principal · Mini Tráiler',
+                    shortTab: '✨ Mini Tráiler',
+                    title: (v.trailerTitle && v.trailerTitle.trim()) ? v.trailerTitle.trim() : 'Mini Tráiler Oficial',
+                    html: trHtml
+                });
+            }
+
+            // 2. Después el Video / Película Completa
+            var fullHtml = toVideoIframeHtml(v.youtubeId || '');
+            if (fullHtml) {
+                list.push({
+                    key: 'full',
+                    isTrailer: false,
+                    badge: list.length > 0 ? '🎬 Película Completa' : '🎬 Video del Evento',
+                    shortTab: '🎬 Video Completo',
+                    title: (v.title && v.title.trim()) ? v.title.trim() : 'Película Completa del Evento',
+                    html: fullHtml
+                });
+            }
+
+            // 3. Videos adicionales (si el administrador agregó más videos)
+            if (Array.isArray(v.extraVideos)) {
+                v.extraVideos.forEach(function(ev, idx) {
+                    if (!ev || !ev.url) return;
+                    var evHtml = toVideoIframeHtml(ev.url);
+                    if (evHtml) {
+                        var t = (ev.title && ev.title.trim()) ? ev.title.trim() : ('Video Adicional ' + (idx + 1));
+                        list.push({
+                            key: 'extra_' + idx,
+                            isTrailer: false,
+                            badge: '📹 Video Adicional',
+                            shortTab: '📹 ' + t,
+                            title: t,
+                            html: evHtml
+                        });
+                    }
+                });
+            }
+            return list;
+        }
+
+        getActiveItemsCount = function(c) {
+            if (!c) return 0;
+            var count = 0;
+            if (c.hasVideo && getClientVideoItems(c).length > 0) count++;
+            if (c.hasPhotos && c.photos && c.photos.length) count++;
+            if (c.hasPhotobook) {
+                var pb = c.photobook;
+                var filledCount = pb ? ((pb.cover ? 1 : 0) + (pb.spreads ? pb.spreads.filter(function(s){ return !!s; }).length : 0)) : 0;
+                if (filledCount > 0) count++;
+            }
+            return count;
+        };
+
+        // Actualizar las tarjetas del menú principal del cliente para destacar primero el Mini Tráiler y luego el Video Completo
+        renderAccessCards = function() {
+            var c = (curClient && D && D.clients) ? D.clients[curClient] : null;
+            if (!c) return;
+            var hiddenLock = document.getElementById('cpHiddenLock');
+            var banner = document.getElementById('cpExpireBanner');
+            var lock = document.getElementById('cpExpiredLock');
+            var container = document.getElementById('accessCardsContainer');
+            var cards = document.getElementById('accessCards');
+
+            if (c.isHidden) {
+                clearInterval(expireTicker);
+                if (banner) banner.style.display = 'none';
+                if (lock) lock.style.display = 'none';
+                if (container) container.style.display = 'none';
+                if (hiddenLock) {
+                    hiddenLock.style.display = 'block';
+                    hiddenLock.outerHTML = '<div id="cpHiddenLock">' + buildHiddenUnavailableHTML('') + '</div>';
+                }
+                return;
+            } else {
+                if (hiddenLock) hiddenLock.style.display = 'none';
+            }
+
+            var cardsHtml = '';
+            clearInterval(expireTicker);
+
+            if (c.expireAt) {
+                var isExpired = (c.expireAt - Date.now()) < 0;
+                updateDynamicExpireUI();
+                expireTicker = setInterval(updateDynamicExpireUI, 60000);
+                if (isExpired) {
+                    container.style.display = 'none';
+                    lock.style.display = 'block';
+                    return;
+                } else {
+                    container.style.display = 'block';
+                    lock.style.display = 'none';
+                }
+            } else {
+                banner.style.display = 'none';
+                lock.style.display = 'none';
+                container.style.display = 'block';
+            }
+
+            var vItems = getClientVideoItems(c);
+            var hasTrailer = vItems.some(function(x) { return x.key === 'trailer'; });
+            var nonTrailerVideos = vItems.filter(function(x) { return x.key !== 'trailer'; });
+
+            if (hasTrailer) {
+                var trItem = vItems.find(function(x) { return x.key === 'trailer'; });
+                cardsHtml += '<div class="access-card trailer-featured" onclick="openVideoView(\'trailer\')">' +
+                    '<div class="access-card-icon" style="background:rgba(201,164,108,0.18); border:1px solid rgba(201,164,108,0.4);">✨</div>' +
+                    '<div class="access-card-info">' +
+                        '<div style="font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; color:var(--c-accent); margin-bottom:0.2rem;">Apartado Principal · Ver Primero</div>' +
+                        '<h3>' + esc(trItem.title) + '</h3>' +
+                        '<p>' + (nonTrailerVideos.length > 0 ? 'Mira primero el mini tráiler y después continúa con la película completa' : 'Avance cinematográfico principal de tu evento') + '</p>' +
+                    '</div>' +
+                    '<button class="btn btn-accent btn-sm">▶ Ver Mini Tráiler</button>' +
+                '</div>';
+
+                if (nonTrailerVideos.length > 0) {
+                    var mainFull = nonTrailerVideos[0];
+                    var extraCount = nonTrailerVideos.length - 1;
+                    cardsHtml += '<div class="access-card" onclick="openVideoView(\'full\')">' +
+                        '<div class="access-card-icon">🎬</div>' +
+                        '<div class="access-card-info">' +
+                            '<h3>' + esc(mainFull.title) + (extraCount > 0 ? ' (+' + extraCount + ' más)' : '') + '</h3>' +
+                            '<p>Película completa y videos adicionales de tu evento</p>' +
+                        '</div>' +
+                        '<button class="btn btn-outline btn-sm" style="color:var(--c-text); border-color:var(--c-border);">Ver Película Completa →</button>' +
+                    '</div>';
+                }
+            } else if (vItems.length > 0) {
+                var firstV = vItems[0];
+                cardsHtml += '<div class="access-card" onclick="openVideoView(0)">' +
+                    '<div class="access-card-icon">🎬</div>' +
+                    '<div class="access-card-info">' +
+                        '<h3>Película del Evento</h3>' +
+                        '<p>' + esc(firstV.title) + (vItems.length > 1 ? ' (' + vItems.length + ' videos disponibles)' : '') + '</p>' +
+                    '</div>' +
+                    '<button class="btn btn-accent btn-sm">Reproducir video</button>' +
+                '</div>';
+            }
+
+            if (c.hasPhotos && c.photos && c.photos.length) {
+                cardsHtml += '<div class="access-card" onclick="openGalleryView()"><div class="access-card-icon">📸</div><div class="access-card-info"><h3>Galería Fotográfica</h3><p>' + c.photos.length + ' fotografías en alta resolución</p></div><button class="btn btn-accent btn-sm">Abrir galería</button></div>';
+            }
+            if (c.hasPhotobook) {
+                var pb = c.photobook || { cover: null, spreads: [null], hasBackCover: false, back: null };
+                var filledCount = (pb.cover ? 1 : 0) + pb.spreads.filter(function(s) { return !!s; }).length + (pb.hasBackCover && pb.back ? 1 : 0);
+                cardsHtml += '<div class="access-card" ' + (filledCount > 0 ? 'onclick="openPhotobookView()"' : '') + '><div class="access-card-icon">📖</div><div class="access-card-info"><h3>Fotolibro Interactivo 3D</h3><p>' + (filledCount > 0 ? filledCount + ' lienzos diseñados' : 'Próximamente disponible') + '</p></div><button class="btn btn-accent btn-sm"' + (filledCount === 0 ? ' disabled style="opacity:.4;cursor:default"' : '') + '>Ver fotolibro</button></div>';
+            }
+            if (!cardsHtml) {
+                cardsHtml = '<div class="adm-empty">Aún estamos preparando el material digital de tu evento. Vuelve pronto.</div>';
+            }
+            cards.innerHTML = cardsHtml;
+        };
+
+        function selectClientVideo(idx, doScroll) {
+            var c = (curClient && D && D.clients) ? D.clients[curClient] : null;
+            if (!c) return;
+            var vItems = getClientVideoItems(c);
+            if (!vItems.length) {
+                document.getElementById('vidTabsBar').innerHTML = '';
+                document.getElementById('vidTitle').textContent = 'Tu video';
+                document.getElementById('vidWrap').innerHTML = '<p style="color:#fff; text-align:center; padding: 2rem;">No hay video disponible.</p>';
+                document.getElementById('vidNextContainer').innerHTML = '';
+                return;
+            }
+            if (idx < 0 || idx >= vItems.length) idx = 0;
+            currentActiveVideoIdx = idx;
+            var curItem = vItems[idx];
+
+            // 1. Barra superior de capítulos / apartados de video (si hay 2 o más videos)
+            var tabsBar = document.getElementById('vidTabsBar');
+            if (vItems.length > 1) {
+                var tHtml = '';
+                vItems.forEach(function(item, i) {
+                    var cls = 'vid-tab-btn' + (i === idx ? ' active' : '');
+                    tHtml += '<button type="button" class="' + cls + '" onclick="selectClientVideo(' + i + ', true)">' +
+                        '<span>' + (i + 1) + '. ' + esc(item.shortTab) + '</span>' +
+                    '</button>';
+                });
+                tabsBar.innerHTML = tHtml;
+                tabsBar.style.display = 'flex';
+            } else {
+                tabsBar.innerHTML = '';
+                tabsBar.style.display = 'none';
+            }
+
+            // 2. Título e insignia del video actual
+            var titleEl = document.getElementById('vidTitle');
+            titleEl.innerHTML = '<span class="vid-badge-main">' + esc(curItem.badge) + '</span> <span>' + esc(curItem.title) + '</span>';
+
+            // 3. Reproductor
+            document.getElementById('vidWrap').innerHTML = curItem.html;
+
+            // 4. Tarjeta inferior para pasar del Mini Tráiler al Video Completo (y lista de videos adicionales)
+            var nextWrap = document.getElementById('vidNextContainer');
+            if (vItems.length > 1) {
+                var nHtml = '';
+                var nextIdx = (idx + 1 < vItems.length) ? (idx + 1) : 0;
+                var nextItem = vItems[nextIdx];
+
+                if (curItem.isTrailer && nextIdx > 0) {
+                    nHtml += '<div class="vid-next-card">' +
+                        '<div class="vid-next-info">' +
+                            '<div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:1px; color:var(--c-accent); font-weight:600; margin-bottom:0.2rem;">Siguiente apartado</div>' +
+                            '<h4>🎬 ' + esc(nextItem.title) + '</h4>' +
+                            '<p>Cuando termines de ver el mini tráiler, toca aquí para reproducir el video completo.</p>' +
+                        '</div>' +
+                        '<button type="button" class="btn btn-accent" onclick="selectClientVideo(' + nextIdx + ', true)">▶ Ver Video Completo →</button>' +
+                    '</div>';
+                } else if (!curItem.isTrailer && vItems[0].isTrailer) {
+                    nHtml += '<div class="vid-next-card" style="border-color:var(--c-border);">' +
+                        '<div class="vid-next-info">' +
+                            '<h4>✨ ' + esc(vItems[0].title) + '</h4>' +
+                            '<p>Puedes volver al apartado principal del Mini Tráiler cuando gustes.</p>' +
+                        '</div>' +
+                        '<button type="button" class="btn btn-outline btn-sm" style="color:var(--c-text); border-color:var(--c-border);" onclick="selectClientVideo(0, true)">← Volver al Mini Tráiler</button>' +
+                    '</div>';
+                }
+
+                if (vItems.length > 2) {
+                    nHtml += '<div style="margin-top:1.4rem;"><div style="font-size:0.76rem; text-transform:uppercase; letter-spacing:1.2px; color:var(--c-muted); margin-bottom:0.6rem; font-weight:600;">Todos los videos de tu evento (' + vItems.length + ')</div><div class="vid-playlist-grid">';
+                    vItems.forEach(function(item, i) {
+                        var isAct = (i === idx);
+                        nHtml += '<div class="vid-pl-item' + (isAct ? ' active' : '') + '" onclick="selectClientVideo(' + i + ', true)">' +
+                            '<div style="min-width:0;">' +
+                                '<div style="font-size:0.68rem; color:var(--c-accent); text-transform:uppercase; letter-spacing:0.8px; font-weight:600;">' + (item.isTrailer ? '✨ Apartado Principal' : ('Video ' + (i + 1))) + '</div>' +
+                                '<div style="font-family:var(--fh); font-size:1rem; color:var(--c-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + esc(item.title) + '</div>' +
+                            '</div>' +
+                            '<span style="font-size:0.78rem; color:' + (isAct ? 'var(--c-accent)' : 'var(--c-muted)') + '; font-weight:600; white-space:nowrap;">' + (isAct ? '▶ Viendo' : 'Ver →') + '</span>' +
+                        '</div>';
+                    });
+                    nHtml += '</div></div>';
+                }
+                nextWrap.innerHTML = nHtml;
+            } else {
+                nextWrap.innerHTML = '';
+            }
+
+            if (doScroll) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        openVideoView = function(initialTarget) {
+            var c = (curClient && D && D.clients) ? D.clients[curClient] : null;
+            if (!c) return;
+            if (c.isHidden || (c.expireAt && (c.expireAt - Date.now()) < 0)) {
+                showMainView();
+                return;
+            }
+            document.getElementById('cpMainView').style.display = 'none';
+            document.getElementById('cpVideoView').style.display = 'block';
+            document.getElementById('cpGalleryView').style.display = 'none';
+            document.getElementById('cpPhotobookView').style.display = 'none';
+            document.getElementById('cp-ft-main').style.display = 'none';
+            document.getElementById('cpHdrMain').style.display = 'none';
+
+            var vItems = getClientVideoItems(c);
+            var startIdx = 0; // Por defecto siempre abre primero el índice 0 (que es el Mini Tráiler si existe)
+            if (typeof initialTarget === 'number') {
+                startIdx = initialTarget;
+            } else if (initialTarget === 'full') {
+                var fullIdx = vItems.findIndex(function(x) { return x.key === 'full'; });
+                if (fullIdx !== -1) startIdx = fullIdx;
+            } else if (initialTarget === 'trailer') {
+                startIdx = 0;
+            }
+
+            selectClientVideo(startIdx, false);
+            window.scrollTo(0, 0);
+            bindBackButtonsV18();
+            pushUrlState(curClient, 'video');
+        };
+
+        // === PANEL DE ADMINISTRACIÓN: FORMULARIO DE MINI TRÁILER + VIDEO COMPLETO + VIDEOS ADICIONALES ===
+        function renderExtraVideosAdminList() {
+            var listEl = document.getElementById('ce_extraVideosList');
+            if (!listEl) return;
+            if (!tempExtraVideos || !tempExtraVideos.length) {
+                listEl.innerHTML = '';
+                return;
+            }
+            var h = '';
+            tempExtraVideos.forEach(function(ev, idx) {
+                h += '<div style="background:#fff; border:1px solid var(--border); border-radius:8px; padding:0.75rem; margin-bottom:0.55rem; position:relative;">' +
+                    '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">' +
+                        '<span style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">📹 Video Adicional #' + (idx + 1) + '</span>' +
+                        '<button type="button" class="al-btn del" style="min-height:28px; padding:0.15rem 0.55rem; font-size:0.72rem;" onclick="removeExtraClientVideo(' + idx + ')">× Quitar</button>' +
+                    '</div>' +
+                    '<input class="af-i" value="' + esc(ev.title || '') + '" placeholder="Título (Ej. Ceremonia Religiosa / Recepción)" onchange="updateExtraClientVideoTitle(' + idx + ', this.value)" style="margin-bottom:0.45rem; min-height:38px; padding:0.45rem 0.75rem;">' +
+                    '<input class="af-i" value="' + esc(ev.url || '') + '" placeholder="Enlace de Google Drive, YouTube o código iframe..." onchange="updateExtraClientVideoUrl(' + idx + ', this.value)" style="margin-bottom:0; min-height:38px; padding:0.45rem 0.75rem;">' +
+                '</div>';
+            });
+            listEl.innerHTML = h;
+        }
+
+        function addExtraClientVideo() {
+            if (!Array.isArray(tempExtraVideos)) tempExtraVideos = [];
+            tempExtraVideos.push({ title: '', url: '' });
+            renderExtraVideosAdminList();
+        }
+
+        function updateExtraClientVideoTitle(idx, val) {
+            if (tempExtraVideos[idx]) tempExtraVideos[idx].title = val.trim();
+        }
+
+        function updateExtraClientVideoUrl(idx, val) {
+            if (tempExtraVideos[idx]) tempExtraVideos[idx].url = val.trim();
+        }
+
+        function removeExtraClientVideo(idx) {
+            tempExtraVideos.splice(idx, 1);
+            renderExtraVideosAdminList();
+        }
+
+        var _origRenderClientFormV22 = renderClientForm;
+        renderClientForm = function(body) {
+            var isNew = !admState.editId;
+            var c = (!isNew && D.clients[admState.editId]) ? D.clients[admState.editId] : {};
+            var vidObj = c.video || {};
+            tempExtraVideos = Array.isArray(vidObj.extraVideos) ? JSON.parse(JSON.stringify(vidObj.extraVideos)) : [];
+
+            _origRenderClientFormV22(body);
+
+            var vidSec = document.getElementById('ce_videoSec');
+            if (vidSec) {
+                vidSec.innerHTML =
+                    '<div style="background:#fffdf9; border:1.5px solid var(--accent); border-radius:var(--radius); padding:0.95rem; margin-bottom:1rem;">' +
+                        '<label class="af-l" style="color:var(--accent); font-size:0.84rem; margin-bottom:0.25rem;">✨ 1. Apartado Principal: Mini Tráiler / Highlight (Se muestra primero)</label>' +
+                        '<p class="adm-hint" style="margin-bottom:0.6rem;">Si agregas un Mini Tráiler aquí, será el <b>apartado principal</b> que verá primero el cliente al entrar, y después podrá pasar a ver el Video Completo.</p>' +
+                        '<label class="af-l">Título del Mini Tráiler</label>' +
+                        '<input class="af-i" id="ce_trailerTitle" value="' + esc(vidObj.trailerTitle || 'Mini Tráiler Oficial') + '" placeholder="Mini Tráiler Oficial" style="margin-bottom:0.6rem;">' +
+                        '<label class="af-l">Enlace de Google Drive, YouTube o Iframe del Mini Tráiler</label>' +
+                        '<textarea class="af-i af-ta" id="ce_trailerId" style="min-height:70px; margin-bottom:0;" placeholder="Pega aquí el link de Google Drive, YouTube o iframe del Mini Tráiler...">' + esc(vidObj.trailerId || '') + '</textarea>' +
+                    '</div>' +
+                    '<div style="background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:0.95rem; margin-bottom:0.85rem;">' +
+                        '<label class="af-l" style="font-size:0.84rem; color:var(--text); margin-bottom:0.5rem;">🎬 2. Video Completo / Película Principal del Evento</label>' +
+                        '<label class="af-l">Título del Video Completo</label>' +
+                        '<input class="af-i" id="ce_vidTitle" value="' + esc(vidObj.title || 'Película Completa del Evento') + '" placeholder="Película Completa del Evento" style="margin-bottom:0.6rem;">' +
+                        '<label class="af-l">Enlace de Google Drive, YouTube o Iframe del Video Completo</label>' +
+                        '<textarea class="af-i af-ta" id="ce_ytId" style="min-height:75px; margin-bottom:0;" placeholder="Pega aquí el link de Google Drive, YouTube o iframe de la Película Completa...">' + esc(vidObj.youtubeId || '') + '</textarea>' +
+                    '</div>' +
+                    '<div id="ce_extraVideosList"></div>' +
+                    '<button type="button" class="adm-add-btn" style="margin-bottom:0;" onclick="addExtraClientVideo()">+ Agregar otro video adicional (Ej. Ceremonia, Fiesta, Vals)</button>';
+
+                renderExtraVideosAdminList();
+            }
+        };
+
+        var _prevSaveClientV22 = saveClient;
+        saveClient = function(oldCode) {
+            var codeEl = document.getElementById('ce_code');
+            var code = codeEl ? codeEl.value.trim().toLowerCase().replace(/\s+/g, '') : '';
+            var hasVideoEl = document.getElementById('ce_hasVideo');
+            var hasVid = hasVideoEl ? !!hasVideoEl.checked : false;
+
+            var trTitleEl = document.getElementById('ce_trailerTitle');
+            var trIdEl = document.getElementById('ce_trailerId');
+            var fullTitleEl = document.getElementById('ce_vidTitle');
+            var fullIdEl = document.getElementById('ce_ytId');
+
+            var trTitle = trTitleEl ? trTitleEl.value.trim() : 'Mini Tráiler Oficial';
+            var trRaw = trIdEl ? trIdEl.value.trim() : '';
+            var fullTitle = fullTitleEl ? fullTitleEl.value.trim() : 'Película Completa del Evento';
+            var fullRaw = fullIdEl ? fullIdEl.value.trim() : '';
+
+            var trIframe = toVideoIframeHtml(trRaw);
+            var fullIframe = toVideoIframeHtml(fullRaw);
+            var cleanExtras = (tempExtraVideos || []).filter(function(ev) { return ev && ev.url && ev.url.trim(); }).map(function(ev, i) {
+                return {
+                    title: (ev.title && ev.title.trim()) ? ev.title.trim() : ('Video Adicional ' + (i + 1)),
+                    url: toVideoIframeHtml(ev.url.trim())
+                };
+            });
+
+            _prevSaveClientV22(oldCode);
+
+            if (code && D.clients[code]) {
+                D.clients[code].video = hasVid ? {
+                    trailerTitle: trTitle || 'Mini Tráiler Oficial',
+                    trailerId: trIframe,
+                    title: fullTitle || 'Película Completa del Evento',
+                    youtubeId: fullIframe,
+                    extraVideos: cleanExtras
+                } : { trailerTitle: '', trailerId: '', title: '', youtubeId: '', extraVideos: [] };
+
+                saveData(function(ok) {
+                    if (ok) {
+                        admState.view = 'list';
+                        renderAdmBody();
+                    }
+                });
+            }
         };
 
         window.addEventListener('DOMContentLoaded', function() { loadData(); });
