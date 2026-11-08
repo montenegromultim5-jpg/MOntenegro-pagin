@@ -947,7 +947,7 @@
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
-                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.4</span></h2>
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.5</span></h2>
                 <button class="adm-x" onclick="closeAdm()">×</button>
             </div>
             <div class="adm-tabs" id="admTabs">
@@ -1401,43 +1401,158 @@
             }
         }
 
-        function downloadPhoto(src, name, e) {
-            if(e) { e.preventDefault(); e.stopPropagation(); }
-            var dId = null;
-            if (src.includes('/d/')) {
-                var m = src.match(/\/d\/([^=\/]+)/);
-                if (m) dId = m[1];
-            } else if (src.includes('id=')) {
-                var m = src.match(/id=([a-zA-Z0-9_-]+)/);
-                if (m) dId = m[1];
+        function normalizePhotoFileName(name) {
+            var base = (name && typeof name === 'string' && name.trim()) ? name.trim() : 'fotografia.jpg';
+            base = base.replace(/[\\/:*?"<>|]+/g, '_');
+            if (!/\.(jpe?g|png|webp|heic|gif)$/i.test(base)) {
+                base += '.jpg';
             }
-            
-            var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            return base;
+        }
 
-            if (dId) {
-                var dlUrl = 'https://drive.google.com/uc?export=download&id=' + dId;
-                if (isIOS) {
-                    window.open(dlUrl, '_blank');
-                    toast('Abriendo foto en alta calidad...');
-                } else {
-                    var a = document.createElement('a');
-                    a.href = dlUrl;
-                    a.target = '_blank';
-                    a.rel = 'noopener noreferrer';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    toast('Descargando fotografía...');
+        function saveBlobDirectlyToDevice(blob, fileName) {
+            var blobUrl = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = blobUrl;
+            a.setAttribute('download', fileName);
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(function() {
+                if (a.parentNode) a.parentNode.removeChild(a);
+                URL.revokeObjectURL(blobUrl);
+            }, 8000);
+        }
+
+        function fetchImageViaCanvasBlob(imgUrl) {
+            return new Promise(function(resolve, reject) {
+                var img = new Image();
+                img.crossOrigin = 'anonymous';
+                var timer = setTimeout(function() {
+                    img.onload = null;
+                    img.onerror = null;
+                    reject(new Error('Canvas timeout'));
+                }, 12000);
+                img.onload = function() {
+                    clearTimeout(timer);
+                    try {
+                        var canvas = document.createElement('canvas');
+                        canvas.width = img.naturalWidth || img.width;
+                        canvas.height = img.naturalHeight || img.height;
+                        var ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        canvas.toBlob(function(blob) {
+                            if (blob && blob.size > 1000) resolve(blob);
+                            else reject(new Error('Empty canvas blob'));
+                        }, 'image/jpeg', 0.96);
+                    } catch (err) {
+                        reject(err);
+                    }
+                };
+                img.onerror = function() {
+                    clearTimeout(timer);
+                    reject(new Error('Image load failed'));
+                };
+                img.src = imgUrl;
+            });
+        }
+
+        async function downloadPhoto(src, name, e, explicitDriveId) {
+            if (e) { e.preventDefault(); e.stopPropagation(); }
+            var btnEl = (e && e.currentTarget) ? e.currentTarget : null;
+            var origBtnHtml = btnEl ? btnEl.innerHTML : null;
+            if (btnEl) {
+                btnEl.style.pointerEvents = 'none';
+                btnEl.style.opacity = '0.7';
+            }
+
+            var fileName = normalizePhotoFileName(name);
+            var dId = explicitDriveId || extractDriveId({ src: src || '' });
+
+            toast('⏳ Descargando ' + fileName + ' directamente...', 3500);
+
+            try {
+                var blob = null;
+                var candidateUrls = [];
+
+                if (dId) {
+                    // 1. Si hay API Key de Google Drive configurada, usar el endpoint oficial de descarga directa binaria (CORS habilitado, 100% calidad original)
+                    if (D && D.settings && D.settings.driveApiKey && D.settings.driveApiKey.trim()) {
+                        candidateUrls.push('https://www.googleapis.com/drive/v3/files/' + encodeURIComponent(dId) + '?alt=media&key=' + encodeURIComponent(D.settings.driveApiKey.trim()));
+                    }
+                    // 2. Servidor directo de imágenes de Google (lh3) en resolución original (=s0 y =d) — NO pasa por drive.google.com
+                    candidateUrls.push('https://lh3.googleusercontent.com/d/' + dId + '=d');
+                    candidateUrls.push('https://lh3.googleusercontent.com/d/' + dId + '=s0');
+                    candidateUrls.push('https://lh3.googleusercontent.com/d/' + dId + '=s4096');
+                } else if (src) {
+                    candidateUrls.push(src.replace('w=800', 'w=2400'));
                 }
-            } else {
-                var a = document.createElement('a');
-                a.href = src.replace('w=800','w=1600');
-                a.download = name || 'fotografia.jpg';
-                a.target = '_blank';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                toast('Iniciando descarga...');
+
+                // Intento A: Descarga binaria directa en memoria (fetch -> Blob)
+                for (var i = 0; i < candidateUrls.length; i++) {
+                    try {
+                        var res = await fetch(candidateUrls[i], { mode: 'cors', credentials: 'omit' });
+                        if (res && res.ok) {
+                            var b = await res.blob();
+                            if (b && b.size > 1500 && (!b.type || !b.type.includes('text/html'))) {
+                                blob = b;
+                                break;
+                            }
+                        }
+                    } catch (fetchErr) {}
+                }
+
+                // Intento B: Si fetch fue bloqueado por CORS, extraer el archivo mediante Canvas de alta resolución en la misma página
+                if (!blob && dId) {
+                    var canvasUrls = [
+                        'https://lh3.googleusercontent.com/d/' + dId + '=s0',
+                        'https://lh3.googleusercontent.com/d/' + dId + '=s2400'
+                    ];
+                    for (var j = 0; j < canvasUrls.length; j++) {
+                        try {
+                            blob = await fetchImageViaCanvasBlob(canvasUrls[j]);
+                            if (blob) break;
+                        } catch (cErr) {}
+                    }
+                } else if (!blob && src) {
+                    try {
+                        blob = await fetchImageViaCanvasBlob(src.replace('w=800', 'w=2400'));
+                    } catch (cErr2) {}
+                }
+
+                if (blob) {
+                    saveBlobDirectlyToDevice(blob, fileName);
+                    toast('✅ Descargada en tu dispositivo: ' + fileName, 3000);
+                    return;
+                }
+
+                // Intento C (Respaldo silencioso sin abrir pestañas ni ir a drive.google.com): iframe oculto hacia lh3.googleusercontent.com/d/{ID}=d
+                if (dId) {
+                    var directAttachmentUrl = 'https://lh3.googleusercontent.com/d/' + dId + '=d';
+                    var hiddenFrame = document.createElement('iframe');
+                    hiddenFrame.style.display = 'none';
+                    hiddenFrame.src = directAttachmentUrl;
+                    document.body.appendChild(hiddenFrame);
+                    setTimeout(function() {
+                        if (hiddenFrame.parentNode) hiddenFrame.parentNode.removeChild(hiddenFrame);
+                    }, 15000);
+                    toast('✅ Descarga iniciada: ' + fileName, 3000);
+                } else if (src) {
+                    var aFallback = document.createElement('a');
+                    aFallback.style.display = 'none';
+                    aFallback.href = src;
+                    aFallback.setAttribute('download', fileName);
+                    document.body.appendChild(aFallback);
+                    aFallback.click();
+                    document.body.removeChild(aFallback);
+                    toast('✅ Descarga iniciada: ' + fileName, 3000);
+                }
+            } finally {
+                if (btnEl) {
+                    btnEl.style.pointerEvents = '';
+                    btnEl.style.opacity = '';
+                    if (origBtnHtml !== null) btnEl.innerHTML = origBtnHtml;
+                }
             }
         }
 
@@ -2412,7 +2527,7 @@
         function triggerDownload(i, e) {
             var p = portalPhotos[i];
             if(!p) return;
-            downloadPhoto(p.src || pSrc(p, 1600), p.name, e);
+            downloadPhoto(p.src || pSrc(p, 1600), p.name, e, extractDriveId(p));
         }
 
         function scrollToSet(id, el) {
@@ -2766,7 +2881,7 @@
                     dlBtn.style.display = 'none'; 
                 } else {
                     dlBtn.style.display = '';     
-                    dlBtn.onclick = function(e) { downloadPhoto(p.src || pFull(p), p.name, e); };
+                    dlBtn.onclick = function(e) { downloadPhoto(p.src || pFull(p), p.name, e, extractDriveId(p)); };
                     dlBtn.removeAttribute('href');
                 }
             }
