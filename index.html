@@ -257,7 +257,7 @@
         
         .px-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); grid-auto-rows: 210px; grid-auto-flow: dense; gap: 12px; }
         .px-grid.layout-masonry { display: block; column-count: 3; column-gap: 12px; }
-        .px-grid.layout-masonry .pc { margin-bottom: 12px; break-inside: avoid; -webkit-column-break-inside: avoid; height: auto !important; grid-row: auto !important; }
+        .px-grid.layout-masonry .pc { margin-bottom: 12px; break-inside: avoid; -webkit-column-break-inside: avoid; height: auto !important; min-height: 150px; grid-row: auto !important; }
         .px-grid.layout-masonry .pc img { height: auto !important; object-fit: contain; }
         .px-grid.layout-vertical { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); grid-auto-rows: auto; }
         .px-grid.layout-vertical .pc { aspect-ratio: 4 / 5; grid-row: span 1 !important; height: auto; }
@@ -947,7 +947,7 @@
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
-                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.3</span></h2>
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.4</span></h2>
                 <button class="adm-x" onclick="closeAdm()">×</button>
             </div>
             <div class="adm-tabs" id="admTabs">
@@ -970,7 +970,7 @@
         <button class="lb-n lb-p" onclick="navLB(-1)" title="Foto anterior (Flecha izquierda)">&#8249;</button>
         <button class="lb-n lb-nx" onclick="navLB(1)" title="Siguiente foto (Flecha derecha)">&#8250;</button>
         <div class="lb-stage" id="lbStage">
-            <img id="lbImg" src="" alt="" style="display:none;" draggable="false">
+            <img id="lbImg" src="" alt="" style="display:none;" draggable="false" fetchpriority="high" decoding="async">
             <iframe id="lbVid" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="display:none; width:90%; height:80vh; max-width:1000px; border-radius:8px;"></iframe>
         </div>
         <div class="lb-bot">
@@ -2149,7 +2149,7 @@
                 var rotClass = p.rot ? ' rot-' + p.rot : '';
                 d.className = 'pc' + initOrient;
                 d.innerHTML = `
-                    <img class="${rotClass.trim()}" src="${pSrc(p, 800)}" alt="${esc(p.name || '')}" loading="lazy" onload="handleGridImgLoad(this, ${i})">
+                    <img class="${rotClass.trim()}" src="${pSrc(p, 800)}" alt="${esc(p.name || '')}" loading="lazy" decoding="async" onload="handleGridImgLoad(this, ${i})">
                     <button class="favb on" type="button" onclick="toggleFav(${i}, event)" title="Quitar de Favoritas">
                         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                     </button>
@@ -2359,7 +2359,7 @@
                     d.id = 'pc-' + i;
                     
                     d.innerHTML = `
-                        <img id="gimg-${i}" class="${rotClass.trim()}" src="${pSrc(p, 800)}" alt="${esc(p.name || '')}" loading="lazy" onload="handleGridImgLoad(this, ${i})">
+                        <img id="gimg-${i}" class="${rotClass.trim()}" src="${pSrc(p, 800)}" alt="${esc(p.name || '')}" loading="lazy" decoding="async" onload="handleGridImgLoad(this, ${i})">
                         <button class="favb${isFav ? ' on' : ''}" id="fav-${i}" type="button" onclick="toggleFav(${i}, event)" title="Agregar a Favoritas">
                             <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                         </button>
@@ -2552,6 +2552,26 @@
         var lbHintShown = false;
         var lbAlwaysHD = false;
         var lbCurrentIsHD = false;
+        var lbLoadToken = 0;
+        var lbActivePreloader = null;
+        var lbActiveHdPreloader = null;
+        var LB_BLANK_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+
+        function cancelLBPendingLoads() {
+            lbLoadToken++;
+            if (lbActivePreloader) {
+                lbActivePreloader.onload = null;
+                lbActivePreloader.onerror = null;
+                try { lbActivePreloader.src = LB_BLANK_PIXEL; } catch(e) {}
+                lbActivePreloader = null;
+            }
+            if (lbActiveHdPreloader) {
+                lbActiveHdPreloader.onload = null;
+                lbActiveHdPreloader.onerror = null;
+                try { lbActiveHdPreloader.src = LB_BLANK_PIXEL; } catch(e) {}
+                lbActiveHdPreloader = null;
+            }
+        }
 
         function ensureLBHighResLoaded(showFeedback) {
             if (lbCurrentIsHD) return;
@@ -2563,23 +2583,28 @@
             if (!imgEl || !origUrl) return;
 
             lbCurrentIsHD = true;
+            var myToken = lbLoadToken;
             if (hdBtn) {
                 hdBtn.textContent = '⏳ Cargando HD...';
                 hdBtn.classList.add('hd-on');
             }
 
+            if (lbActiveHdPreloader) {
+                lbActiveHdPreloader.onload = null;
+                lbActiveHdPreloader.onerror = null;
+            }
             var hiImg = new Image();
+            lbActiveHdPreloader = hiImg;
             hiImg.onload = function() {
-                if (portalPhotos[lbIdx] === p) {
+                if (lbLoadToken === myToken && portalPhotos[lbIdx] === p) {
                     imgEl.src = origUrl;
                     if (hdBtn) hdBtn.textContent = '✨ HD Activo';
                     if (showFeedback) toast('✨ Calidad original de Google Drive aplicada', 2000);
                 }
             };
             hiImg.onerror = function() {
-                // Fallback a 4096px si =s0 es bloqueado por Drive en algún archivo
                 var fallbackUrl = pSrc(p, 4096);
-                if (portalPhotos[lbIdx] === p && fallbackUrl) {
+                if (lbLoadToken === myToken && portalPhotos[lbIdx] === p && fallbackUrl) {
                     imgEl.src = fallbackUrl;
                     if (hdBtn) hdBtn.textContent = '✨ HD Activo';
                 }
@@ -2658,6 +2683,9 @@
 
         function showLB() {
             var p = portalPhotos[lbIdx]; if (!p) return; 
+            cancelLBPendingLoads();
+            var myToken = lbLoadToken;
+
             var countStr = portalPhotos.length > 1 ? (lbIdx + 1) + ' / ' + portalPhotos.length : '';
             document.getElementById('lbC').textContent = countStr + (p.name ? (countStr ? '  ·  ' : '') + p.name : ''); 
             lbTempRot = p.rot ? parseInt(p.rot) : 0;
@@ -2675,6 +2703,7 @@
 
             if (p.type === 'video') {
                 imgEl.style.display = 'none';
+                imgEl.src = LB_BLANK_PIXEL;
                 vidEl.style.display = 'block';
                 vidEl.src = getEmbedUrl(p.videoUrl) + '?autoplay=1';
                 dlBtn.style.display = 'none';
@@ -2694,10 +2723,43 @@
                     hdBtn.classList.toggle('hd-on', lbAlwaysHD);
                 }
 
-                // Carga inicial rápida en 2200px y, si HD está activo o el usuario hace zoom, carga la original (=s0) de Drive
-                imgEl.src = pFull(p);
+                // 1. Limpiar inmediatamente la foto anterior para que NUNCA se quede pegada en pantalla
+                imgEl.src = LB_BLANK_PIXEL;
+
+                // 2. Mostrar al instante (0 ms) la imagen que ya está en caché de la cuadrícula (=s800)
+                var gridThumb = !isPublicPortfolioView ? document.getElementById('gimg-' + lbIdx) : null;
+                var instantSrc = (gridThumb && gridThumb.src) ? gridThumb.src : pSrc(p, 800);
+                imgEl.src = instantSrc;
+
+                // 3. Cargar en segundo plano la versión de alta nitidez (=s1600 en móvil / =s2200 en PC) y reemplazar suavemente
+                var targetHiResSize = isTouchDevice ? 1600 : 2200;
+                var hiResUrl = pSrc(p, targetHiResSize);
+                if (hiResUrl && hiResUrl !== instantSrc) {
+                    var preImg = new Image();
+                    lbActivePreloader = preImg;
+                    preImg.onload = function() {
+                        if (lbLoadToken === myToken && portalPhotos[lbIdx] === p && !lbCurrentIsHD) {
+                            imgEl.src = hiResUrl;
+                        }
+                    };
+                    preImg.src = hiResUrl;
+                }
+
                 if (lbAlwaysHD) {
                     ensureLBHighResLoaded(false);
+                }
+
+                // 4. Precargar en caché las fotos vecinas (anterior y siguiente) en =s800 para que deslizar sea instantáneo
+                if (portalPhotos.length > 1) {
+                    var nextIdx = (lbIdx + 1) % portalPhotos.length;
+                    var prevIdx = (lbIdx - 1 + portalPhotos.length) % portalPhotos.length;
+                    [nextIdx, prevIdx].forEach(function(adjIdx) {
+                        var adjP = portalPhotos[adjIdx];
+                        if (adjP && adjP.type !== 'video') {
+                            var adjImg = new Image();
+                            adjImg.src = pSrc(adjP, 800);
+                        }
+                    });
                 }
                 
                 if (isPublicPortfolioView) {
@@ -2728,10 +2790,13 @@
         }
 
         function closeLB() { 
+            cancelLBPendingLoads();
             document.getElementById('lb').classList.remove('active'); 
             document.body.classList.remove('lb-open');
             document.body.style.overflow = ''; 
             document.getElementById('lbVid').src = ''; 
+            var imgEl = document.getElementById('lbImg');
+            if (imgEl) imgEl.src = LB_BLANK_PIXEL;
             lbScale = 1; lbPanX = 0; lbPanY = 0;
         }
 
