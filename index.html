@@ -947,7 +947,7 @@
     <div class="adm-ov" id="admPanel">
         <div class="adm-box">
             <div class="adm-hdr">
-                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.5</span></h2>
+                <h2>Panel de Administración <span style="font-size:0.75rem; color:var(--text-light); font-family:var(--fb); background: var(--border-light); padding: 0.2rem 0.55rem; border-radius: 50px; margin-left: 0.5rem; vertical-align: middle;">v2.6</span></h2>
                 <button class="adm-x" onclick="closeAdm()">×</button>
             </div>
             <div class="adm-tabs" id="admTabs">
@@ -991,6 +991,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <script>
         function hideLoader() {
@@ -2237,6 +2238,7 @@
                     '</div>' +
                     '<div class="fav-set-actions">' +
                         (favIndices.length > 0 ? (
+                            '<button type="button" class="btn btn-sm" id="btnDlAllFavs" style="background:var(--c-accent); color:#fff; border:none; min-height:36px; padding:0.35rem 1rem; font-weight:600;" onclick="downloadAllFavoritesDirect(event)">⬇ Descargar todas (.ZIP)</button>' +
                             '<button type="button" class="btn btn-sm" style="background:#25D366; color:#fff; border:none; min-height:36px; padding:0.35rem 0.95rem;" onclick="sendFavSetWA()">📲 Enviar lista por WhatsApp</button>' +
                             '<button type="button" class="btn btn-accent btn-sm" style="min-height:36px; padding:0.35rem 0.95rem;" onclick="moveFavsToPrintOrder()">🖨️ Pedir Impresión</button>' +
                             '<button type="button" class="btn btn-sm" style="background:transparent; color:var(--c-muted); border:1px solid var(--c-border); min-height:36px; padding:0.35rem 0.75rem;" onclick="clearAllFavs()">Vaciar</button>'
@@ -4806,6 +4808,7 @@
             var h = '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem; margin-bottom:0.6rem;">' +
                 '<label class="af-l" style="margin:0; color:#e11d48; font-size:0.86rem;">♥ Fotografías Favoritas Seleccionadas (' + favList.length + ')</label>' +
                 '<div style="display:flex; gap:0.45rem; flex-wrap:wrap;">' +
+                    (favList.length > 0 ? '<button type="button" class="al-btn" id="btnAdmDlFavsZip" style="background:var(--accent); color:#fff; border-color:var(--accent);" onclick="downloadAdminClientFavsZip(\'' + esc(code) + '\', event)">⬇ Descargar Favoritas (.ZIP)</button>' : '') +
                     (favList.length > 0 ? '<button type="button" class="al-btn" onclick="copyAdminClientFavNames(\'' + esc(code) + '\')">📋 Copiar nombres de archivos</button>' : '') +
                     '<button type="button" class="al-btn" style="background:#fff0f3; border-color:#fecdd3; color:#e11d48;" onclick="openClientGalleryOnFavsFromAdmin(\'' + esc(code) + '\')">👁️ Ver Set Favoritas en Galería</button>' +
                 '</div>' +
@@ -5907,6 +5910,184 @@
                 '</div>';
             body.appendChild(meterDiv);
         };
+
+        // =========================================================================
+        // VERSIÓN 2.6:
+        // 1. Descarga Directa de Todas las Fotos Favoritas en un archivo .ZIP (Sin ir a Google Drive)
+        // 2. Disponible tanto para el Cliente en su Galería (♥ Favoritas) como en el Panel Admin
+        // =========================================================================
+        async function fetchPhotoBlob(src, explicitDriveId) {
+            var dId = explicitDriveId || extractDriveId({ src: src || '' });
+            var candidateUrls = [];
+
+            if (dId) {
+                if (D && D.settings && D.settings.driveApiKey && D.settings.driveApiKey.trim()) {
+                    candidateUrls.push('https://www.googleapis.com/drive/v3/files/' + encodeURIComponent(dId) + '?alt=media&key=' + encodeURIComponent(D.settings.driveApiKey.trim()));
+                }
+                candidateUrls.push('https://lh3.googleusercontent.com/d/' + dId + '=d');
+                candidateUrls.push('https://lh3.googleusercontent.com/d/' + dId + '=s0');
+                candidateUrls.push('https://lh3.googleusercontent.com/d/' + dId + '=s2400');
+                candidateUrls.push('https://lh3.googleusercontent.com/d/' + dId + '=s1600');
+            } else if (src) {
+                candidateUrls.push(src.replace('w=800', 'w=2400'));
+                candidateUrls.push(src);
+            }
+
+            var blob = null;
+            for (var i = 0; i < candidateUrls.length; i++) {
+                try {
+                    var res = await fetch(candidateUrls[i], { mode: 'cors', credentials: 'omit' });
+                    if (res && res.ok) {
+                        var b = await res.blob();
+                        if (b && b.size > 1500 && (!b.type || !b.type.includes('text/html'))) {
+                            blob = b;
+                            break;
+                        }
+                    }
+                } catch (fetchErr) {}
+            }
+
+            if (!blob && dId) {
+                var canvasUrls = [
+                    'https://lh3.googleusercontent.com/d/' + dId + '=s0',
+                    'https://lh3.googleusercontent.com/d/' + dId + '=s2400',
+                    'https://lh3.googleusercontent.com/d/' + dId + '=s1600'
+                ];
+                for (var j = 0; j < canvasUrls.length; j++) {
+                    try {
+                        blob = await fetchImageViaCanvasBlob(canvasUrls[j]);
+                        if (blob) break;
+                    } catch (cErr) {}
+                }
+            } else if (!blob && src) {
+                try {
+                    blob = await fetchImageViaCanvasBlob(src.replace('w=800', 'w=2400'));
+                } catch (cErr2) {}
+            }
+
+            return blob;
+        }
+
+        async function packAndDownloadPhotosListAsZip(photoItemsList, zipFileName, btnEl) {
+            if (!photoItemsList || !photoItemsList.length) {
+                toast('No hay fotografías favoritas seleccionadas para descargar.');
+                return;
+            }
+
+            var origHtml = btnEl ? btnEl.innerHTML : null;
+            if (btnEl) {
+                btnEl.style.pointerEvents = 'none';
+                btnEl.style.opacity = '0.75';
+            }
+
+            try {
+                if (typeof JSZip === 'undefined') {
+                    toast('⏳ Descargando fotografías favoritas una por una...', 3500);
+                    for (var k = 0; k < photoItemsList.length; k++) {
+                        var itemK = photoItemsList[k];
+                        if (btnEl) btnEl.innerHTML = '⏳ ' + (k + 1) + ' / ' + photoItemsList.length + '...';
+                        await downloadPhoto(itemK.src || pSrc(itemK, 1600), itemK.name, null, extractDriveId(itemK));
+                        await new Promise(function(r) { setTimeout(r, 650); });
+                    }
+                    return;
+                }
+
+                var zip = new JSZip();
+                var total = photoItemsList.length;
+                var downloadedCount = 0;
+                var usedNames = {};
+
+                for (var i = 0; i < total; i++) {
+                    var photo = photoItemsList[i];
+                    if (!photo) continue;
+
+                    var pct = Math.round(((i + 1) / total) * 100);
+                    if (btnEl) {
+                        btnEl.innerHTML = '⏳ ' + (i + 1) + '/' + total + ' (' + pct + '%)';
+                    }
+                    toast('⏳ Preparando favorita ' + (i + 1) + ' de ' + total + '...', 2500);
+
+                    var rawName = photo.name || ('Favorita_' + (i + 1) + '.jpg');
+                    var baseName = normalizePhotoFileName(rawName);
+
+                    if (usedNames[baseName]) {
+                        usedNames[baseName]++;
+                        var dotIdx = baseName.lastIndexOf('.');
+                        baseName = baseName.substring(0, dotIdx) + '_' + usedNames[baseName] + baseName.substring(dotIdx);
+                    } else {
+                        usedNames[baseName] = 1;
+                    }
+
+                    try {
+                        var blob = await fetchPhotoBlob(photo.src, extractDriveId(photo));
+                        if (blob) {
+                            zip.file(baseName, blob);
+                            downloadedCount++;
+                        }
+                    } catch (errPhoto) {
+                        console.warn('No se pudo empaquetar la foto:', baseName, errPhoto);
+                    }
+                }
+
+                if (downloadedCount === 0) {
+                    toast('⚠️ No se pudieron descargar las fotos directamente. Verifica tu conexión.');
+                    return;
+                }
+
+                if (btnEl) btnEl.innerHTML = '📦 Creando ZIP...';
+                toast('📦 Empaquetando ' + downloadedCount + ' fotos en archivo .ZIP...', 4000);
+
+                var zipBlob = await zip.generateAsync({ type: 'blob' });
+                saveBlobDirectlyToDevice(zipBlob, zipFileName);
+                toast('✅ ¡' + downloadedCount + ' fotos favoritas descargadas en ' + zipFileName + '!', 4500);
+            } catch (err) {
+                console.error('Error al generar ZIP de favoritas:', err);
+                toast('❌ Error al generar el archivo ZIP: ' + (err.message || 'Intenta nuevamente'));
+            } finally {
+                if (btnEl) {
+                    btnEl.style.pointerEvents = '';
+                    btnEl.style.opacity = '';
+                    if (origHtml !== null) btnEl.innerHTML = origHtml;
+                }
+            }
+        }
+
+        async function downloadAllFavoritesDirect(e) {
+            if (e) { e.preventDefault(); e.stopPropagation(); }
+            var favs = getFavIndices();
+            if (!favs || !favs.length) {
+                toast('Primero marca tus fotos favoritas con el corazón ♥.');
+                return;
+            }
+            var btnEl = (e && e.currentTarget) ? e.currentTarget : document.getElementById('btnDlAllFavs');
+            var c = (curClient && D && D.clients) ? D.clients[curClient] : null;
+            var safeTitle = ((c && c.name) ? c.name : (curClient || 'Evento')).replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ_-]+/g, '_');
+            var zipName = 'Favoritas_' + safeTitle + '.zip';
+
+            var list = [];
+            favs.forEach(function(idx) {
+                if (portalPhotos[idx]) list.push(portalPhotos[idx]);
+            });
+
+            await packAndDownloadPhotosListAsZip(list, zipName, btnEl);
+        }
+
+        async function downloadAdminClientFavsZip(code, e) {
+            if (e) { e.preventDefault(); e.stopPropagation(); }
+            var c = (code && D && D.clients) ? D.clients[code] : null;
+            if (!c) return;
+            var favItems = getClientSharedFavList(c);
+            if (!favItems.length) {
+                toast('Este evento aún no tiene fotos favoritas seleccionadas.');
+                return;
+            }
+            var btnEl = (e && e.currentTarget) ? e.currentTarget : document.getElementById('btnAdmDlFavsZip');
+            var safeTitle = (c.name || code || 'Evento').replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ_-]+/g, '_');
+            var zipName = 'Favoritas_' + safeTitle + '.zip';
+            var photosList = favItems.map(function(item) { return item.photo; });
+
+            await packAndDownloadPhotosListAsZip(photosList, zipName, btnEl);
+        }
 
         window.addEventListener('DOMContentLoaded', function() { loadData(); });
     </script>
